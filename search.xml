@@ -44,10 +44,10 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml  &#x2F;&#x2F; 配置信息，你可以在此配置大部分的参数</span><br><span class="line">├── package.json &#x2F;&#x2F; 应用程序的信息</span><br><span class="line">├── public       &#x2F;&#x2F; 执行 hexo generate 命令，输出的静态网页内容目录</span><br><span class="line">├── scaffolds    &#x2F;&#x2F; 模板文件夹。当你新建文章时，Hexo会根据scaffold来建立文件 </span><br><span class="line">├── scripts      &#x2F;&#x2F; 存放自定义 javascript 脚本</span><br><span class="line">├── source       &#x2F;&#x2F; 存放用户资源的地方</span><br><span class="line">|   ├── _drafts  &#x2F;&#x2F; 草稿文章</span><br><span class="line">|   └── _posts   &#x2F;&#x2F; 发布文章</span><br><span class="line">└── themes       &#x2F;&#x2F; 存放博客的主题，Hexo会根据主题来生成静态页面</span><br></pre></td></tr></table></figure>
 
 <p>执行下列命令，会生成静态页面。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo g(generate)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate  <span class="comment"># 或者 hexo g</span></span><br></pre></td></tr></table></figure>
 
 <p>启动本地服务，打开浏览器输入 <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000/</a> 即可访问。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo s(server)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server  <span class="comment"># 或者 hexo s</span></span><br></pre></td></tr></table></figure>
 
 <h4 id="三、部署到Github"><a href="#三、部署到Github" class="headerlink" title="三、部署到Github"></a>三、部署到Github</h4><h5 id="配置-SSH-Key，将本地目录与-Github-关联"><a href="#配置-SSH-Key，将本地目录与-Github-关联" class="headerlink" title="配置 SSH Key，将本地目录与 Github 关联"></a>配置 SSH Key，将本地目录与 Github 关联</h5><p>配置SSH Key是让本地 git 项目与远程仓库建立联系。SSH Keys不配置的话每次项目有改动提交的时候就要手动输入账号密码，配置了就不需要了。</p>
 <p>首先检查是否已经有SSH Key</p>
@@ -81,7 +81,7 @@
 <p>然后执行命令：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo clean</span><br><span class="line">$ hexo g <span class="comment">#生成静态网页</span></span><br><span class="line">$ hexo d <span class="comment">#部署到远程仓库</span></span><br><span class="line">or <span class="comment"># $ hexo g -d</span></span><br></pre></td></tr></table></figure>
 
-<p>此时，通过访问 <a href="https://yourname.github.io/" target="_blank" rel="noopener">https://yourname.github.io</a> 可以看到默认的 Hexo 首页</p>
+<p>此时，通过访问 <a href="https://yourname.github.io/" target="_blank" rel="noopener">https://yourname.github.io</a> 可以看到默认的 Hexo 首页。</p>
 <p>一些常用命令：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">"postName"</span> <span class="comment"># 新建文章</span></span><br><span class="line"></span><br><span class="line">hexo new page <span class="string">"pageName"</span> <span class="comment"># 新建页面</span></span><br><span class="line"></span><br><span class="line">hexo generate <span class="comment"># 生成静态页面至public目录，markdown转html</span></span><br><span class="line"></span><br><span class="line">hexo server <span class="comment"># 开启预览访问端口（默认端口4000，'ctrl + c'关闭server）</span></span><br><span class="line"></span><br><span class="line">hexo deploy <span class="comment"># 将.deploy目录部署到GitHub</span></span><br><span class="line"></span><br><span class="line">hexo clean <span class="comment"># 清除public文件夹和db.json，清除缓存数据</span></span><br><span class="line"></span><br><span class="line">hexo <span class="built_in">help</span> <span class="comment"># 查看帮助</span></span><br><span class="line"></span><br><span class="line">hexo version <span class="comment"># 查看Hexo的版本</span></span><br><span class="line"></span><br><span class="line">hexo n == hexo new</span><br><span class="line"></span><br><span class="line">hexo g == hexo generate</span><br><span class="line"></span><br><span class="line">hexo s == hexo server</span><br><span class="line"></span><br><span class="line">hexo d == hexo deploy</span><br></pre></td></tr></table></figure>
 
