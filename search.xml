@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Git使用</title>
-    <url>/2020/07/21/Git%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Activity详细解析</title>
     <url>/2020/07/22/Activity%E8%AF%A6%E7%BB%86%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[]]></content>
@@ -126,6 +115,124 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git入门指南</title>
+    <url>/2020/07/21/Git%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文主要是学习和记录在工作中经常用到的一些Git命令。</p>
+<p>这里推荐几个练习和学习Git命令的网站：</p>
+<blockquote>
+<h4 id="Learn-Git-Branching"><a href="#Learn-Git-Branching" class="headerlink" title="Learn Git Branching"></a><strong><a href="https://learngitbranching.js.org/?locale=zh_CN" target="_blank" rel="noopener">Learn Git Branching</a></strong></h4><p><strong><a href="https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="noopener">《Git文档》</a></strong></p>
+<p><strong><a href="https://www.liaoxuefeng.com/wiki/896043488029600" target="_blank" rel="noopener">《廖雪峰的Git教程》</a></strong></p>
+</blockquote>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、基础必读"><a href="#一、基础必读" class="headerlink" title="一、基础必读"></a>一、基础必读</h4><h5 id="Git是什么"><a href="#Git是什么" class="headerlink" title="Git是什么"></a>Git是什么</h5><blockquote>
+<p>Git is a <a href="https://git-scm.com/about/free-and-open-source" target="_blank" rel="noopener">free and open source</a> distributed version control system designed to handle everything from small to very large projects with speed and efficiency. </p>
+<p>Git是一个免费和开源的分布式版本控制系统，致力于高效和快速的处理任何小或者大的项目。</p>
+</blockquote>
+<h5 id="Git中的几个概念"><a href="#Git中的几个概念" class="headerlink" title="Git中的几个概念"></a>Git中的几个概念</h5><p><strong>工作区、暂存区、版本库</strong></p>
+<ul>
+<li>工作区：就是在电脑里能够看到的目录，存放项目的文件夹。</li>
+<li>暂存区：是在版本库<code>.git</code>目录下的<code>index</code>文件，称为stage（或者叫index）的暂存区。</li>
+<li>版本库：工作区有一个隐藏目录<code>.git</code>，就是Git的版本库，主要存放暂存区和分支，还有Git为我们自动创建的第一个分支<code>master</code>，以及指向<code>master</code>的一个指针叫<code>HEAD</code>。</li>
+</ul>
+<p>三者的关系如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh3mg3awoxj30cq06iaa8.jpg" alt=""></p>
+<p><code>git add</code> 命令把文件修改从工作目录添加到暂存区，<code>git commit</code> 命令把暂存区的所有内容提交到版本库当前分支。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh3mizv2xbj30yg0ktgn7.jpg" alt=""><center>Git的过程</center></p>
+<h5 id="文件状态"><a href="#文件状态" class="headerlink" title="文件状态"></a>文件状态</h5><p>如果我们想看一下工作区和暂存区文件的状态，可以使用命令 <code>git status</code>，</p>
+<ul>
+<li><code>Changes to be committed</code>：暂存区的文件。</li>
+<li><code>Changes not staged for commit</code>：工作区的文件，还未保存到暂存区。</li>
+<li><code>Untracked files</code>：指那些第一次创建，还没有加入版本更新的文件。</li>
+</ul>
+<p>对于任何一个文件，在 Git 内都只有三种状态：已提交（committed），已修改（modified）和已暂存（staged）。已提交表示该文件已经被安全地保存在本地数据库中了；已修改表示修改了某个文件，但还没有提交保存；已暂存表示把已修改的文件放在下次提交时要保存的清单中。</p>
+<h5 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h5><p>分支是多人协作开发中必不可少的角色，因为在我们的开发过程中，至少会有两个分支：</p>
+<ul>
+<li>正式版本的分支：线上代码版本保存的分支，需要稳定的运行。</li>
+<li>开发主线的分支：下个版本需求的开发分支。</li>
+<li>Bug分支：修复Bug的分支。</li>
+</ul>
+<h4 id="二、基础命令"><a href="#二、基础命令" class="headerlink" title="二、基础命令"></a>二、基础命令</h4><h5 id="暂存区相关"><a href="#暂存区相关" class="headerlink" title="暂存区相关"></a>暂存区相关</h5><h6 id="添加进暂存区"><a href="#添加进暂存区" class="headerlink" title="添加进暂存区"></a>添加进暂存区</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git add .       <span class="comment"># 添加全部文件</span></span><br><span class="line">$ git add &lt;file&gt;  <span class="comment"># 添加某个文件</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="撤销工作区的修改"><a href="#撤销工作区的修改" class="headerlink" title="撤销工作区的修改"></a>撤销工作区的修改</h6><p>场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令<code>git checkout -- file</code>。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git checkout -- &lt;file&gt;  <span class="comment"># 把工作区指定文件的修改全部撤销</span></span><br></pre></td></tr></table></figure>
+
+<p>这里有两种情况：</p>
+<p>一种是<code>file</code>自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；</p>
+<p>一种是<code>file</code>已经添加到暂存区后，又作了修改，现在撤销修改就回到添加到暂存区后的状态。</p>
+<p>总之，就是让这个文件回到最近一次<code>git commit</code>或<code>git add</code>时的状态。</p>
+<h6 id="撤销暂存区的修改"><a href="#撤销暂存区的修改" class="headerlink" title="撤销暂存区的修改"></a>撤销暂存区的修改</h6><p>场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令<code>git reset HEAD &lt;file&gt;</code>，就回到了场景1，第二步按场景1操作。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git reset HEAD &lt;file&gt;  <span class="comment"># 把暂存区的修改撤销掉（unstage），重新放回工作区</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="版本库相关"><a href="#版本库相关" class="headerlink" title="版本库相关"></a>版本库相关</h5><h6 id="提交到版本库"><a href="#提交到版本库" class="headerlink" title="提交到版本库"></a>提交到版本库</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git commit -m &lt;message&gt;  <span class="comment"># message描述提交信息</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="撤销提交"><a href="#撤销提交" class="headerlink" title="撤销提交"></a>撤销提交</h6><p>在没有上传到远程分支时，进行版本库的撤销。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git reset HEAD~1  <span class="comment"># HEAD 代表当前的头结点，HEAD~n 代表当前节点的前n个节点</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="查看改动"><a href="#查看改动" class="headerlink" title="查看改动"></a>查看改动</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git diff HEAD -- &lt;file&gt;  <span class="comment"># 比较当前工作区和上一个版本的差异</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h6><p>直接在文件管理器中把文件删了，或者执行<code>rm</code>命令。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ rm file  <span class="comment"># 仅从工作区删除文件</span></span><br></pre></td></tr></table></figure>
+
+<p>在Git中删除也是一个修改操作，要想从版本库中删除文件，需执行两步。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git rm &lt;file&gt;  <span class="comment"># 从工作区删除文件并add到了暂存区</span></span><br><span class="line">$ git commit -m <span class="string">'remove file'</span>  <span class="comment"># 提交到版本库中</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Branch"><a href="#Branch" class="headerlink" title="Branch"></a>Branch</h5><h6 id="查看分支"><a href="#查看分支" class="headerlink" title="查看分支"></a>查看分支</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git branch  <span class="comment"># 查看本地所有分支，*是当前分支</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="创建分支"><a href="#创建分支" class="headerlink" title="创建分支"></a>创建分支</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git branch &lt;name&gt;  <span class="comment"># name 分支名</span></span><br></pre></td></tr></table></figure>
+
+<p>在本地创建和远程分支对应的分支，本地和远程分支的名称最好一致，使用：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git checkout -b branch-name origin/branch-name</span><br></pre></td></tr></table></figure>
+
+<h6 id="切换分支"><a href="#切换分支" class="headerlink" title="切换分支"></a>切换分支</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git checkout &lt;name&gt;  <span class="comment"># 切换到name分支 或者 git switch &lt;name&gt;</span></span><br><span class="line">$ git checkout -b &lt;name&gt; <span class="comment"># 创建并切换name分支 或者 git switch -c &lt;name&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h6><p>合并保留之前的提交顺序。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git merge &lt;name&gt;  <span class="comment"># 合并分支name到当前分支</span></span><br></pre></td></tr></table></figure>
+
+<p>得到的提交历史更加线性，看着更加简洁。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git rebase &lt;name&gt;  <span class="comment"># 合并分支name到当前分支</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="删除分支"><a href="#删除分支" class="headerlink" title="删除分支"></a>删除分支</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git branch -d &lt;name&gt; <span class="comment"># 删除name分支</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="三、远程命令"><a href="#三、远程命令" class="headerlink" title="三、远程命令"></a>三、远程命令</h4><h5 id="查看远程库信息"><a href="#查看远程库信息" class="headerlink" title="查看远程库信息"></a>查看远程库信息</h5><p>远程仓库的默认名称是<code>origin</code>。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git remote -v  <span class="comment"># -v 查看详细信息</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="更新代码"><a href="#更新代码" class="headerlink" title="更新代码"></a>更新代码</h5><h6 id="拉取最新代码"><a href="#拉取最新代码" class="headerlink" title="拉取最新代码"></a>拉取最新代码</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git pull &lt;origin&gt; &lt;branch-name&gt;  <span class="comment"># origin是我们远程分支的别名</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="上传代码"><a href="#上传代码" class="headerlink" title="上传代码"></a>上传代码</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git push &lt;origin&gt; &lt;branch-name&gt; <span class="comment"># 推送到指定分支</span></span><br></pre></td></tr></table></figure>
+
+<p>在上面的更新/推送命令中，默认了远程仓库的分支和当前的分支名一致，比如 <code>git push origin master</code>，本地分支名和远程分支的名称都为 <code>master</code>，如果不一致，则需要给定名称。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git push/pull &lt;origin&gt; &lt;本地分支:远程分支&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="进阶命令"><a href="#进阶命令" class="headerlink" title="进阶命令"></a>进阶命令</h5><h6 id="追加更新"><a href="#追加更新" class="headerlink" title="追加更新"></a>追加更新</h6><p>更新上次 commit 的代码，避免再次生成一个 commit 记录。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git commit --amend</span><br></pre></td></tr></table></figure>
+
+<h6 id="关联远程分支"><a href="#关联远程分支" class="headerlink" title="关联远程分支"></a>关联远程分支</h6><p>建立本地分支和远程分支的关联。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git branch --<span class="built_in">set</span>-upstream branch-name origin/branch-name</span><br></pre></td></tr></table></figure>
+
+<h6 id="上一个版本"><a href="#上一个版本" class="headerlink" title="上一个版本"></a>上一个版本</h6><p>指定当前版本的上一个版本，比如想在 <code>master</code> 分支上一个版本的基础上对代码进行修改，我可以输入 <code>git checkout -b bugfix master^</code>。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">HEAD^</span><br><span class="line">分支^</span><br><span class="line">Hash值^</span><br></pre></td></tr></table></figure>
+
+<h6 id="工作现场暂存和恢复"><a href="#工作现场暂存和恢复" class="headerlink" title="工作现场暂存和恢复"></a>工作现场暂存和恢复</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git stash  <span class="comment"># 把当前工作现场“储藏”起来，等以后恢复现场后继续工作</span></span><br><span class="line">$ git stash pop  <span class="comment"># 恢复工作现场，同时把stash内容也删了</span></span><br></pre></td></tr></table></figure>
+
+<p>修复bug时，我们会通过创建新的bug分支进行修复，然后合并，最后删除；</p>
+<p>当手头工作没有完成时，先把工作现场<code>git stash</code>一下，然后去修复bug，修复后，再<code>git stash pop</code>，回到工作现场。</p>
+<h6 id="复制一个特定的提交到当前分支"><a href="#复制一个特定的提交到当前分支" class="headerlink" title="复制一个特定的提交到当前分支"></a>复制一个特定的提交到当前分支</h6><p>在master分支上修复的bug，想要合并到当前dev分支，可以用<code>git cherry-pick &lt;commit&gt;</code>命令，把bug提交的修改“复制”到当前分支，避免重复劳动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git cherry-pick &lt;commit&gt;  <span class="comment"># commit 某次提交</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Git命令暂时先学习这些，掌握了这些可以胜任平时的开发，对于一些复杂的命令，使用的时候再查。</p>
+<p>引用文章：</p>
+<blockquote>
+<p><a href="https://juejin.im/post/5a2cdfe26fb9a0452936b07f" target="_blank" rel="noopener">《🛠Git 常用操作总结》</a><br><a href="https://juejin.im/post/5ba3aad7f265da0a8e6d801c" target="_blank" rel="noopener">《关于Android Studio使用Git的总结》</a><br><a href="https://www.liaoxuefeng.com/wiki/896043488029600" target="_blank" rel="noopener">《廖雪峰的Git教程》</a></p>
+<p><a href="https://juejin.im/post/5f0281aaf265da230f2838ba#heading-30" target="_blank" rel="noopener">《团队协作Git入门指南》</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
       </tags>
   </entry>
 </search>
