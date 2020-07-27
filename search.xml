@@ -130,6 +130,8 @@
 <p>Git is a <a href="https://git-scm.com/about/free-and-open-source" target="_blank" rel="noopener">free and open source</a> distributed version control system designed to handle everything from small to very large projects with speed and efficiency. </p>
 <p>Git是一个免费和开源的分布式版本控制系统，致力于高效和快速的处理任何小或者大的项目。</p>
 </blockquote>
+<a id="more"></a>
+
 <h5 id="Git中的几个概念"><a href="#Git中的几个概念" class="headerlink" title="Git中的几个概念"></a>Git中的几个概念</h5><p><strong>工作区、暂存区、版本库</strong></p>
 <ul>
 <li>工作区：就是在电脑里能够看到的目录，存放项目的文件夹。</li>
