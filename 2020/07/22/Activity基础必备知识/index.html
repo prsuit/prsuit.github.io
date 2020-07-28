@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本文是介绍Android的四大组件之一的Activity。 目录一、Activity是什么我们都知道android中有四大组件（Activity 活动，Service 服务，BroadcastReceiver 广播接收器，Content Provider 内容提供者），Activity是用的最多也是最基本的组件，Activity 提供窗口来和用户进行交互的组件。官方是这么介绍的：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Activity基础必备知识">
+<meta property="og:url" content="http://yoursite.com/2020/07/22/Activity%E5%9F%BA%E7%A1%80%E5%BF%85%E5%A4%87%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="前言本文是介绍Android的四大组件之一的Activity。 目录一、Activity是什么我们都知道android中有四大组件（Activity 活动，Service 服务，BroadcastReceiver 广播接收器，Content Provider 内容提供者），Activity是用的最多也是最基本的组件，Activity 提供窗口来和用户进行交互的组件。官方是这么介绍的：">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5lxx3ssej308n081dfu.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5m9bc21zj308w05r748.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5o2g5wxnj30e90if75q.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh6iwqed6kj30890bvmxc.jpg">
+<meta property="article:published_time" content="2020-07-21T16:11:45.000Z">
+<meta property="article:modified_time" content="2020-07-28T09:42:58.947Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="Android基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5lxx3ssej308n081dfu.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/07/22/Activity%E5%9F%BA%E7%A1%80%E5%BF%85%E5%A4%87%E7%9F%A5%E8%AF%86/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Activity基础必备知识 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、Activity是什么"><span class="nav-number">2.1.</span> <span class="nav-text">一、Activity是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、Activity状态及转换"><span class="nav-number">2.2.</span> <span class="nav-text">二、Activity状态及转换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、Activity栈"><span class="nav-number">2.3.</span> <span class="nav-text">三、Activity栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、Activity生命周期"><span class="nav-number">2.4.</span> <span class="nav-text">四、Activity生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、Activity启动和通信"><span class="nav-number">2.5.</span> <span class="nav-text">五、Activity启动和通信</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#显式Intent"><span class="nav-number">2.5.1.</span> <span class="nav-text">显式Intent</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#隐式Intent"><span class="nav-number">2.5.2.</span> <span class="nav-text">隐式Intent</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Intent-Filter"><span class="nav-number">2.5.3.</span> <span class="nav-text">Intent Filter</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、Activity启动模式"><span class="nav-number">2.6.</span> <span class="nav-text">六、Activity启动模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-manifest-文件"><span class="nav-number">2.6.1.</span> <span class="nav-text">使用 manifest 文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-Intent-标志"><span class="nav-number">2.6.2.</span> <span class="nav-text">使用 Intent 标志</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/22/Activity%E5%9F%BA%E7%A1%80%E5%BF%85%E5%A4%87%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Activity基础必备知识
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-22 00:11:45" itemprop="dateCreated datePublished" datetime="2020-07-22T00:11:45+08:00">2020-07-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Android基础</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/07/22/Activity%E5%9F%BA%E7%A1%80%E5%BF%85%E5%A4%87%E7%9F%A5%E8%AF%86/" class="post-meta-item leancloud_visitors" data-flag-title="Activity基础必备知识" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android的四大组件之一的Activity。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Activity是什么"><a href="#一、Activity是什么" class="headerlink" title="一、Activity是什么"></a>一、Activity是什么</h4><p>我们都知道android中有四大组件（Activity 活动，Service 服务，BroadcastReceiver 广播接收器，Content Provider 内容提供者），Activity是用的最多也是最基本的组件，Activity 提供窗口来和用户进行交互的组件。官方是这么介绍的：</p>
+<a id="more"></a>
+
+<blockquote>
+<p>An activity is a single, focused thing that the user can do. Almost all activities interact with the user, so the Activity class takes care of creating a window for you in which you can place your UI with setContentView(View).</p>
+<p>一个activity是一个单独的，用来处理用户操作的窗口。几乎所有的activity都是用来和用户交互的，所以activity类会创建了一个窗口，你可以通过setContentView(View)显示你的UI在窗口上。</p>
+</blockquote>
+<ul>
+<li>Activity是一个应用程序组件，提供一个屏幕，用户可以用来交互为了完成某项任务。</li>
+<li>Activity中所有操作都与用户密切相关，是一个负责与用户交互的组件，可以通过setContentView(View)来显示指定控件。</li>
+</ul>
+<h4 id="二、Activity状态及转换"><a href="#二、Activity状态及转换" class="headerlink" title="二、Activity状态及转换"></a>二、Activity状态及转换</h4><p>在android 中，Activity 拥有四种基本状态：</p>
+<p>1.<strong>Active/Running</strong></p>
+<p>​    一个新 Activity 启动入栈后，它显示在屏幕最前端，处理是处于栈的最顶端（Activity栈顶），此时它处于可见并可和用户交互的激活状态，叫做活动状态或者运行状态（active or running）。</p>
+<p>2.<strong>Paused</strong></p>
+<p>​    当 Activity 失去焦点，被另一个透明或者 Dialog 样式非全屏的 Activity 覆盖时的状态，叫做暂停状态（Paused）。此时它依然与窗口管理器保持连接，系统继续维护其内部状态，所以它仍然可见，但它已经失去了焦点故不可与用户交互。</p>
+<p>3.<strong>Stopped</strong></p>
+<p>​    当 Activity 被另外一个 Activity 完全覆盖掉，不可再见时的状态叫做停止状态（Stopped）。</p>
+<p>4.<strong>Killed</strong></p>
+<p>​    Activity 被系统杀死回收或者没有被启动时的状态，叫做被杀死的状态（Killed）。</p>
+<p>下图说明了 Activity 在不同状态间转换的时机和条件：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5lxx3ssej308n081dfu.jpg" alt=""></p>
+<h4 id="三、Activity栈"><a href="#三、Activity栈" class="headerlink" title="三、Activity栈"></a>三、Activity栈</h4><p>Android 是通过一种 Activity 栈的方式来管理 Activity 的，一个 Activity 的实例的状态决定它在栈中的位置。处于前台的 Activity 总是在栈的顶端，当前台的 Activity 因为异常或其它原因被销毁时，处于栈第二层的 Activity 将被激活，上浮到栈顶。当新的 Activity 启动入栈时，原 Activity 会被压入到栈的第二层。一个 Activity 在栈中的位置变化反映了它在不同状态间的转换。Activity 的状态与它在栈中的位置关系如下图所示：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5m9bc21zj308w05r748.jpg" alt=""></p>
+<p>如上所示，除了最顶层即处在 Active 状态的 Activity 外，其它的 Activity 都有可能在系统内存不足时被回收，一个 Activity 的实例越是处在栈的底层，它被系统回收的可能性越大。系统负责管理栈中 Activity 的实例，它根据 Activity 所处的状态来改变其在栈中的位置。</p>
+<h4 id="四、Activity生命周期"><a href="#四、Activity生命周期" class="headerlink" title="四、Activity生命周期"></a>四、Activity生命周期</h4><p>生命周期函数，常用的7个如下：</p>
+<p><strong>onCreate()</strong>：表示 Activity <strong>正在被创建</strong>，常用来<strong>初始化工作</strong>，比如调用 setContentView 加载界面布局资源，初始化 Activity 所需数据等；</p>
+<p><strong>onReStart()</strong>：表示 Activity <strong>正在重新启动</strong>，当前 Acitivty 从不可见重新变为可见时，onRestart 就会被调用；</p>
+<p><strong>onStart()</strong>：表示 Activity <strong>正在被启动</strong>，此时 Activity <strong>可见但不在前台</strong>，还处于后台，无法与用户交互；</p>
+<p><strong>onResume()</strong>：表示 Activity <strong>获得焦点</strong>，此时 Activity <strong>可见且在前台</strong>并开始活动，位于活动堆栈的顶部，这是与onStart的区别所在；</p>
+<p><strong>onPause()</strong>：表示 Activity <strong>正在停止</strong>，<strong>可见但不在前台</strong>，此时可做一些<strong>存储数据、停止动画</strong>等工作，但是不能太耗时，因为这会影响到新 Activity 的显示，onPause 必须先执行完，新 Activity 的 onResume 才会执行；</p>
+<p><strong>onStop()</strong>：表示 Activity <strong>即将停止</strong>，被新 activity 覆盖了，对用户<strong>不可见</strong>，可以做一些稍微重量级的回收工作，比如注销广播接收器、关闭网络连接等，同样不能太耗时；</p>
+<p><strong>onDestroy()</strong>：表示 Activity <strong>即将被销毁</strong>，这是 Activity 生命周期中的最后一个回调，常做<strong>回收工作、资源释放</strong>；</p>
+<ul>
+<li>延伸：从<strong>整个生命周期</strong>来看，<strong>onCreate</strong> 和 <strong>onDestroy</strong> 是配对的，分别标识着 Activity 的创建和销毁，并且只可能有<strong>一次调用</strong>； 从 Activity <strong>是否可见</strong>来说，<strong>onStart</strong> 和 <strong>onStop</strong> 是配对的，这两个方法可能被<strong>调用多次</strong>； 从 Activity <strong>是否在前台</strong>来说，<strong>onResume</strong> 和 <strong>onPause</strong> 是配对的，这两个方法可能被<strong>调用多次</strong>； 除了这种区别，在实际使用中没有其他明显区别。</li>
+</ul>
+<p>Activity 生命周期循环图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5o2g5wxnj30e90if75q.jpg" alt=""></p>
+<p><strong>onSaveInstanceState()</strong>：发生条件在系统配置发生改变（例如屏幕方向）导致 Activity 被杀死并重新创建、资源内存不足导致低优先级的 Activity 被杀死，系统会调用 <strong>onSaveInstanceState</strong> 来保存当前 Activity 的状态，此方法调用在 onStop 之前，与 onPause 没有既定的时序关系；</p>
+<p><strong>onRestoreInstanceState()</strong>： 当 Activity 被重建后，系统会调用 <strong>onRestoreInstanceState</strong>，并且把onSaveInstanceState 方法所保存的 Bundle 对象<strong>同时传参</strong>给 onRestoreInstanceState() 和 onCreate() ，因此可以通过这两个方法判断 Activity <strong>是否被重建</strong>，调用在 onStart 之后，可使用 onSaveInstanceState() 和onRestoreInstanceState()（或onCreate()）来保存和恢复 Activity 活动状态。</p>
+<h4 id="五、Activity启动和通信"><a href="#五、Activity启动和通信" class="headerlink" title="五、Activity启动和通信"></a>五、Activity启动和通信</h4><p><strong>Intent</strong>是一种消息传递的机制，它负责对操作的动作、动作涉及数据、附加数据进行描述。Android 则根据此Intent的描述，负责找到对应的组件，将 Intent 传递给调用的组件，并完成组件的调用。</p>
+<h5 id="显式Intent"><a href="#显式Intent" class="headerlink" title="显式Intent"></a>显式Intent</h5><p>通过指定具体的组件类，通知应用启动对应的组件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setClass(MainActivity.<span class="keyword">this</span>,SecondAcvivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">intent.putExtra(<span class="string">"values"</span>,<span class="string">"传个值"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<h5 id="隐式Intent"><a href="#隐式Intent" class="headerlink" title="隐式Intent"></a>隐式Intent</h5><p>通过指定了一系列更为抽象的 action 和 category 等信息，然后交由系统去分析这个 Intent，并帮我们找出合适的活动去启动。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.example.administrator.ACTION_START"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p>要在清单文件中<code>&lt;activity&gt;</code>标签下配置<code>&lt;intent-filter&gt;</code>的内容，可以指定当前活动能够响应的 action<br>和 category，如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity android:name=<span class="string">".SecondActivity"</span> &gt;</span><br><span class="line">	&lt;intent-filter&gt;</span><br><span class="line">		&lt;action android:name=<span class="string">"com.example.administrator.ACTION_START"</span> /&gt;</span><br><span class="line">		&lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">	&lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Intent-Filter"><a href="#Intent-Filter" class="headerlink" title="Intent Filter"></a>Intent Filter</h5><p>描述了一个组件愿意接收什么样的 Intent 对象，Android 将其抽象为 android.content.IntentFilter 类。 Activity 通过指定其 Intent Filter告诉系统该 Activity 可以响应什么类型的 Intent，有三大属性Action、URL、Category可以配置。</p>
+<p>Activity 中 Intent Filter 匹配的过程：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh6iwqed6kj30890bvmxc.jpg" alt=""></p>
+<p><strong>Action 匹配</strong></p>
+<p>是一个用户定义的字符串，一个 Intent Filter 可以包含多个 Action，用于标示 Activity 所能接受的”动作”。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter &gt;</span><br><span class="line"> 	&lt;action android:name=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span><br><span class="line"> 	&lt;action android:name=<span class="string">"com.xx.myaction"</span> /&gt;</span><br><span class="line">	......</span><br><span class="line"> &lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>URI 数据匹配</strong></p>
+<p>通过 URI 携带外部数据给目标组件，在<code>&lt;intent-filter&gt;</code>标签中配置一个<code>&lt;data&gt;</code>标签。</p>
+<p>mimeType 属性指定携带外部数据的数据类型，scheme 指定协议，host、port、path 指定数据的位置、端口、和路径。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">	&lt;data android:mimeType=<span class="string">"mimeType"</span> android:scheme=<span class="string">"scheme"</span></span><br><span class="line"> 				android:host=<span class="string">"host"</span> android:port=<span class="string">"port"</span> android:path=<span class="string">"path"</span>/&gt;</span><br><span class="line">&lt;/intent-filter</span><br></pre></td></tr></table></figure>
+
+<p>只有<code>&lt;data&gt;</code>标签中指定的内容和 Intent 中携带的 Data 完全一致时，当前活动才能够响应该 Intent。不过一般在<code>&lt;data&gt;</code>标签中都不会指定过多的内容。</p>
+<p><strong>Category 类别匹配</strong></p>
+<p>为组件定义一个 Category 类别列表，当 Intent 中包含这个列表的所有项目时 Category 类别匹配才会成功。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">	&lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
+
+<p>android.intent.category.DEFAULT 是一种默认的 category，在调用startActivity()方法的时候会自动将这个 category 添加到 Intent 中。</p>
+<p><strong>接收上一个Activity返回数据</strong></p>
+<p><strong>startActivityForResult()</strong>方法也是用于启动 Activity 的，这个方法可以 Activity 销毁的时候能够返回一个结果给上一个活动。该方法接收两个参数，第一个参数还是 Intent，第二个参数是请求码，用于在之后的回调中判断数据的来源。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(MainActivity.<span class="keyword">this</span>, SecondActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">startActivityForResult(intent, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>返回代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.putExtra(<span class="string">"data_return"</span>, <span class="string">"Hello MainActivity"</span>);</span><br><span class="line">setResult(RESULT_OK, intent);</span><br><span class="line">finish();</span><br></pre></td></tr></table></figure>
+
+<p><strong>setResult()</strong>方法接收两个参数，第一个参数用于向上一个活动返回处理结果，一般只使用<strong>RESULT_OK</strong>或<strong>RESULT_CANCELED</strong>，第二个参数则是把带有数据的 Intent 传递回去，然后调用了 finish()方法来销毁当前活动。</p>
+<p>在需要接收返回数据的 Activity 中重写<strong>onActivityResult()</strong>方法，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line"><span class="keyword">switch</span> (requestCode) &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">	<span class="keyword">if</span> (resultCode == RESULT_OK) &#123;</span><br><span class="line">		String returnedData = data.getStringExtra(<span class="string">"data_return"</span>);</span><br><span class="line">		Log.d(<span class="string">"FirstActivity"</span>, returnedData);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>onActivityResult()方法带有三个参数：</p>
+<p>第一个参数 requestCode，即我们在启动活动时传入的请求码。</p>
+<p>第二个参数 resultCode，即我们在返回数据时传入的处理结果。</p>
+<p>第三个参数 data，即携带着返回数据的 Intent。</p>
+<h4 id="六、Activity启动模式"><a href="#六、Activity启动模式" class="headerlink" title="六、Activity启动模式"></a>六、Activity启动模式</h4><h5 id="使用-manifest-文件"><a href="#使用-manifest-文件" class="headerlink" title="使用 manifest 文件"></a>使用 manifest 文件</h5><p>在 manifest 文件中通过给<code>&lt;activity&gt;</code>标签的<strong>android:launchMode</strong>属性来指定恰当的启动模式。</p>
+<p>1.<strong>standard标准模式</strong></p>
+<p>​        每次启动一个 Activity 都会重新创建一个新的实例，不管这个实例是否已经存在，此模式的 Activity 默认会进入启动它的 Activity 所属的任务栈中；</p>
+<p>2.<strong>singleTop栈顶复用模式</strong></p>
+<p>​        如果新 Activity 已经位于任务栈的栈顶，那么此 Activity 不会被重新创建，同时会回调 <strong>onNewIntent</strong> 方法，如果已经存在但不在栈顶，那么 Activity 依然会被重新创建；一般用于推送消息跳转界面。</p>
+<p>3.<strong>singleTask栈内复用模式</strong></p>
+<p>​        Activity 在同一个Task内只有一个实例。每次启动该 Activity 时系统首先会在返回栈中检查是否存在该Activity 的实例，如果发现已经存在则直接使用该实例，回调其<strong>onNewIntent</strong>方法，并把在这个 Activity 之上的所有 Activity 统统出栈；如果没有发现就会创建一个新的 Activity 实例，并将其加入Task栈顶，一般项目的主页面用该启动模式。</p>
+<p>4.<strong>singleInstance单实例模式</strong></p>
+<p>Activity只能单独地位于一个任务栈中，且此任务栈中只有唯一一个实例，在不同app之间的共享活动实例，一般用于系统功能界面。</p>
+<h5 id="使用-Intent-标志"><a href="#使用-Intent-标志" class="headerlink" title="使用 Intent 标志"></a>使用 Intent 标志</h5><p>Activity常用的标记位Flags</p>
+<ul>
+<li><strong>FLAG_ACTIVITY_NEW_TASK</strong>：对应 singleTask 启动模式。</li>
+<li><strong>FLAG_ACTIVITY_SINGLE_TOP</strong>：对应 singleTop 启动模式。</li>
+<li><strong>FLAG_ACTIVITY_CLEAR_TOP</strong>：在同一个任务栈中所有位于它上面的 Activity 都要出栈。这个标记位一般会和 singleTask 模式一起出现，在这种情况下，被启动Activity的实例如果已经存在，那么系统就会回调onNewIntent。如果被启动的 Activity 采用 standard 模式启动，那么它以及连同它之上的 Activity 都要出栈，系统会创建新的 Activity 实例并放入栈中。</li>
+<li><strong>FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS :</strong> 具有这个标记的 Activity 不会出现在历史 Activity 列表中。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以此文记录 Android 中 Activity 的基础知识，便于对 Activity 的理解和学习。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android%E5%9F%BA%E7%A1%80/" rel="tag"># Android基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/21/Git%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/" rel="prev" title="Git入门指南">
+      <i class="fa fa-chevron-left"></i> Git入门指南
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
