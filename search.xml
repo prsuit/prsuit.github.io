@@ -112,15 +112,14 @@
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文主要是学习和记录在工作中经常用到的一些Git命令。</p>
 <p>这里推荐几个练习和学习Git命令的网站：</p>
 <blockquote>
-<h4 id="Learn-Git-Branching"><a href="#Learn-Git-Branching" class="headerlink" title="Learn Git Branching"></a><strong><a href="https://learngitbranching.js.org/?locale=zh_CN" target="_blank" rel="noopener">Learn Git Branching</a></strong></h4><p><strong><a href="https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="noopener">《Git文档》</a></strong></p>
-<p><strong><a href="https://www.liaoxuefeng.com/wiki/896043488029600" target="_blank" rel="noopener">《廖雪峰的Git教程》</a></strong></p>
+<p><strong><a href="https://learngitbranching.js.org/?locale=zh_CN" target="_blank" rel="noopener">Learn Git Branching</a></strong>、<strong><a href="https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="noopener">《Git文档》</a></strong>、<strong><a href="https://www.liaoxuefeng.com/wiki/896043488029600" target="_blank" rel="noopener">《廖雪峰的Git教程》</a></strong></p>
 </blockquote>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、基础必读"><a href="#一、基础必读" class="headerlink" title="一、基础必读"></a>一、基础必读</h4><h5 id="Git是什么"><a href="#Git是什么" class="headerlink" title="Git是什么"></a>Git是什么</h5><a id="more"></a>
-
-<blockquote>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、基础必读"><a href="#一、基础必读" class="headerlink" title="一、基础必读"></a>一、基础必读</h4><h5 id="Git是什么"><a href="#Git是什么" class="headerlink" title="Git是什么"></a>Git是什么</h5><blockquote>
 <p>Git is a <a href="https://git-scm.com/about/free-and-open-source" target="_blank" rel="noopener">free and open source</a> distributed version control system designed to handle everything from small to very large projects with speed and efficiency. </p>
 <p>Git是一个免费和开源的分布式版本控制系统，致力于高效和快速的处理任何小或者大的项目。</p>
 </blockquote>
+<a id="more"></a>
+
 <h5 id="Git中的几个概念"><a href="#Git中的几个概念" class="headerlink" title="Git中的几个概念"></a>Git中的几个概念</h5><p><strong>工作区、暂存区、版本库</strong></p>
 <ul>
 <li>工作区：就是在电脑里能够看到的目录，存放项目的文件夹。</li>
