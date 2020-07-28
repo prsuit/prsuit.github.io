@@ -227,8 +227,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Activity基础必备知识</title>
-    <url>/2020/07/22/Activity%E5%9F%BA%E7%A1%80%E5%BF%85%E5%A4%87%E7%9F%A5%E8%AF%86/</url>
+    <title>Activity必备基础</title>
+    <url>/2020/07/22/Activity%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android的四大组件之一的Activity。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Activity是什么"><a href="#一、Activity是什么" class="headerlink" title="一、Activity是什么"></a>一、Activity是什么</h4><p>我们都知道android中有四大组件（Activity 活动，Service 服务，BroadcastReceiver 广播接收器，Content Provider 内容提供者），Activity是用的最多也是最基本的组件，Activity 提供窗口来和用户进行交互的组件。官方是这么介绍的：</p>
 <a id="more"></a>
