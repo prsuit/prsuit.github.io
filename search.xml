@@ -120,9 +120,11 @@
   </entry>
   <entry>
     <title>Service必备基础</title>
-    <url>/2020/07/28/Service%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/</url>
+    <url>/2020/07/25/Service%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android的四大组件之一的Service。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、什么是Service"><a href="#一、什么是Service" class="headerlink" title="一、什么是Service"></a>一、什么是Service</h4><p>Service 是一个应用程序组件，它能在后台执行一些耗时较长的操作，并且不提供用户界面。服务能被其他应用程序的组件启动，即使用户切换到另外的应用时还能保持后台运行。此外，应用程序组件还能与服务绑定，并与服务进行交互，甚至能进行进程间通信（IPC）。 比如，服务可以处理网络传输、音乐播放、执行文件I/O、或者与 content provider 进行交互，所有这些都是后台进行的。</p>
+<a id="more"></a>
+
 <ul>
 <li><p>运行完全不依赖UI的，只要进程还在，Service 就可以继续运行，可以和其他组件组件交互；</p>
 </li>
