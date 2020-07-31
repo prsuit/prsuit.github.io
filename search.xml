@@ -1,6 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Activity必备基础</title>
+    <url>/2020/07/23/Activity%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android的四大组件之一的Activity。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Activity是什么"><a href="#一、Activity是什么" class="headerlink" title="一、Activity是什么"></a>一、Activity是什么</h4><p>我们都知道android中有四大组件（Activity 活动，Service 服务，BroadcastReceiver 广播接收器，Content Provider 内容提供者），Activity是用的最多也是最基本的组件，Activity 提供窗口来和用户进行交互的组件。官方是这么介绍的：</p>
+<a id="more"></a>
+
+<blockquote>
+<p>An activity is a single, focused thing that the user can do. Almost all activities interact with the user, so the Activity class takes care of creating a window for you in which you can place your UI with setContentView(View).</p>
+<p>一个activity是一个单独的，用来处理用户操作的窗口。几乎所有的activity都是用来和用户交互的，所以activity类会创建了一个窗口，你可以通过setContentView(View)显示你的UI在窗口上。</p>
+</blockquote>
+<ul>
+<li>Activity是一个应用程序组件，提供一个屏幕，用户可以用来交互为了完成某项任务。</li>
+<li>Activity中所有操作都与用户密切相关，是一个负责与用户交互的组件，可以通过setContentView(View)来显示指定控件。</li>
+</ul>
+<h4 id="二、Activity状态及转换"><a href="#二、Activity状态及转换" class="headerlink" title="二、Activity状态及转换"></a>二、Activity状态及转换</h4><p>在android 中，Activity 拥有四种基本状态：</p>
+<p>1.<strong>Active/Running</strong></p>
+<p>​    一个新 Activity 启动入栈后，它显示在屏幕最前端，处理是处于栈的最顶端（Activity栈顶），此时它处于可见并可和用户交互的激活状态，叫做活动状态或者运行状态（active or running）。</p>
+<p>2.<strong>Paused</strong></p>
+<p>​    当 Activity 失去焦点，被另一个透明或者 Dialog 样式非全屏的 Activity 覆盖时的状态，叫做暂停状态（Paused）。此时它依然与窗口管理器保持连接，系统继续维护其内部状态，所以它仍然可见，但它已经失去了焦点故不可与用户交互。</p>
+<p>3.<strong>Stopped</strong></p>
+<p>​    当 Activity 被另外一个 Activity 完全覆盖掉，不可再见时的状态叫做停止状态（Stopped）。</p>
+<p>4.<strong>Killed</strong></p>
+<p>​    Activity 被系统杀死回收或者没有被启动时的状态，叫做被杀死的状态（Killed）。</p>
+<p>下图说明了 Activity 在不同状态间转换的时机和条件：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5lxx3ssej308n081dfu.jpg" alt=""></p>
+<h4 id="三、Activity栈"><a href="#三、Activity栈" class="headerlink" title="三、Activity栈"></a>三、Activity栈</h4><p>Android 是通过一种 Activity 栈的方式来管理 Activity 的，一个 Activity 的实例的状态决定它在栈中的位置。处于前台的 Activity 总是在栈的顶端，当前台的 Activity 因为异常或其它原因被销毁时，处于栈第二层的 Activity 将被激活，上浮到栈顶。当新的 Activity 启动入栈时，原 Activity 会被压入到栈的第二层。一个 Activity 在栈中的位置变化反映了它在不同状态间的转换。Activity 的状态与它在栈中的位置关系如下图所示：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5m9bc21zj308w05r748.jpg" alt=""></p>
+<p>如上所示，除了最顶层即处在 Active 状态的 Activity 外，其它的 Activity 都有可能在系统内存不足时被回收，一个 Activity 的实例越是处在栈的底层，它被系统回收的可能性越大。系统负责管理栈中 Activity 的实例，它根据 Activity 所处的状态来改变其在栈中的位置。</p>
+<h4 id="四、Activity生命周期"><a href="#四、Activity生命周期" class="headerlink" title="四、Activity生命周期"></a>四、Activity生命周期</h4><p>生命周期函数，常用的7个如下：</p>
+<p><strong>onCreate()</strong>：表示 Activity <strong>正在被创建</strong>，常用来<strong>初始化工作</strong>，比如调用 setContentView 加载界面布局资源，初始化 Activity 所需数据等；</p>
+<p><strong>onReStart()</strong>：表示 Activity <strong>正在重新启动</strong>，当前 Acitivty 从不可见重新变为可见时，onRestart 就会被调用；</p>
+<p><strong>onStart()</strong>：表示 Activity <strong>正在被启动</strong>，此时 Activity <strong>可见但不在前台</strong>，还处于后台，无法与用户交互；</p>
+<p><strong>onResume()</strong>：表示 Activity <strong>获得焦点</strong>，此时 Activity <strong>可见且在前台</strong>并开始活动，位于活动堆栈的顶部，这是与onStart的区别所在；</p>
+<p><strong>onPause()</strong>：表示 Activity <strong>正在停止</strong>，<strong>可见但不在前台</strong>，此时可做一些<strong>存储数据、停止动画</strong>等工作，但是不能太耗时，因为这会影响到新 Activity 的显示，onPause 必须先执行完，新 Activity 的 onResume 才会执行；</p>
+<p><strong>onStop()</strong>：表示 Activity <strong>即将停止</strong>，被新 activity 覆盖了，对用户<strong>不可见</strong>，可以做一些稍微重量级的回收工作，比如注销广播接收器、关闭网络连接等，同样不能太耗时；</p>
+<p><strong>onDestroy()</strong>：表示 Activity <strong>即将被销毁</strong>，这是 Activity 生命周期中的最后一个回调，常做<strong>回收工作、资源释放</strong>；</p>
+<ul>
+<li>延伸：从<strong>整个生命周期</strong>来看，<strong>onCreate</strong> 和 <strong>onDestroy</strong> 是配对的，分别标识着 Activity 的创建和销毁，并且只可能有<strong>一次调用</strong>； 从 Activity <strong>是否可见</strong>来说，<strong>onStart</strong> 和 <strong>onStop</strong> 是配对的，这两个方法可能被<strong>调用多次</strong>； 从 Activity <strong>是否在前台</strong>来说，<strong>onResume</strong> 和 <strong>onPause</strong> 是配对的，这两个方法可能被<strong>调用多次</strong>； 除了这种区别，在实际使用中没有其他明显区别。</li>
+</ul>
+<p>Activity 生命周期循环图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5o2g5wxnj30e90if75q.jpg" alt=""></p>
+<p><strong>onSaveInstanceState()</strong>：发生条件在系统配置发生改变（例如屏幕方向）导致 Activity 被杀死并重新创建、资源内存不足导致低优先级的 Activity 被杀死，系统会调用 <strong>onSaveInstanceState</strong> 来保存当前 Activity 的状态，此方法调用在 onStop 之后 和 onDestory 之前；</p>
+<p><strong>onRestoreInstanceState()</strong>： 当 Activity 被重建后，系统会调用 <strong>onRestoreInstanceState</strong>，并且把onSaveInstanceState 方法所保存的 Bundle 对象<strong>同时传参</strong>给 onRestoreInstanceState() 和 onCreate() ，因此可以通过这两个方法判断 Activity <strong>是否被重建</strong>，调用在 onStart 之后，可使用 onSaveInstanceState() 和onRestoreInstanceState()（或onCreate()）来保存和恢复 Activity 活动状态。</p>
+<h4 id="五、Activity启动和通信"><a href="#五、Activity启动和通信" class="headerlink" title="五、Activity启动和通信"></a>五、Activity启动和通信</h4><p><strong>Intent</strong>是一种消息传递的机制，它负责对操作的动作、动作涉及数据、附加数据进行描述。Android 则根据此Intent的描述，负责找到对应的组件，将 Intent 传递给调用的组件，并完成组件的调用。</p>
+<h5 id="显式Intent"><a href="#显式Intent" class="headerlink" title="显式Intent"></a>显式Intent</h5><p>通过指定具体的组件类，通知应用启动对应的组件。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setClass(MainActivity.<span class="keyword">this</span>,SecondAcvivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">intent.putExtra(<span class="string">"values"</span>,<span class="string">"传个值"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<h5 id="隐式Intent"><a href="#隐式Intent" class="headerlink" title="隐式Intent"></a>隐式Intent</h5><p>通过指定了一系列更为抽象的 action 和 category 等信息，然后交由系统去分析这个 Intent，并帮我们找出合适的活动去启动。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.example.administrator.ACTION_START"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p>要在清单文件中<code>&lt;activity&gt;</code>标签下配置<code>&lt;intent-filter&gt;</code>的内容，可以指定当前活动能够响应的 action<br>和 category，如下：</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;activity android:name=<span class="string">".SecondActivity"</span> &gt;</span><br><span class="line">	&lt;intent-filter&gt;</span><br><span class="line">		&lt;action android:name=<span class="string">"com.example.administrator.ACTION_START"</span> /&gt;</span><br><span class="line">		&lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">	&lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Intent-Filter"><a href="#Intent-Filter" class="headerlink" title="Intent Filter"></a>Intent Filter</h5><p>描述了一个组件愿意接收什么样的 Intent 对象，Android 将其抽象为 android.content.IntentFilter 类。 Activity 通过指定其 Intent Filter告诉系统该 Activity 可以响应什么类型的 Intent，有三大属性Action、URL、Category可以配置。</p>
+<p>Activity 中 Intent Filter 匹配的过程：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh6iwqed6kj30890bvmxc.jpg" alt=""></p>
+<p><strong>Action 匹配</strong></p>
+<p>是一个用户定义的字符串，一个 Intent Filter 可以包含多个 Action，用于标示 Activity 所能接受的”动作”。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;intent-filter &gt;</span><br><span class="line"> 	&lt;action android:name=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span><br><span class="line"> 	&lt;action android:name=<span class="string">"com.xx.myaction"</span> /&gt;</span><br><span class="line">	......</span><br><span class="line"> &lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>URI 数据匹配</strong></p>
+<p>通过 URI 携带外部数据给目标组件，在<code>&lt;intent-filter&gt;</code>标签中配置一个<code>&lt;data&gt;</code>标签。</p>
+<p>mimeType 属性指定携带外部数据的数据类型，scheme 指定协议，host、port、path 指定数据的位置、端口、和路径。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">	&lt;data android:mimeType=<span class="string">"mimeType"</span> android:scheme=<span class="string">"scheme"</span></span><br><span class="line"> 				android:host=<span class="string">"host"</span> android:port=<span class="string">"port"</span> android:path=<span class="string">"path"</span>/&gt;</span><br><span class="line">&lt;/intent-filter</span><br></pre></td></tr></table></figure>
+
+<p>只有<code>&lt;data&gt;</code>标签中指定的内容和 Intent 中携带的 Data 完全一致时，当前活动才能够响应该 Intent。不过一般在<code>&lt;data&gt;</code>标签中都不会指定过多的内容。</p>
+<p><strong>Category 类别匹配</strong></p>
+<p>为组件定义一个 Category 类别列表，当 Intent 中包含这个列表的所有项目时 Category 类别匹配才会成功。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">	&lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
+
+<p>android.intent.category.DEFAULT 是一种默认的 category，在调用startActivity()方法的时候会自动将这个 category 添加到 Intent 中。</p>
+<p><strong>接收上一个Activity返回数据</strong></p>
+<p><strong>startActivityForResult()</strong>方法也是用于启动 Activity 的，这个方法可以 Activity 销毁的时候能够返回一个结果给上一个活动。该方法接收两个参数，第一个参数还是 Intent，第二个参数是请求码，用于在之后的回调中判断数据的来源。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(MainActivity.<span class="keyword">this</span>, SecondActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">startActivityForResult(intent, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>返回代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.putExtra(<span class="string">"data_return"</span>, <span class="string">"Hello MainActivity"</span>);</span><br><span class="line">setResult(RESULT_OK, intent);</span><br><span class="line">finish();</span><br></pre></td></tr></table></figure>
+
+<p><strong>setResult()</strong>方法接收两个参数，第一个参数用于向上一个活动返回处理结果，一般只使用<strong>RESULT_OK</strong>或<strong>RESULT_CANCELED</strong>，第二个参数则是把带有数据的 Intent 传递回去，然后调用了 finish()方法来销毁当前活动。</p>
+<p>在需要接收返回数据的 Activity 中重写<strong>onActivityResult()</strong>方法，</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line"><span class="keyword">switch</span> (requestCode) &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">	<span class="keyword">if</span> (resultCode == RESULT_OK) &#123;</span><br><span class="line">		String returnedData = data.getStringExtra(<span class="string">"data_return"</span>);</span><br><span class="line">		Log.d(<span class="string">"FirstActivity"</span>, returnedData);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>onActivityResult()方法带有三个参数：</p>
+<p>第一个参数 requestCode，即我们在启动活动时传入的请求码。</p>
+<p>第二个参数 resultCode，即我们在返回数据时传入的处理结果。</p>
+<p>第三个参数 data，即携带着返回数据的 Intent。</p>
+<h4 id="六、Activity启动模式"><a href="#六、Activity启动模式" class="headerlink" title="六、Activity启动模式"></a>六、Activity启动模式</h4><h5 id="使用-manifest-文件"><a href="#使用-manifest-文件" class="headerlink" title="使用 manifest 文件"></a>使用 manifest 文件</h5><p>在 manifest 文件中通过给<code>&lt;activity&gt;</code>标签的<strong>android:launchMode</strong>属性来指定恰当的启动模式。</p>
+<p>1.<strong>standard标准模式</strong></p>
+<p>​        每次启动一个 Activity 都会重新创建一个新的实例，不管这个实例是否已经存在，此模式的 Activity 默认会进入启动它的 Activity 所属的任务栈中；</p>
+<p>2.<strong>singleTop栈顶复用模式</strong></p>
+<p>​        如果新 Activity 已经位于任务栈的栈顶，那么此 Activity 不会被重新创建，同时会回调 <strong>onNewIntent</strong> 方法，如果已经存在但不在栈顶，那么 Activity 依然会被重新创建；一般用于推送消息跳转界面。</p>
+<p>3.<strong>singleTask栈内复用模式</strong></p>
+<p>​        Activity 在同一个Task内只有一个实例。每次启动该 Activity 时系统首先会在返回栈中检查是否存在该Activity 的实例，如果发现已经存在则直接使用该实例，回调其<strong>onNewIntent</strong>方法，并把在这个 Activity 之上的所有 Activity 统统出栈；如果没有发现就会创建一个新的 Activity 实例，并将其加入Task栈顶，一般项目的主页面用该启动模式。</p>
+<p>4.<strong>singleInstance单实例模式</strong></p>
+<p>Activity只能单独地位于一个任务栈中，且此任务栈中只有唯一一个实例，在不同app之间的共享活动实例，一般用于系统功能界面。</p>
+<h5 id="使用-Intent-标志"><a href="#使用-Intent-标志" class="headerlink" title="使用 Intent 标志"></a>使用 Intent 标志</h5><p>Activity常用的标记位Flags</p>
+<ul>
+<li><strong>FLAG_ACTIVITY_NEW_TASK</strong>：对应 singleTask 启动模式。</li>
+<li><strong>FLAG_ACTIVITY_SINGLE_TOP</strong>：对应 singleTop 启动模式。</li>
+<li><strong>FLAG_ACTIVITY_CLEAR_TOP</strong>：在同一个任务栈中所有位于它上面的 Activity 都要出栈。这个标记位一般会和 singleTask 模式一起出现，在这种情况下，被启动Activity的实例如果已经存在，那么系统就会回调onNewIntent。如果被启动的 Activity 采用 standard 模式启动，那么它以及连同它之上的 Activity 都要出栈，系统会创建新的 Activity 实例并放入栈中。</li>
+<li><strong>FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS :</strong> 具有这个标记的 Activity 不会出现在历史 Activity 列表中。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以此文记录 Android 中 Activity 的基础知识，便于对 Activity 的理解和学习。</p>
+]]></content>
+      <categories>
+        <category>Android基础</category>
+      </categories>
+      <tags>
+        <tag>Android基础</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Git入门指南</title>
     <url>/2020/07/21/Git%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文主要是学习和记录在工作中经常用到的一些Git命令。这里推荐几个练习和学习Git命令的网站：</p>
@@ -116,6 +228,112 @@
       </categories>
       <tags>
         <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo 搭建博客教程</title>
+    <url>/2020/07/20/Hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文主要是介绍在Mac上如何使用Hexo+GitHub搭建个人博客。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、什么是-Hexo"><a href="#一、什么是-Hexo" class="headerlink" title="一、什么是 Hexo"></a>一、什么是 Hexo</h4><blockquote>
+<p><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
+</blockquote>
+<a id="more"></a>
+
+<h4 id="二、配置环境"><a href="#二、配置环境" class="headerlink" title="二、配置环境"></a>二、配置环境</h4><h5 id="申请GitHub"><a href="#申请GitHub" class="headerlink" title="申请GitHub"></a>申请GitHub</h5><p><a href="https://github.com/" target="_blank" rel="noopener">Github</a>注册账号，用作博客的远程仓库和部署服务器。</p>
+<h5 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h5><p><a href="https://nodejs.org/en/" target="_blank" rel="noopener">官网下载</a>并安装，安装完成后可用<code>node -v</code>查看版本号。</p>
+<h5 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h5><p>Mac 安装 Xcode 自带有 Git，也可去<a href="https://git-scm.com/" target="_blank" rel="noopener">官网下载</a>，安装完成后可用<code>git --version</code>查看版本号。</p>
+<p>需要设置你 Github 的用户名密码和email，在命令行输入：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">"Your Name"</span></span><br><span class="line">$ git config --global user.email <span class="string">"email@example.com"</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="安装-Hexo"><a href="#安装-Hexo" class="headerlink" title="安装 Hexo"></a>安装 Hexo</h5><p>所有必备的应用程序安装完成后，即可使用 npm 安装 Hexo。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<h5 id="初始化博客"><a href="#初始化博客" class="headerlink" title="初始化博客"></a>初始化博客</h5><p>安装 Hexo 完成后，执行下列命令，Hexo 将会在指定文件夹中新建所需要的文件。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo init &lt;folder&gt;</span><br><span class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
+
+<p>新建完成后，指定文件夹的目录如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml  &#x2F;&#x2F; 配置信息，你可以在此配置大部分的参数</span><br><span class="line">├── package.json &#x2F;&#x2F; 应用程序的信息</span><br><span class="line">├── public       &#x2F;&#x2F; 执行 hexo generate 命令，输出的静态网页内容目录</span><br><span class="line">├── scaffolds    &#x2F;&#x2F; 模板文件夹。当你新建文章时，Hexo会根据scaffold来建立文件 </span><br><span class="line">├── scripts      &#x2F;&#x2F; 存放自定义 javascript 脚本</span><br><span class="line">├── source       &#x2F;&#x2F; 存放用户资源的地方</span><br><span class="line">|   ├── _drafts  &#x2F;&#x2F; 草稿文章</span><br><span class="line">|   └── _posts   &#x2F;&#x2F; 发布文章</span><br><span class="line">└── themes       &#x2F;&#x2F; 存放博客的主题，Hexo会根据主题来生成静态页面</span><br></pre></td></tr></table></figure>
+
+<p>执行下列命令，会生成静态页面。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate  <span class="comment"># 或者 hexo g</span></span><br></pre></td></tr></table></figure>
+
+<p>启动本地服务，打开浏览器输入 <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000/</a> 即可访问。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server <span class="comment"># 或者 hexo s</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="三、部署到Github"><a href="#三、部署到Github" class="headerlink" title="三、部署到Github"></a>三、部署到Github</h4><h5 id="配置-SSH-Key，将本地目录与-Github-关联"><a href="#配置-SSH-Key，将本地目录与-Github-关联" class="headerlink" title="配置 SSH Key，将本地目录与 Github 关联"></a>配置 SSH Key，将本地目录与 Github 关联</h5><p>配置SSH Key是让本地 git 项目与远程仓库建立联系。SSH Keys不配置的话每次项目有改动提交的时候就要手动输入账号密码，配置了就不需要了。</p>
+<p>首先检查是否已经有SSH Key，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p>如果没有目录.ssh，则要生成一个新的SSH Key，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"your e-mail"</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来几步都直接按回车键，然后系统会要你输入密码。这个密码会在你提交项目时使用，如果为空的话提交项目时则不用输入。</p>
+<p>成功后进入到.shh文件夹中再输入ls，查看是否有id_rsa.pub文件，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.ssh</span><br><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p>打开id_rsa.pub文件，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p>复制SSH Key后，登录GitHub账号，在Setting-&gt;SSH keys-&gt;add SSH key，将其添加到Add SSH Key里。</p>
+<h5 id="测试-SSH-Key-是否配置成功"><a href="#测试-SSH-Key-是否配置成功" class="headerlink" title="测试 SSH Key 是否配置成功"></a>测试 SSH Key 是否配置成功</h5><p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<p>如配置了密码则要输入密码，输完按回车。如果显示以下内容，则说明Github中的 ssh 配置成功。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Hi username! You have successfully authenticated, but GitHub does not</span><br><span class="line">provide shell access.</span><br></pre></td></tr></table></figure>
+
+<h5 id="创建仓库-Github-Pages"><a href="#创建仓库-Github-Pages" class="headerlink" title="创建仓库 Github Pages"></a>创建仓库 Github Pages</h5><p>登录GitHub账号后，新建 New repository，建立与你github用户名对应的仓库，名称必须为username.github.io，如prsuit.github.io。</p>
+<h5 id="修改Hexo的-config-yml文件"><a href="#修改Hexo的-config-yml文件" class="headerlink" title="修改Hexo的_config.yml文件"></a>修改Hexo的<code>_config.yml</code>文件</h5><p>根目录<code>_config.yml</code>是博客的配置文件，用文本编辑器打开此文件，在文件最后部分，修改deploy配置：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repository: https://github.com/yourname/yourname.github.io.git <span class="comment">#yourname替换成你的Github账户名</span></span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：在<code>.yml</code>文件中，冒号后面都是要带空格的。</strong></p>
+<h5 id="将博客项目上传到仓库"><a href="#将博客项目上传到仓库" class="headerlink" title="将博客项目上传到仓库"></a>将博客项目上传到仓库</h5><p>安装 <a href="https://github.com/hexojs/hexo-deployer-git" target="_blank" rel="noopener">hexo-deployer-git</a>，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<p>然后执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo clean</span><br><span class="line">$ hexo g <span class="comment">#生成静态网页</span></span><br><span class="line">$ hexo d <span class="comment">#部署到远程仓库</span></span><br><span class="line"><span class="comment"># 或者 $ hexo g -d</span></span><br></pre></td></tr></table></figure>
+
+<p>此时，通过访问 <a href="https://yourname.github.io/" target="_blank" rel="noopener">https://yourname.github.io</a> 可以看到默认的 Hexo 首页。</p>
+<p>一些常用命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">"postName"</span> <span class="comment"># 新建文章</span></span><br><span class="line"></span><br><span class="line">hexo new page <span class="string">"pageName"</span> <span class="comment"># 新建页面</span></span><br><span class="line"></span><br><span class="line">hexo generate <span class="comment"># 生成静态页面至public目录，markdown转html</span></span><br><span class="line"></span><br><span class="line">hexo server <span class="comment"># 开启预览访问端口（默认端口4000，'ctrl + c'关闭server）</span></span><br><span class="line"></span><br><span class="line">hexo deploy <span class="comment"># 将.deploy目录部署到GitHub</span></span><br><span class="line"></span><br><span class="line">hexo clean <span class="comment"># 清除public文件夹和db.json，清除缓存数据</span></span><br><span class="line"></span><br><span class="line">hexo <span class="built_in">help</span> <span class="comment"># 查看帮助</span></span><br><span class="line"></span><br><span class="line">hexo version <span class="comment"># 查看Hexo的版本</span></span><br><span class="line"></span><br><span class="line">hexo n == hexo new</span><br><span class="line"></span><br><span class="line">hexo g == hexo generate</span><br><span class="line"></span><br><span class="line">hexo s == hexo server</span><br><span class="line"></span><br><span class="line">hexo d == hexo deploy</span><br></pre></td></tr></table></figure>
+
+<h4 id="四、更换Hexo主题"><a href="#四、更换Hexo主题" class="headerlink" title="四、更换Hexo主题"></a>四、更换Hexo主题</h4><p>Hexo 中有很多主题，可以在<a href="https://hexo.io/themes/" target="_blank" rel="noopener">官网</a>查看。 推荐使用<a href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">hexo-theme-next</a>，更换主题步骤：</p>
+<h5 id="下载主题资源"><a href="#下载主题资源" class="headerlink" title="下载主题资源"></a>下载主题资源</h5><p>终端cd到初始化博客文件夹目录下，执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/iissnan/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+
+<h5 id="配置使用下载的主题"><a href="#配置使用下载的主题" class="headerlink" title="配置使用下载的主题"></a>配置使用下载的主题</h5><p>修改博客目录下<code>_config.yml</code>里的theme的名称<code>landscape</code>更改为<code>next</code>。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
+
+<h5 id="主题的其他配置"><a href="#主题的其他配置" class="headerlink" title="主题的其他配置"></a>主题的其他配置</h5><p>可在<code>/theme/{theme}/_config.yml</code> 主题的配置文件下进行主题的配置。</p>
+<h5 id="添加分类"><a href="#添加分类" class="headerlink" title="添加分类"></a>添加分类</h5><p>新建一个页面，命名为 categories，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new page categories</span><br></pre></td></tr></table></figure>
+
+<p>在 source 目录下会生成 categories 目录，修改 source/categories 目录的 index.md 如下:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">date: 2020-07-19 20:24:49</span><br><span class="line"><span class="built_in">type</span>: <span class="string">"categories"</span></span><br><span class="line">comments: <span class="literal">false</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<p>在主题<code>/theme/{theme}/_config.yml</code> 中将<code>menu</code>的<code>catagories</code>取消注释，把前面的<code>#</code>去掉即可。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">menu:</span><br><span class="line">  home: / || fa fa-home</span><br><span class="line">  about: /about/ || fa fa-user</span><br><span class="line">  tags: /tags/ || fa fa-tags</span><br><span class="line">  categories: /categories/ || fa fa-th</span><br><span class="line">  archives: /archives/ || fa fa-archive</span><br></pre></td></tr></table></figure>
+
+<p>给模板添加分类属性，打开scarffolds文件夹里的post.md文件，给它的头部加上categories:，这样我们创建的所有新的文章都会自带这个属性，我们只需要往里填分类，就可以自动在网站上形成分类了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">categories: 分类名 <span class="comment"># 多个分类，数组形式[分类名1，分类名2]</span></span><br><span class="line"><span class="comment"># 短横线形式</span></span><br><span class="line"><span class="comment"># - 分类名1</span></span><br><span class="line"><span class="comment"># - 分类名2</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<h5 id="添加标签"><a href="#添加标签" class="headerlink" title="添加标签"></a>添加标签</h5><p>新建一个页面，命名为 tags，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new page tags</span><br></pre></td></tr></table></figure>
+
+<p>在 source 目录下会生成 tags 目录，修改 source/tags 目录的 index.md如下 :</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">date: 2020-07-19 20:28:30</span><br><span class="line"><span class="built_in">type</span>: <span class="string">"tags"</span></span><br><span class="line">comments: <span class="literal">false</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<p>同样，在主题<code>/theme/{theme}/_config.yml</code> 中将<code>menu</code>的<code>tags</code>取消注释，同上。</p>
+<p>以后写文章时，在要分类的文章顶部加入 tags 属性，值为标签名:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">categories: 分类名</span><br><span class="line">tags: [标签a,标签b] <span class="comment"># 数组形式，添加a和b两个标签</span></span><br><span class="line"><span class="comment"># 短横线形式</span></span><br><span class="line"><span class="comment"># - 标签a</span></span><br><span class="line"><span class="comment"># - 标签b</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<p>至此，完成以上配置，可以执行调试命令查看效果。以后就可以使用Hexo发布文章了，当然还可以添加其他配置如文章阅读统计、评论等，可自行探索。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>万事开头难，但总算开头了💔，从此开启自己的博客生涯。第一次写Blog，写作思路不是很清晰流畅，花费了比较多的时间，希望以后会越来越好，Fighting！！！</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -243,224 +461,6 @@
       </categories>
       <tags>
         <tag>Android基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Activity必备基础</title>
-    <url>/2020/07/23/Activity%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android的四大组件之一的Activity。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Activity是什么"><a href="#一、Activity是什么" class="headerlink" title="一、Activity是什么"></a>一、Activity是什么</h4><p>我们都知道android中有四大组件（Activity 活动，Service 服务，BroadcastReceiver 广播接收器，Content Provider 内容提供者），Activity是用的最多也是最基本的组件，Activity 提供窗口来和用户进行交互的组件。官方是这么介绍的：</p>
-<a id="more"></a>
-
-<blockquote>
-<p>An activity is a single, focused thing that the user can do. Almost all activities interact with the user, so the Activity class takes care of creating a window for you in which you can place your UI with setContentView(View).</p>
-<p>一个activity是一个单独的，用来处理用户操作的窗口。几乎所有的activity都是用来和用户交互的，所以activity类会创建了一个窗口，你可以通过setContentView(View)显示你的UI在窗口上。</p>
-</blockquote>
-<ul>
-<li>Activity是一个应用程序组件，提供一个屏幕，用户可以用来交互为了完成某项任务。</li>
-<li>Activity中所有操作都与用户密切相关，是一个负责与用户交互的组件，可以通过setContentView(View)来显示指定控件。</li>
-</ul>
-<h4 id="二、Activity状态及转换"><a href="#二、Activity状态及转换" class="headerlink" title="二、Activity状态及转换"></a>二、Activity状态及转换</h4><p>在android 中，Activity 拥有四种基本状态：</p>
-<p>1.<strong>Active/Running</strong></p>
-<p>​    一个新 Activity 启动入栈后，它显示在屏幕最前端，处理是处于栈的最顶端（Activity栈顶），此时它处于可见并可和用户交互的激活状态，叫做活动状态或者运行状态（active or running）。</p>
-<p>2.<strong>Paused</strong></p>
-<p>​    当 Activity 失去焦点，被另一个透明或者 Dialog 样式非全屏的 Activity 覆盖时的状态，叫做暂停状态（Paused）。此时它依然与窗口管理器保持连接，系统继续维护其内部状态，所以它仍然可见，但它已经失去了焦点故不可与用户交互。</p>
-<p>3.<strong>Stopped</strong></p>
-<p>​    当 Activity 被另外一个 Activity 完全覆盖掉，不可再见时的状态叫做停止状态（Stopped）。</p>
-<p>4.<strong>Killed</strong></p>
-<p>​    Activity 被系统杀死回收或者没有被启动时的状态，叫做被杀死的状态（Killed）。</p>
-<p>下图说明了 Activity 在不同状态间转换的时机和条件：</p>
-<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5lxx3ssej308n081dfu.jpg" alt=""></p>
-<h4 id="三、Activity栈"><a href="#三、Activity栈" class="headerlink" title="三、Activity栈"></a>三、Activity栈</h4><p>Android 是通过一种 Activity 栈的方式来管理 Activity 的，一个 Activity 的实例的状态决定它在栈中的位置。处于前台的 Activity 总是在栈的顶端，当前台的 Activity 因为异常或其它原因被销毁时，处于栈第二层的 Activity 将被激活，上浮到栈顶。当新的 Activity 启动入栈时，原 Activity 会被压入到栈的第二层。一个 Activity 在栈中的位置变化反映了它在不同状态间的转换。Activity 的状态与它在栈中的位置关系如下图所示：</p>
-<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5m9bc21zj308w05r748.jpg" alt=""></p>
-<p>如上所示，除了最顶层即处在 Active 状态的 Activity 外，其它的 Activity 都有可能在系统内存不足时被回收，一个 Activity 的实例越是处在栈的底层，它被系统回收的可能性越大。系统负责管理栈中 Activity 的实例，它根据 Activity 所处的状态来改变其在栈中的位置。</p>
-<h4 id="四、Activity生命周期"><a href="#四、Activity生命周期" class="headerlink" title="四、Activity生命周期"></a>四、Activity生命周期</h4><p>生命周期函数，常用的7个如下：</p>
-<p><strong>onCreate()</strong>：表示 Activity <strong>正在被创建</strong>，常用来<strong>初始化工作</strong>，比如调用 setContentView 加载界面布局资源，初始化 Activity 所需数据等；</p>
-<p><strong>onReStart()</strong>：表示 Activity <strong>正在重新启动</strong>，当前 Acitivty 从不可见重新变为可见时，onRestart 就会被调用；</p>
-<p><strong>onStart()</strong>：表示 Activity <strong>正在被启动</strong>，此时 Activity <strong>可见但不在前台</strong>，还处于后台，无法与用户交互；</p>
-<p><strong>onResume()</strong>：表示 Activity <strong>获得焦点</strong>，此时 Activity <strong>可见且在前台</strong>并开始活动，位于活动堆栈的顶部，这是与onStart的区别所在；</p>
-<p><strong>onPause()</strong>：表示 Activity <strong>正在停止</strong>，<strong>可见但不在前台</strong>，此时可做一些<strong>存储数据、停止动画</strong>等工作，但是不能太耗时，因为这会影响到新 Activity 的显示，onPause 必须先执行完，新 Activity 的 onResume 才会执行；</p>
-<p><strong>onStop()</strong>：表示 Activity <strong>即将停止</strong>，被新 activity 覆盖了，对用户<strong>不可见</strong>，可以做一些稍微重量级的回收工作，比如注销广播接收器、关闭网络连接等，同样不能太耗时；</p>
-<p><strong>onDestroy()</strong>：表示 Activity <strong>即将被销毁</strong>，这是 Activity 生命周期中的最后一个回调，常做<strong>回收工作、资源释放</strong>；</p>
-<ul>
-<li>延伸：从<strong>整个生命周期</strong>来看，<strong>onCreate</strong> 和 <strong>onDestroy</strong> 是配对的，分别标识着 Activity 的创建和销毁，并且只可能有<strong>一次调用</strong>； 从 Activity <strong>是否可见</strong>来说，<strong>onStart</strong> 和 <strong>onStop</strong> 是配对的，这两个方法可能被<strong>调用多次</strong>； 从 Activity <strong>是否在前台</strong>来说，<strong>onResume</strong> 和 <strong>onPause</strong> 是配对的，这两个方法可能被<strong>调用多次</strong>； 除了这种区别，在实际使用中没有其他明显区别。</li>
-</ul>
-<p>Activity 生命周期循环图：</p>
-<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5o2g5wxnj30e90if75q.jpg" alt=""></p>
-<p><strong>onSaveInstanceState()</strong>：发生条件在系统配置发生改变（例如屏幕方向）导致 Activity 被杀死并重新创建、资源内存不足导致低优先级的 Activity 被杀死，系统会调用 <strong>onSaveInstanceState</strong> 来保存当前 Activity 的状态，此方法调用在 onStop 之前，与 onPause 没有既定的时序关系；</p>
-<p><strong>onRestoreInstanceState()</strong>： 当 Activity 被重建后，系统会调用 <strong>onRestoreInstanceState</strong>，并且把onSaveInstanceState 方法所保存的 Bundle 对象<strong>同时传参</strong>给 onRestoreInstanceState() 和 onCreate() ，因此可以通过这两个方法判断 Activity <strong>是否被重建</strong>，调用在 onStart 之后，可使用 onSaveInstanceState() 和onRestoreInstanceState()（或onCreate()）来保存和恢复 Activity 活动状态。</p>
-<h4 id="五、Activity启动和通信"><a href="#五、Activity启动和通信" class="headerlink" title="五、Activity启动和通信"></a>五、Activity启动和通信</h4><p><strong>Intent</strong>是一种消息传递的机制，它负责对操作的动作、动作涉及数据、附加数据进行描述。Android 则根据此Intent的描述，负责找到对应的组件，将 Intent 传递给调用的组件，并完成组件的调用。</p>
-<h5 id="显式Intent"><a href="#显式Intent" class="headerlink" title="显式Intent"></a>显式Intent</h5><p>通过指定具体的组件类，通知应用启动对应的组件。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setClass(MainActivity.<span class="keyword">this</span>,SecondAcvivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">intent.putExtra(<span class="string">"values"</span>,<span class="string">"传个值"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
-
-<h5 id="隐式Intent"><a href="#隐式Intent" class="headerlink" title="隐式Intent"></a>隐式Intent</h5><p>通过指定了一系列更为抽象的 action 和 category 等信息，然后交由系统去分析这个 Intent，并帮我们找出合适的活动去启动。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.example.administrator.ACTION_START"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
-
-<p>要在清单文件中<code>&lt;activity&gt;</code>标签下配置<code>&lt;intent-filter&gt;</code>的内容，可以指定当前活动能够响应的 action<br>和 category，如下：</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;activity android:name=<span class="string">".SecondActivity"</span> &gt;</span><br><span class="line">	&lt;intent-filter&gt;</span><br><span class="line">		&lt;action android:name=<span class="string">"com.example.administrator.ACTION_START"</span> /&gt;</span><br><span class="line">		&lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">	&lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<h5 id="Intent-Filter"><a href="#Intent-Filter" class="headerlink" title="Intent Filter"></a>Intent Filter</h5><p>描述了一个组件愿意接收什么样的 Intent 对象，Android 将其抽象为 android.content.IntentFilter 类。 Activity 通过指定其 Intent Filter告诉系统该 Activity 可以响应什么类型的 Intent，有三大属性Action、URL、Category可以配置。</p>
-<p>Activity 中 Intent Filter 匹配的过程：</p>
-<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gh6iwqed6kj30890bvmxc.jpg" alt=""></p>
-<p><strong>Action 匹配</strong></p>
-<p>是一个用户定义的字符串，一个 Intent Filter 可以包含多个 Action，用于标示 Activity 所能接受的”动作”。</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;intent-filter &gt;</span><br><span class="line"> 	&lt;action android:name=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span><br><span class="line"> 	&lt;action android:name=<span class="string">"com.xx.myaction"</span> /&gt;</span><br><span class="line">	......</span><br><span class="line"> &lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>URI 数据匹配</strong></p>
-<p>通过 URI 携带外部数据给目标组件，在<code>&lt;intent-filter&gt;</code>标签中配置一个<code>&lt;data&gt;</code>标签。</p>
-<p>mimeType 属性指定携带外部数据的数据类型，scheme 指定协议，host、port、path 指定数据的位置、端口、和路径。</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">	&lt;data android:mimeType=<span class="string">"mimeType"</span> android:scheme=<span class="string">"scheme"</span></span><br><span class="line"> 				android:host=<span class="string">"host"</span> android:port=<span class="string">"port"</span> android:path=<span class="string">"path"</span>/&gt;</span><br><span class="line">&lt;/intent-filter</span><br></pre></td></tr></table></figure>
-
-<p>只有<code>&lt;data&gt;</code>标签中指定的内容和 Intent 中携带的 Data 完全一致时，当前活动才能够响应该 Intent。不过一般在<code>&lt;data&gt;</code>标签中都不会指定过多的内容。</p>
-<p><strong>Category 类别匹配</strong></p>
-<p>为组件定义一个 Category 类别列表，当 Intent 中包含这个列表的所有项目时 Category 类别匹配才会成功。</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">	&lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
-
-<p>android.intent.category.DEFAULT 是一种默认的 category，在调用startActivity()方法的时候会自动将这个 category 添加到 Intent 中。</p>
-<p><strong>接收上一个Activity返回数据</strong></p>
-<p><strong>startActivityForResult()</strong>方法也是用于启动 Activity 的，这个方法可以 Activity 销毁的时候能够返回一个结果给上一个活动。该方法接收两个参数，第一个参数还是 Intent，第二个参数是请求码，用于在之后的回调中判断数据的来源。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(MainActivity.<span class="keyword">this</span>, SecondActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">startActivityForResult(intent, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
-<p>返回代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.putExtra(<span class="string">"data_return"</span>, <span class="string">"Hello MainActivity"</span>);</span><br><span class="line">setResult(RESULT_OK, intent);</span><br><span class="line">finish();</span><br></pre></td></tr></table></figure>
-
-<p><strong>setResult()</strong>方法接收两个参数，第一个参数用于向上一个活动返回处理结果，一般只使用<strong>RESULT_OK</strong>或<strong>RESULT_CANCELED</strong>，第二个参数则是把带有数据的 Intent 传递回去，然后调用了 finish()方法来销毁当前活动。</p>
-<p>在需要接收返回数据的 Activity 中重写<strong>onActivityResult()</strong>方法，</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line"><span class="keyword">switch</span> (requestCode) &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">	<span class="keyword">if</span> (resultCode == RESULT_OK) &#123;</span><br><span class="line">		String returnedData = data.getStringExtra(<span class="string">"data_return"</span>);</span><br><span class="line">		Log.d(<span class="string">"FirstActivity"</span>, returnedData);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>onActivityResult()方法带有三个参数：</p>
-<p>第一个参数 requestCode，即我们在启动活动时传入的请求码。</p>
-<p>第二个参数 resultCode，即我们在返回数据时传入的处理结果。</p>
-<p>第三个参数 data，即携带着返回数据的 Intent。</p>
-<h4 id="六、Activity启动模式"><a href="#六、Activity启动模式" class="headerlink" title="六、Activity启动模式"></a>六、Activity启动模式</h4><h5 id="使用-manifest-文件"><a href="#使用-manifest-文件" class="headerlink" title="使用 manifest 文件"></a>使用 manifest 文件</h5><p>在 manifest 文件中通过给<code>&lt;activity&gt;</code>标签的<strong>android:launchMode</strong>属性来指定恰当的启动模式。</p>
-<p>1.<strong>standard标准模式</strong></p>
-<p>​        每次启动一个 Activity 都会重新创建一个新的实例，不管这个实例是否已经存在，此模式的 Activity 默认会进入启动它的 Activity 所属的任务栈中；</p>
-<p>2.<strong>singleTop栈顶复用模式</strong></p>
-<p>​        如果新 Activity 已经位于任务栈的栈顶，那么此 Activity 不会被重新创建，同时会回调 <strong>onNewIntent</strong> 方法，如果已经存在但不在栈顶，那么 Activity 依然会被重新创建；一般用于推送消息跳转界面。</p>
-<p>3.<strong>singleTask栈内复用模式</strong></p>
-<p>​        Activity 在同一个Task内只有一个实例。每次启动该 Activity 时系统首先会在返回栈中检查是否存在该Activity 的实例，如果发现已经存在则直接使用该实例，回调其<strong>onNewIntent</strong>方法，并把在这个 Activity 之上的所有 Activity 统统出栈；如果没有发现就会创建一个新的 Activity 实例，并将其加入Task栈顶，一般项目的主页面用该启动模式。</p>
-<p>4.<strong>singleInstance单实例模式</strong></p>
-<p>Activity只能单独地位于一个任务栈中，且此任务栈中只有唯一一个实例，在不同app之间的共享活动实例，一般用于系统功能界面。</p>
-<h5 id="使用-Intent-标志"><a href="#使用-Intent-标志" class="headerlink" title="使用 Intent 标志"></a>使用 Intent 标志</h5><p>Activity常用的标记位Flags</p>
-<ul>
-<li><strong>FLAG_ACTIVITY_NEW_TASK</strong>：对应 singleTask 启动模式。</li>
-<li><strong>FLAG_ACTIVITY_SINGLE_TOP</strong>：对应 singleTop 启动模式。</li>
-<li><strong>FLAG_ACTIVITY_CLEAR_TOP</strong>：在同一个任务栈中所有位于它上面的 Activity 都要出栈。这个标记位一般会和 singleTask 模式一起出现，在这种情况下，被启动Activity的实例如果已经存在，那么系统就会回调onNewIntent。如果被启动的 Activity 采用 standard 模式启动，那么它以及连同它之上的 Activity 都要出栈，系统会创建新的 Activity 实例并放入栈中。</li>
-<li><strong>FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS :</strong> 具有这个标记的 Activity 不会出现在历史 Activity 列表中。</li>
-</ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以此文记录 Android 中 Activity 的基础知识，便于对 Activity 的理解和学习。</p>
-]]></content>
-      <categories>
-        <category>Android基础</category>
-      </categories>
-      <tags>
-        <tag>Android基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo 搭建博客教程</title>
-    <url>/2020/07/20/Hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文主要是介绍在Mac上如何使用Hexo+GitHub搭建个人博客。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、什么是-Hexo"><a href="#一、什么是-Hexo" class="headerlink" title="一、什么是 Hexo"></a>一、什么是 Hexo</h4><blockquote>
-<p><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
-</blockquote>
-<a id="more"></a>
-
-<h4 id="二、配置环境"><a href="#二、配置环境" class="headerlink" title="二、配置环境"></a>二、配置环境</h4><h5 id="申请GitHub"><a href="#申请GitHub" class="headerlink" title="申请GitHub"></a>申请GitHub</h5><p><a href="https://github.com/" target="_blank" rel="noopener">Github</a>注册账号，用作博客的远程仓库和部署服务器。</p>
-<h5 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h5><p><a href="https://nodejs.org/en/" target="_blank" rel="noopener">官网下载</a>并安装，安装完成后可用<code>node -v</code>查看版本号。</p>
-<h5 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h5><p>Mac 安装 Xcode 自带有 Git，也可去<a href="https://git-scm.com/" target="_blank" rel="noopener">官网下载</a>，安装完成后可用<code>git --version</code>查看版本号。</p>
-<p>需要设置你 Github 的用户名密码和email，在命令行输入：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">"Your Name"</span></span><br><span class="line">$ git config --global user.email <span class="string">"email@example.com"</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="安装-Hexo"><a href="#安装-Hexo" class="headerlink" title="安装 Hexo"></a>安装 Hexo</h5><p>所有必备的应用程序安装完成后，即可使用 npm 安装 Hexo。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-
-<h5 id="初始化博客"><a href="#初始化博客" class="headerlink" title="初始化博客"></a>初始化博客</h5><p>安装 Hexo 完成后，执行下列命令，Hexo 将会在指定文件夹中新建所需要的文件。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo init &lt;folder&gt;</span><br><span class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
-
-<p>新建完成后，指定文件夹的目录如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml  &#x2F;&#x2F; 配置信息，你可以在此配置大部分的参数</span><br><span class="line">├── package.json &#x2F;&#x2F; 应用程序的信息</span><br><span class="line">├── public       &#x2F;&#x2F; 执行 hexo generate 命令，输出的静态网页内容目录</span><br><span class="line">├── scaffolds    &#x2F;&#x2F; 模板文件夹。当你新建文章时，Hexo会根据scaffold来建立文件 </span><br><span class="line">├── scripts      &#x2F;&#x2F; 存放自定义 javascript 脚本</span><br><span class="line">├── source       &#x2F;&#x2F; 存放用户资源的地方</span><br><span class="line">|   ├── _drafts  &#x2F;&#x2F; 草稿文章</span><br><span class="line">|   └── _posts   &#x2F;&#x2F; 发布文章</span><br><span class="line">└── themes       &#x2F;&#x2F; 存放博客的主题，Hexo会根据主题来生成静态页面</span><br></pre></td></tr></table></figure>
-
-<p>执行下列命令，会生成静态页面。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate  <span class="comment"># 或者 hexo g</span></span><br></pre></td></tr></table></figure>
-
-<p>启动本地服务，打开浏览器输入 <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000/</a> 即可访问。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server <span class="comment"># 或者 hexo s</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="三、部署到Github"><a href="#三、部署到Github" class="headerlink" title="三、部署到Github"></a>三、部署到Github</h4><h5 id="配置-SSH-Key，将本地目录与-Github-关联"><a href="#配置-SSH-Key，将本地目录与-Github-关联" class="headerlink" title="配置 SSH Key，将本地目录与 Github 关联"></a>配置 SSH Key，将本地目录与 Github 关联</h5><p>配置SSH Key是让本地 git 项目与远程仓库建立联系。SSH Keys不配置的话每次项目有改动提交的时候就要手动输入账号密码，配置了就不需要了。</p>
-<p>首先检查是否已经有SSH Key，执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.ssh</span><br></pre></td></tr></table></figure>
-
-<p>如果没有目录.ssh，则要生成一个新的SSH Key，执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"your e-mail"</span></span><br></pre></td></tr></table></figure>
-
-<p>接下来几步都直接按回车键，然后系统会要你输入密码。这个密码会在你提交项目时使用，如果为空的话提交项目时则不用输入。</p>
-<p>成功后进入到.shh文件夹中再输入ls，查看是否有id_rsa.pub文件，执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.ssh</span><br><span class="line">ls</span><br></pre></td></tr></table></figure>
-
-<p>打开id_rsa.pub文件，执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat id_rsa.pub</span><br></pre></td></tr></table></figure>
-
-<p>复制SSH Key后，登录GitHub账号，在Setting-&gt;SSH keys-&gt;add SSH key，将其添加到Add SSH Key里。</p>
-<h5 id="测试-SSH-Key-是否配置成功"><a href="#测试-SSH-Key-是否配置成功" class="headerlink" title="测试 SSH Key 是否配置成功"></a>测试 SSH Key 是否配置成功</h5><p>执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-
-<p>如配置了密码则要输入密码，输完按回车。如果显示以下内容，则说明Github中的 ssh 配置成功。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Hi username! You have successfully authenticated, but GitHub does not</span><br><span class="line">provide shell access.</span><br></pre></td></tr></table></figure>
-
-<h5 id="创建仓库-Github-Pages"><a href="#创建仓库-Github-Pages" class="headerlink" title="创建仓库 Github Pages"></a>创建仓库 Github Pages</h5><p>登录GitHub账号后，新建 New repository，建立与你github用户名对应的仓库，名称必须为username.github.io，如prsuit.github.io。</p>
-<h5 id="修改Hexo的-config-yml文件"><a href="#修改Hexo的-config-yml文件" class="headerlink" title="修改Hexo的_config.yml文件"></a>修改Hexo的<code>_config.yml</code>文件</h5><p>根目录<code>_config.yml</code>是博客的配置文件，用文本编辑器打开此文件，在文件最后部分，修改deploy配置：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repository: https://github.com/yourname/yourname.github.io.git <span class="comment">#yourname替换成你的Github账户名</span></span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：在<code>.yml</code>文件中，冒号后面都是要带空格的。</strong></p>
-<h5 id="将博客项目上传到仓库"><a href="#将博客项目上传到仓库" class="headerlink" title="将博客项目上传到仓库"></a>将博客项目上传到仓库</h5><p>安装 <a href="https://github.com/hexojs/hexo-deployer-git" target="_blank" rel="noopener">hexo-deployer-git</a>，执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-<p>然后执行命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo clean</span><br><span class="line">$ hexo g <span class="comment">#生成静态网页</span></span><br><span class="line">$ hexo d <span class="comment">#部署到远程仓库</span></span><br><span class="line"><span class="comment"># 或者 $ hexo g -d</span></span><br></pre></td></tr></table></figure>
-
-<p>此时，通过访问 <a href="https://yourname.github.io/" target="_blank" rel="noopener">https://yourname.github.io</a> 可以看到默认的 Hexo 首页。</p>
-<p>一些常用命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">"postName"</span> <span class="comment"># 新建文章</span></span><br><span class="line"></span><br><span class="line">hexo new page <span class="string">"pageName"</span> <span class="comment"># 新建页面</span></span><br><span class="line"></span><br><span class="line">hexo generate <span class="comment"># 生成静态页面至public目录，markdown转html</span></span><br><span class="line"></span><br><span class="line">hexo server <span class="comment"># 开启预览访问端口（默认端口4000，'ctrl + c'关闭server）</span></span><br><span class="line"></span><br><span class="line">hexo deploy <span class="comment"># 将.deploy目录部署到GitHub</span></span><br><span class="line"></span><br><span class="line">hexo clean <span class="comment"># 清除public文件夹和db.json，清除缓存数据</span></span><br><span class="line"></span><br><span class="line">hexo <span class="built_in">help</span> <span class="comment"># 查看帮助</span></span><br><span class="line"></span><br><span class="line">hexo version <span class="comment"># 查看Hexo的版本</span></span><br><span class="line"></span><br><span class="line">hexo n == hexo new</span><br><span class="line"></span><br><span class="line">hexo g == hexo generate</span><br><span class="line"></span><br><span class="line">hexo s == hexo server</span><br><span class="line"></span><br><span class="line">hexo d == hexo deploy</span><br></pre></td></tr></table></figure>
-
-<h4 id="四、更换Hexo主题"><a href="#四、更换Hexo主题" class="headerlink" title="四、更换Hexo主题"></a>四、更换Hexo主题</h4><p>Hexo 中有很多主题，可以在<a href="https://hexo.io/themes/" target="_blank" rel="noopener">官网</a>查看。 推荐使用<a href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">hexo-theme-next</a>，更换主题步骤：</p>
-<h5 id="下载主题资源"><a href="#下载主题资源" class="headerlink" title="下载主题资源"></a>下载主题资源</h5><p>终端cd到初始化博客文件夹目录下，执行命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/iissnan/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
-
-<h5 id="配置使用下载的主题"><a href="#配置使用下载的主题" class="headerlink" title="配置使用下载的主题"></a>配置使用下载的主题</h5><p>修改博客目录下<code>_config.yml</code>里的theme的名称<code>landscape</code>更改为<code>next</code>。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
-
-<h5 id="主题的其他配置"><a href="#主题的其他配置" class="headerlink" title="主题的其他配置"></a>主题的其他配置</h5><p>可在<code>/theme/{theme}/_config.yml</code> 主题的配置文件下进行主题的配置。</p>
-<h5 id="添加分类"><a href="#添加分类" class="headerlink" title="添加分类"></a>添加分类</h5><p>新建一个页面，命名为 categories，执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new page categories</span><br></pre></td></tr></table></figure>
-
-<p>在 source 目录下会生成 categories 目录，修改 source/categories 目录的 index.md 如下:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">date: 2020-07-19 20:24:49</span><br><span class="line"><span class="built_in">type</span>: <span class="string">"categories"</span></span><br><span class="line">comments: <span class="literal">false</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-<p>在主题<code>/theme/{theme}/_config.yml</code> 中将<code>menu</code>的<code>catagories</code>取消注释，把前面的<code>#</code>去掉即可。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">menu:</span><br><span class="line">  home: / || fa fa-home</span><br><span class="line">  about: /about/ || fa fa-user</span><br><span class="line">  tags: /tags/ || fa fa-tags</span><br><span class="line">  categories: /categories/ || fa fa-th</span><br><span class="line">  archives: /archives/ || fa fa-archive</span><br></pre></td></tr></table></figure>
-
-<p>给模板添加分类属性，打开scarffolds文件夹里的post.md文件，给它的头部加上categories:，这样我们创建的所有新的文章都会自带这个属性，我们只需要往里填分类，就可以自动在网站上形成分类了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">categories: 分类名 <span class="comment"># 多个分类，数组形式[分类名1，分类名2]</span></span><br><span class="line"><span class="comment"># 短横线形式</span></span><br><span class="line"><span class="comment"># - 分类名1</span></span><br><span class="line"><span class="comment"># - 分类名2</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-<h5 id="添加标签"><a href="#添加标签" class="headerlink" title="添加标签"></a>添加标签</h5><p>新建一个页面，命名为 tags，执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new page tags</span><br></pre></td></tr></table></figure>
-
-<p>在 source 目录下会生成 tags 目录，修改 source/tags 目录的 index.md如下 :</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">date: 2020-07-19 20:28:30</span><br><span class="line"><span class="built_in">type</span>: <span class="string">"tags"</span></span><br><span class="line">comments: <span class="literal">false</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-<p>同样，在主题<code>/theme/{theme}/_config.yml</code> 中将<code>menu</code>的<code>tags</code>取消注释，同上。</p>
-<p>以后写文章时，在要分类的文章顶部加入 tags 属性，值为标签名:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">categories: 分类名</span><br><span class="line">tags: [标签a,标签b] <span class="comment"># 数组形式，添加a和b两个标签</span></span><br><span class="line"><span class="comment"># 短横线形式</span></span><br><span class="line"><span class="comment"># - 标签a</span></span><br><span class="line"><span class="comment"># - 标签b</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-<p>至此，完成以上配置，可以执行调试命令查看效果。以后就可以使用Hexo发布文章了，当然还可以添加其他配置如文章阅读统计、评论等，可自行探索。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>万事开头难，但总算开头了💔，从此开启自己的博客生涯。第一次写Blog，写作思路不是很清晰流畅，花费了比较多的时间，希望以后会越来越好，Fighting！！！</p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
       </tags>
   </entry>
 </search>
