@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5o2g5wxnj30e90if75q.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh6iwqed6kj30890bvmxc.jpg">
 <meta property="article:published_time" content="2020-07-23T12:11:45.000Z">
-<meta property="article:modified_time" content="2020-07-31T09:22:03.649Z">
+<meta property="article:modified_time" content="2020-08-03T06:40:50.055Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android基础">
 <meta name="twitter:card" content="summary">
@@ -228,7 +228,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -423,13 +423,24 @@
 <p>3.<strong>singleTask栈内复用模式</strong></p>
 <p>​        Activity 在同一个Task内只有一个实例。每次启动该 Activity 时系统首先会在返回栈中检查是否存在该Activity 的实例，如果发现已经存在则直接使用该实例，回调其<strong>onNewIntent</strong>方法，并把在这个 Activity 之上的所有 Activity 统统出栈；如果没有发现就会创建一个新的 Activity 实例，并将其加入Task栈顶，一般项目的主页面用该启动模式。</p>
 <p>4.<strong>singleInstance单实例模式</strong></p>
-<p>Activity只能单独地位于一个任务栈中，且此任务栈中只有唯一一个实例，在不同app之间的共享活动实例，一般用于系统功能界面。</p>
+<p>整个系统里只有一个实例，Activity只能单独地位于一个任务栈中，且此任务栈中只有唯一一个实例，在不同app之间的共享活动实例，一般用于系统功能界面。</p>
 <h5 id="使用-Intent-标志"><a href="#使用-Intent-标志" class="headerlink" title="使用 Intent 标志"></a>使用 Intent 标志</h5><p>Activity常用的标记位Flags</p>
 <ul>
-<li><strong>FLAG_ACTIVITY_NEW_TASK</strong>：对应 singleTask 启动模式。</li>
-<li><strong>FLAG_ACTIVITY_SINGLE_TOP</strong>：对应 singleTop 启动模式。</li>
-<li><strong>FLAG_ACTIVITY_CLEAR_TOP</strong>：在同一个任务栈中所有位于它上面的 Activity 都要出栈。这个标记位一般会和 singleTask 模式一起出现，在这种情况下，被启动Activity的实例如果已经存在，那么系统就会回调onNewIntent。如果被启动的 Activity 采用 standard 模式启动，那么它以及连同它之上的 Activity 都要出栈，系统会创建新的 Activity 实例并放入栈中。</li>
-<li><strong>FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS :</strong> 具有这个标记的 Activity 不会出现在历史 Activity 列表中。</li>
+<li><p><strong>FLAG_ACTIVITY_NEW_TASK</strong>：<del>对应 singleTask 启动模式</del>。</p>
+<p>1.单独的<code>FLAG_ACTIVITY_NEW_TASK</code> 并不等价于启动模式 <code>singleTask</code>，它仅表示寻找activity所需的任务栈压入，（即<code>TaskAffinity</code>指定的任务栈，<code>TaskAffinity</code> 默认为应用包名）</p>
+<p>2.<code>FLAG_ACTIVITY_NEW_TASK</code>+<code>FLAG_ACTIVITY_CLEAR_TOP</code>也不等价于启动模式<code>singleTask</code></p>
+<p>3.在<code>FLAG_ACTIVITY_NEW_TASK</code>+<code>FLAG_ACTIVITY_CLEAR_TOP</code>的情况下，AndroidManifest.xml中设置activity的启动模式为<code>standard</code>或<code>singleTask</code>时activity入栈方式是不一样的。分为如下3个情况：</p>
+<p>​    <strong>3.1</strong>当启动模式为<code>standard</code>时，如果activity所需的栈中已经存在该activity的实例了，那么这个实例连同它之上的activity都要出栈，然后再新建一个activity实例入栈。</p>
+<p>​    <strong>3.2</strong>当启动模式为<code>singleTask</code>时，如果activity所需的栈中已经存在该activity的实例了，那么系统会调用该实例的<code>onNewIntent()</code>方法，且只将该实例之上的activity出栈。</p>
+<p>​    <strong>3.3</strong>如果activity所需的栈中<strong>不存在</strong>该activity的实例，则不论启动模式为<code>standard</code>还是<code>singleTask</code>，都是新建activity实例直接入栈。</p>
+<p>4.AndroidManifest.xml中设置activity的启动模式为<code>singleTask</code>时，则不论是<code>FLAG_ACTIVITY_NEW_TASK</code>+<code>FLAG_ACTIVITY_CLEAR_TOP</code>还是只有<code>FLAG_ACTIVITY_NEW_TASK</code>效果一样，因为singleTask模式中默认就带有<code>FLAG_ACTIVITY_CLEAR_TOP</code>标识。</p>
+</li>
+<li><p><strong>FLAG_ACTIVITY_SINGLE_TOP</strong>：对应 singleTop 启动模式。</p>
+</li>
+<li><p><strong>FLAG_ACTIVITY_CLEAR_TOP</strong>：在同一个任务栈中所有位于它上面的 Activity 都要出栈。这个标记位一般会和 singleTask 模式一起出现，在这种情况下，被启动Activity的实例如果已经存在，那么系统就会回调onNewIntent。如果被启动的 Activity 采用 standard 模式启动，那么它以及连同它之上的 Activity 都要出栈，系统会创建新的 Activity 实例并放入栈中。</p>
+</li>
+<li><p><strong>FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS :</strong> 具有这个标记的 Activity 不会出现在历史 Activity 列表中。</p>
+</li>
 </ul>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以此文记录 Android 中 Activity 的基础知识，便于对 Activity 的理解和学习。</p>
 
