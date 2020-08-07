@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本文是介绍Android常用的组件之一的Fragment。 目录一、什么是FragmentFragment，简称碎片，是 Android最基本，最重要的基础概念之一。Fragment 官方的定义是：  A Fragment represents a behavior or a portion of user interface in an Activity. You can combine m">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fragment必备基础">
+<meta property="og:url" content="http://yoursite.com/2020/08/05/Fragment%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="前言本文是介绍Android常用的组件之一的Fragment。 目录一、什么是FragmentFragment，简称碎片，是 Android最基本，最重要的基础概念之一。Fragment 官方的定义是：  A Fragment represents a behavior or a portion of user interface in an Activity. You can combine m">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghguz2jnu5j30b409uq34.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghgwq0ptw2j30hs0l4jsp.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghi3kbnbqwj30ks02tjrj.jpg">
+<meta property="article:published_time" content="2020-08-05T02:58:51.000Z">
+<meta property="article:modified_time" content="2020-08-07T15:55:27.168Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="Android基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghguz2jnu5j30b409uq34.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/08/05/Fragment%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Fragment必备基础 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、什么是Fragment"><span class="nav-number">2.1.</span> <span class="nav-text">一、什么是Fragment</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、生命周期"><span class="nav-number">2.2.</span> <span class="nav-text">二、生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、基本使用"><span class="nav-number">2.3.</span> <span class="nav-text">三、基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建-Fragment"><span class="nav-number">2.3.1.</span> <span class="nav-text">创建 Fragment</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#添加Fragment到Activity"><span class="nav-number">2.3.2.</span> <span class="nav-text">添加Fragment到Activity</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、Fragment实现原理和Back-Stack"><span class="nav-number">2.4.</span> <span class="nav-text">四、Fragment实现原理和Back Stack</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、Fragment通信"><span class="nav-number">2.5.</span> <span class="nav-text">五、Fragment通信</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Fragment向Activity传递数据"><span class="nav-number">2.5.1.</span> <span class="nav-text">Fragment向Activity传递数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Activity向Fragment传递数据"><span class="nav-number">2.5.2.</span> <span class="nav-text">Activity向Fragment传递数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Fragment之间通信"><span class="nav-number">2.5.3.</span> <span class="nav-text">Fragment之间通信</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、Fragment中的onActivityResult"><span class="nav-number">2.6.</span> <span class="nav-text">六、Fragment中的onActivityResult</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#七、ViewPager-Fragment相关"><span class="nav-number">2.7.</span> <span class="nav-text">七、ViewPager+Fragment相关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#八、懒加载"><span class="nav-number">2.8.</span> <span class="nav-text">八、懒加载</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么要使用懒加载"><span class="nav-number">2.8.1.</span> <span class="nav-text">为什么要使用懒加载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#什么是懒加载"><span class="nav-number">2.8.2.</span> <span class="nav-text">什么是懒加载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如何实现懒加载"><span class="nav-number">2.8.3.</span> <span class="nav-text">如何实现懒加载</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/05/Fragment%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Fragment必备基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-08-05 10:58:51" itemprop="dateCreated datePublished" datetime="2020-08-05T10:58:51+08:00">2020-08-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Android基础</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/08/05/Fragment%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/" class="post-meta-item leancloud_visitors" data-flag-title="Fragment必备基础" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android常用的组件之一的Fragment。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、什么是Fragment"><a href="#一、什么是Fragment" class="headerlink" title="一、什么是Fragment"></a>一、什么是Fragment</h4><p>Fragment，简称碎片，是 Android最基本，最重要的基础概念之一。Fragment 官方的定义是：</p>
+<blockquote>
+<p>A Fragment represents a behavior or a portion of user interface in an Activity. You can combine multiple fragments in a single activity to build a multi-pane UI and reuse a fragment in multiple activities. You can think of a fragment as a modular section of an activity, which has its own lifecycle, receives its own input events, and which you can add or remove while the activity is running.</p>
+</blockquote>
+<a id="more"></a>
+
+<ul>
+<li>Fragment 是依赖于 Activity 的，不能独立存在的。</li>
+<li>一个 Activity 里可以有多个 Fragment 。</li>
+<li>一个 Fragment 可以被多个 Activity 重用。</li>
+<li>Fragment 有自己的生命周期，并能接收输入事件。</li>
+<li>我们能在 Activity 运行时动态地添加或删除 Fragment 。</li>
+</ul>
+<p><strong>Fragment 的优势有以下几点：</strong></p>
+<ul>
+<li><strong>模块化(Modularity)</strong>：我们不必把所有代码全部写在Activity中，而是把代码写在各自的Fragment中。</li>
+<li><strong>可重用(Reusability)</strong>：多个Activity可以重用一个Fragment。</li>
+<li><strong>可适配(Adaptability)</strong>：根据硬件的屏幕尺寸、屏幕方向，能够方便地实现不同的布局，这样用户体验更好。</li>
+</ul>
+<p><strong>Fragment核心的类有：</strong></p>
+<ul>
+<li><strong>Fragment</strong>：Fragment 的基类，任何创建的 Fragment 都需要继承该类。</li>
+<li><strong>FragmentManager</strong>：管理和维护 Fragment。它是抽象类，具体的实现类是 <strong>FragmentManagerImpl</strong>。</li>
+<li><strong>FragmentTransaction</strong>：对 Fragment 的添加、删除等操作都需要通过事务方式进行。它是抽象类，具体的实现类是 <strong>BackStackRecord</strong>。</li>
+</ul>
+<h4 id="二、生命周期"><a href="#二、生命周期" class="headerlink" title="二、生命周期"></a>二、生命周期</h4><p>Fragment的生命周期和Activity类似，但比Activity的生命周期复杂一些，基本的生命周期方法如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ghguz2jnu5j30b409uq34.jpg" alt=""></p>
+<ul>
+<li><strong>onAttach</strong>：Fragment 和 Activity 相关联时调用。可以通过该方法获取 Activity 引用，还可以通过getArguments() 获取参数。</li>
+<li><strong>onCreate</strong>：Fragment 被创建时调用。</li>
+<li><strong>onCreateView</strong>：创建 Fragment 的布局。</li>
+<li><strong>onActivityCreated</strong>：当 Activity 完成 onCreate() 时调用，在 onCreateView() 方法之后调用该方法。</li>
+<li><strong>onStart</strong>：当 Fragment 开始可见时调用，此时还不可交互。</li>
+<li><strong>onResume</strong>：当 Fragment 可见且可交互时调用。</li>
+<li><strong>onPause</strong>：当 Fragment 不可交互但可见时调用，表明用户将要离开当前 Fragment 。</li>
+<li><strong>onStop</strong>：当 Fragment 不可见时调用，Fragment 被停止。</li>
+<li><strong>onDestroyView</strong>：当 Fragment 的 UI 从视图结构中移除时调用，销毁与 Fragment 有关的视图。</li>
+<li><strong>onDestroy</strong>：销毁 Fragment 时调用。</li>
+<li><strong>onDetach</strong>：当 Fragment 和 Activity 解除关联时调用。</li>
+</ul>
+<p>当一个 fragment 被创建的时候，需调用以下生命周期方法：onAttach(), onCreate(), onCreateView(), onActivityCreated()；</p>
+<p>当这个 fragment 对用户可见可交互的时候，需调用：onStart() ,onResume()；</p>
+<p>当这个 fragment 对用户不可交互不可见，进入后台模式需调用：onPause(),onStop()；</p>
+<p>当这个 fragment 被销毁或者是持有它的 Activity 被销毁了，调用：onPause() ,onStop(), onDestroyView(), onDestroy(),onDetach()。</p>
+<p>因为 Fragment 是依赖 Activity 的，Fragment 和 Activity 的生命周期方法有密切的关系和顺序，如图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ghgwq0ptw2j30hs0l4jsp.jpg" alt=""></p>
+<p>举例来理解Fragment生命周期方法，共有两个Fragment：F1和F2，F1在初始化时就加入Activity，点击F1中的按钮调用replace替换为F2。</p>
+<p>当F1在Activity的<code>onCreate()</code>中被添加时，日志如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">BasicActivity: [onCreate] BEGIN</span><br><span class="line">BasicActivity: [onCreate] END</span><br><span class="line">BasicActivity: [onStart] BEGIN</span><br><span class="line">Fragment1: [onAttach] BEGIN </span><br><span class="line">Fragment1: [onAttach] END</span><br><span class="line">BasicActivity: [onAttachFragment] BEGIN</span><br><span class="line">BasicActivity: [onAttachFragment] END</span><br><span class="line">Fragment1: [onCreate] BEGIN</span><br><span class="line">Fragment1: [onCreate] END</span><br><span class="line">Fragment1: [onCreateView]</span><br><span class="line">Fragment1: [onViewCreated] BEGIN</span><br><span class="line">Fragment1: [onViewCreated] END</span><br><span class="line">Fragment1: [onActivityCreated] BEGIN</span><br><span class="line">Fragment1: [onActivityCreated] END</span><br><span class="line">Fragment1: [onStart] BEGIN</span><br><span class="line">Fragment1: [onStart] END</span><br><span class="line">BasicActivity: [onStart] END</span><br><span class="line">BasicActivity: [onPostCreate] BEGIN</span><br><span class="line">BasicActivity: [onPostCreate] END</span><br><span class="line">BasicActivity: [onResume] BEGIN</span><br><span class="line">BasicActivity: [onResume] END</span><br><span class="line">BasicActivity: [onPostResume] BEGIN</span><br><span class="line">Fragment1: [onResume] BEGIN</span><br><span class="line">Fragment1: [onResume] END</span><br><span class="line">BasicActivity: [onPostResume] END</span><br><span class="line">BasicActivity: [onAttachedToWindow] BEGIN</span><br><span class="line">BasicActivity: [onAttachedToWindow] END</span><br></pre></td></tr></table></figure>
+
+<p>从上图可以看出：</p>
+<ul>
+<li><p>Fragment 的 onAttach()-&gt;onCreate()-&gt;onCreateView()-&gt;onActivityCreated()-&gt;onStart()都是在 Activity 的 onStart() 中调用的。</p>
+</li>
+<li><p>Fragment 的 onResume() 在 Activity 的 onResume() 之后调用。</p>
+</li>
+</ul>
+<p>当点击F1的按钮，调用<code>replace()</code>替换为F2，且不加<code>addToBackStack()</code>时，日志如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Fragment2: [onAttach] BEGIN</span><br><span class="line">Fragment2: [onAttach] END</span><br><span class="line">BasicActivity: [onAttachFragment] BEGIN</span><br><span class="line">BasicActivity: [onAttachFragment] END</span><br><span class="line">Fragment2: [onCreate] BEGIN</span><br><span class="line">Fragment2: [onCreate] END</span><br><span class="line">Fragment1: [onPause] BEGIN</span><br><span class="line">Fragment1: [onPause] END</span><br><span class="line">Fragment1: [onStop] BEGIN</span><br><span class="line">Fragment1: [onStop] END</span><br><span class="line">Fragment1: [onDestroyView] BEGIN</span><br><span class="line">Fragment1: [onDestroyView] END</span><br><span class="line">Fragment1: [onDestroy] BEGIN</span><br><span class="line">Fragment1: [onDestroy] END</span><br><span class="line">Fragment1: [onDetach] BEGIN</span><br><span class="line">Fragment1: [onDetach] END</span><br><span class="line">Fragment2: [onCreateView]</span><br><span class="line">Fragment2: [onViewCreated] BEGIN</span><br><span class="line">Fragment2: [onViewCreated] END</span><br><span class="line">Fragment2: [onActivityCreated] BEGIN</span><br><span class="line">Fragment2: [onActivityCreated] END</span><br><span class="line">Fragment2: [onStart] BEGIN</span><br><span class="line">Fragment2: [onStart] END</span><br><span class="line">Fragment2: [onResume] BEGIN</span><br><span class="line">Fragment2: [onResume] END</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，F1最后调用了<code>onDestroy()</code>和<code>onDetach()</code>。</p>
+<p>当点击F1的按钮，调用<code>replace()</code>替换为F2，且加<code>addToBackStack()</code>时，日志如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Fragment2: [onAttach] BEGIN</span><br><span class="line">Fragment2: [onAttach] END</span><br><span class="line">BasicActivity: [onAttachFragment] BEGIN</span><br><span class="line">BasicActivity: [onAttachFragment] END</span><br><span class="line">Fragment2: [onCreate] BEGIN</span><br><span class="line">Fragment2: [onCreate] END</span><br><span class="line">Fragment1: [onPause] BEGIN</span><br><span class="line">Fragment1: [onPause] END</span><br><span class="line">Fragment1: [onStop] BEGIN</span><br><span class="line">Fragment1: [onStop] END</span><br><span class="line">Fragment1: [onDestroyView] BEGIN</span><br><span class="line">Fragment1: [onDestroyView] END</span><br><span class="line">Fragment2: [onCreateView]</span><br><span class="line">Fragment2: [onViewCreated] BEGIN</span><br><span class="line">Fragment2: [onViewCreated] END</span><br><span class="line">Fragment2: [onActivityCreated] BEGIN</span><br><span class="line">Fragment2: [onActivityCreated] END</span><br><span class="line">Fragment2: [onStart] BEGIN</span><br><span class="line">Fragment2: [onStart] END</span><br><span class="line">Fragment2: [onResume] BEGIN</span><br><span class="line">Fragment2: [onResume] END</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，F1被替换时，最后只调到了<code>onDestroyView()</code>，并没有调用<code>onDestroy()</code>和<code>onDetach()</code>。当用户点返回按钮回退事务时，F1会调 onCreateView()-&gt;onActivityCreated()-&gt;onStart()-&gt;onResume()，因此在 Fragment 事务中加不加<code>addToBackStack()</code>会影响 Fragment 的生命周期。</p>
+<p>FragmentTransaction 有一些基本方法，下面给出调用这些方法时，Fragment 生命周期的变化：</p>
+<ul>
+<li>add(): onAttach()-&gt;…-&gt;onResume()。</li>
+<li>remove(): onPause()-&gt;…-&gt;onDetach()。</li>
+<li>replace(): 相当于旧 Fragment 调用remove()，新 Fragment 调用add()。</li>
+<li>show(): 不调用任何生命周期方法，调用该方法的前提是要显示的 Fragment 已经被添加到容器，只是纯粹把 Fragment UI 的 setVisibility 为 true。</li>
+<li>hide(): 不调用任何生命周期方法，调用该方法的前提是要显示的 Fragment 已经被添加到容器，只是纯粹把Fragment UI的setVisibility为false。</li>
+<li>detach(): onPause()-&gt;onStop()-&gt;onDestroyView()。UI从布局中移除，但是仍然被 FragmentManager 管理。</li>
+<li>attach(): onCreateView()-&gt;onStart()-&gt;onResume()。</li>
+</ul>
+<h4 id="三、基本使用"><a href="#三、基本使用" class="headerlink" title="三、基本使用"></a>三、基本使用</h4><h5 id="创建-Fragment"><a href="#创建-Fragment" class="headerlink" title="创建 Fragment"></a>创建 Fragment</h5><p>首先创建继承 Fragment 的类，名为Fragment1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fragment1</span> <span class="keyword">extends</span> <span class="title">Fragment</span></span>&#123;  </span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> String ARG_PARAM = <span class="string">"param_key"</span>; </span><br><span class="line">     <span class="keyword">private</span> String mParam; </span><br><span class="line">     <span class="keyword">private</span> Activity mActivity; </span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAttach</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        mActivity = (Activity) context;</span><br><span class="line">        mParam = getArguments().getString(ARG_PARAM);  <span class="comment">//获取参数</span></span><br><span class="line">    &#125;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> View <span class="title">onCreateView</span><span class="params">(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        View root = inflater.inflate(R.layout.fragment_1, container, <span class="keyword">false</span>);</span><br><span class="line">        TextView view = root.findViewById(R.id.text);</span><br><span class="line">        view.setText(mParam);</span><br><span class="line">             <span class="keyword">return</span> root;</span><br><span class="line">    &#125;    </span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Fragment1 <span class="title">newInstance</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">        Fragment1 frag = <span class="keyword">new</span> Fragment1();</span><br><span class="line">        Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">        bundle.putString(ARG_PARAM, str);</span><br><span class="line">        fragment.setArguments(bundle);   <span class="comment">//设置参数</span></span><br><span class="line">        <span class="keyword">return</span> fragment;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Fragment 有很多可以复写的方法，其中最常用的就是<code>onCreateView()</code>，该方法返回 Fragment 的UI布局，需要注意的是<code>inflate()</code>的第三个参数是 <strong>false</strong> ，因为在 Fragment 内部实现中，会把该布局添加到 container 中，如果设为 true，那么就会重复做两次添加，则会抛出异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Caused by: java.lang.IllegalStateException: The specified child already has a parent. <span class="function">You must call <span class="title">removeView</span><span class="params">()</span> on the child's parent first.</span></span><br></pre></td></tr></table></figure>
+
+<p>如果在创建Fragment时要传入参数，必须要通过<code>setArguments(Bundle bundle)</code>方式添加，而不建议通过为Fragment 添加带参数的构造函数，因为通过<code>setArguments()</code>方式添加，在由于内存紧张导致Fragment被系统杀掉并恢复（re-instantiate）时能保留这些数据。官方建议如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">It is strongly recommended that subclasses <span class="keyword">do</span> not have other constructors with parameters, since these constructors will not be called when the fragment is re-instantiated.</span><br></pre></td></tr></table></figure>
+
+<p>我们可以在 Fragment 的<code>onAttach()</code>中通过<code>getArguments()</code>获得传进来的参数，并在之后使用这些参数。如果要获取 Activity 对象，不建议调用<code>getActivity()</code>，而是在<code>onAttach()</code>中将 Context 对象强转为 Activity 对象。</p>
+<h5 id="添加Fragment到Activity"><a href="#添加Fragment到Activity" class="headerlink" title="添加Fragment到Activity"></a>添加Fragment到Activity</h5><ul>
+<li><p><strong>静态添加</strong>：通过 <code>&lt;fragment&gt;</code> 标签的形式添加到 Activity 的布局 xml 当中，缺点是一旦添加就不能在运行时删除。</p>
+</li>
+<li><p><strong>动态添加</strong>：通过 java 代码将 fragment 添加到宿主 Activity 中，这种方式比较灵活，常用这种方式。</p>
+</li>
+</ul>
+<p>这里只给出动态添加的方式。首先Activity需要有一个容器存放 Fragment ，一般是 FrameLayout，因此在Activity 的布局文件中加入 FrameLayout：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;FrameLayout</span><br><span class="line">    android:id=<span class="string">"@+id/container"</span></span><br><span class="line">    android:layout_width=<span class="string">"match_parent"</span></span><br><span class="line">    android:layout_height=<span class="string">"match_parent"</span>/&gt;</span><br></pre></td></tr></table></figure>
+
+<p>然后在<code>onCreate()</code>中，通过以下代码将 Fragment 添加进 Activity 中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (bundle == <span class="keyword">null</span>) &#123;</span><br><span class="line">    getSupportFragmentManager().beginTransaction()</span><br><span class="line">        .add(R.id.container, Fragment1.newInstance(<span class="string">"hello world"</span>), <span class="string">"f1"</span>)        <span class="comment">//.addToBackStack("fname")</span></span><br><span class="line">        .commit();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意几点：</p>
+<ul>
+<li>使用<code>getSupportFragmentManager()</code>获取 FragmentManager。</li>
+<li><code>add()</code>是对 Fragment 众多操作中的一种，还有<code>remove()</code>, <code>replace()</code>等，第一个参数是根容器的id（FrameLayout的id，即”@id/container”），第二个参数是 Fragment 对象，第三个参数是 fragment 的 tag 名，指定 tag 的好处是后续我们可以通过<code>Fragment1 frag = getSupportFragmentManager().findFragmentByTag(&quot;f1&quot;)</code>从 FragmentManager 中查找 Fragment 对象。</li>
+<li>在一次事务中，可以做多个操作，比如同时做<code>add().remove().replace()</code>。</li>
+<li><code>commit()</code>操作是异步的，内部通过<code>mManager.enqueueAction()</code>加入处理队列。对应的同步方法为<code>commitNow()</code>，<code>commit()</code>内部会有<code>checkStateLoss()</code>操作，如果开发人员使用不当（比如<code>commit()</code>操作在<code>onSaveInstanceState()</code>之后），可能会抛出异常，而<code>commitAllowingStateLoss()</code>方法则是不会抛出异常版本的<code>commit()</code>方法，但是尽量使用<code>commit()</code>，而不要使用<code>commitAllowingStateLoss()</code>。</li>
+<li><code>addToBackStack(&quot;fname&quot;)</code>是可选的。FragmentManager 拥有回退栈（BackStack），类似于 Activity 的任务栈，如果添加了该语句，就把该事务加入回退栈，当用户点击返回按钮，会回退该事务（回退指的是如果事务是<code>add(frag1)</code>，那么回退操作就是<code>remove(frag1)</code>）；如果没添加该语句，用户点击返回按钮会直接销毁Activity。</li>
+<li>Fragment 有一个常见的问题，即 Fragment 重叠问题，这是由于 Fragment 被系统杀掉，并重新初始化时再次将 fragment 加入 activity，因此通过在外围加 if 语句能判断此时是否是被系统杀掉并重新初始化的情况。</li>
+</ul>
+<p><strong>Fragment有个常见的异常：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalStateException: Can not perform <span class="keyword">this</span> action after onSaveInstanceState</span><br><span class="line">    at android.support.v4.app.FragmentManagerImpl.checkStateLoss(FragmentManager.java:<span class="number">1341</span>)</span><br><span class="line">    at android.support.v4.app.FragmentManagerImpl.enqueueAction(FragmentManager.java:<span class="number">1352</span>)</span><br><span class="line">    at android.support.v4.app.BackStackRecord.commitInternal(BackStackRecord.java:<span class="number">595</span>)</span><br><span class="line">    at android.support.v4.app.BackStackRecord.commit(BackStackRecord.java:<span class="number">574</span>)</span><br></pre></td></tr></table></figure>
+
+<p>该异常出现的原因是：commit() 在 onSaveInstanceState() 后调用。首先，onSaveInstanceState() 是在 Activity 有可能被系统回收的异常终止情况下，而且是在 onPause() 之后，onStop() 之前调用。onRestoreInstanceState() 在onStart() 之后，onResume() 之前。</p>
+<p><strong>因此避免出现该异常的方案有：</strong></p>
+<ul>
+<li>不要把 Fragment 事务放在异步线程的回调中，比如不要把 Fragment 事务放在 AsyncTask 的onPostExecute()，因此 onPostExecute() 可能会在 onSaveInstanceState() 之后执行。</li>
+<li>逼不得已时使用 commitAllowingStateLoss()。</li>
+</ul>
+<h4 id="四、Fragment实现原理和Back-Stack"><a href="#四、Fragment实现原理和Back-Stack" class="headerlink" title="四、Fragment实现原理和Back Stack"></a>四、Fragment实现原理和Back Stack</h4><p>我们知道 Activity 有任务栈，用户通过 startActivity 将 Activity 加入栈，点击返回按钮将 Activity 出栈。Fragment 也有类似的栈，称为回退栈（Back Stack），回退栈是由 FragmentManager 管理的。默认情况下，Fragment 事务是不会加入回退栈的，如果想将 Fragment 事务加入回退栈，则可以加入<code>addToBackStack(&quot;&quot;)</code>。如果没有加入回退栈，则用户点击返回按钮会直接将 Activity 出栈；如果加入了回退栈，则用户点击返回按钮会回滚 Fragment 事务。</p>
+<p>我们将通过最常见的 Fragment 用法，讲解 Back Stack 的实现原理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">getSupportFragmentManager().beginTransaction()</span><br><span class="line">    .add(R.id.container, f1, <span class="string">"f1"</span>)</span><br><span class="line">    .addToBackStack(<span class="string">""</span>)</span><br><span class="line">    .commit();</span><br></pre></td></tr></table></figure>
+
+<p>上面这个代码的功能就是将 Fragment 加入 Activity 中，内部实现为：创建一个 BackStackRecord 对象，该对象记录了这个事务的全部操作轨迹（这里只做了一次 add 操作，并且加入回退栈），随后将该对象提交到 FragmentManager 的执行队列中，等待执行。</p>
+<p>BackStackRecord 类的定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//androidx之前</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BackStackRecord</span> <span class="keyword">extends</span> <span class="title">FragmentTransaction</span> <span class="keyword">implements</span> <span class="title">FragmentManager</span>.<span class="title">BackStackEntry</span>, <span class="title">Runnable</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// androidx之后</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BackStackRecord</span> <span class="keyword">extends</span> <span class="title">FragmentTransaction</span> <span class="keyword">implements</span></span></span><br><span class="line"><span class="class">        <span class="title">FragmentManager</span>.<span class="title">BackStackEntry</span>, <span class="title">FragmentManagerImpl</span>.<span class="title">OpGenerator</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从定义可以看出，BackStackRecord 有三重含义：</p>
+<ul>
+<li>继承了 FragmentTransaction，即是事务，保存了整个事务的全部操作轨迹。</li>
+<li>实现了 BackStackEntry，作为回退栈的元素，正是因为该类拥有事务全部的操作轨迹，因此在popBackStack() 时能回退整个事务。</li>
+<li>继承了 Runnable，即被放入 FragmentManager 执行队列，等待被执行。</li>
+</ul>
+<p>先看第一层含义，<code>getSupportFragmentManager.beginTransaction()</code>返回的就是 BackStackRecord 对象，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> FragmentTransaction <span class="title">beginTransaction</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> BackStackRecord(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>BackStackRecord 类包含了一次事务的整个操作轨迹，是以链表形式存在的，链表的元素是 Op 类，androidx 之后是保存在一个<code>ArrayList&lt;Op&gt; mOps = new ArrayList&lt;&gt;()</code>中，表示其中某个操作，定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//androidx之前</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Op</span> </span>&#123;</span><br><span class="line">    Op next; <span class="comment">//链表后一个节点</span></span><br><span class="line">    Op prev; <span class="comment">//链表前一个节点</span></span><br><span class="line">    <span class="keyword">int</span> cmd;  <span class="comment">//操作是add或remove或replace或hide或show等</span></span><br><span class="line">    Fragment fragment; <span class="comment">//对哪个Fragment对象做操作</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// androidx之后</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Op</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> mCmd;</span><br><span class="line">        Fragment mFragment;</span><br><span class="line">        <span class="keyword">int</span> mEnterAnim;</span><br><span class="line">        <span class="keyword">int</span> mExitAnim;</span><br><span class="line">        <span class="keyword">int</span> mPopEnterAnim;</span><br><span class="line">        <span class="keyword">int</span> mPopExitAnim;</span><br><span class="line">        Lifecycle.State mOldMaxState;</span><br><span class="line">        Lifecycle.State mCurrentMaxState;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们来看下具体场景下这些类是怎么被使用的，比如我们的事务做add操作。add 函数的定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> FragmentTransaction <span class="title">add</span><span class="params">(<span class="keyword">int</span> containerViewId, Fragment fragment, String tag)</span> </span>&#123;</span><br><span class="line">   doAddOp(containerViewId, fragment, tag, OP_ADD);</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>doAddOp()</code>方法就是创建 Op 对象，并加入链表，定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAddOp</span><span class="params">(<span class="keyword">int</span> containerViewId, Fragment fragment, String tag, <span class="keyword">int</span> opcmd)</span> </span>&#123;</span><br><span class="line">    fragment.mTag = tag;  <span class="comment">//设置fragment的tag</span></span><br><span class="line">    fragment.mContainerId = fragment.mFragmentId = containerViewId;  <span class="comment">//设置fragment的容器id</span></span><br><span class="line">    Op op = <span class="keyword">new</span> Op();</span><br><span class="line">    op.cmd = opcmd;</span><br><span class="line">    op.fragment = fragment;</span><br><span class="line">    addOp(op);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>addOp() 是将创建好的 Op 对象加入链表，androidx 则加到列表，定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addOp</span><span class="params">(Op op)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mHead == <span class="keyword">null</span>) &#123;</span><br><span class="line">        mHead = mTail = op;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        op.prev = mTail;</span><br><span class="line">        mTail.next = op;</span><br><span class="line">        mTail = op;</span><br><span class="line">    &#125;</span><br><span class="line">    mNumOp++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//androidx</span></span><br><span class="line"> <span class="function"><span class="keyword">void</span> <span class="title">addOp</span><span class="params">(Op op)</span> </span>&#123;</span><br><span class="line">        mOps.add(op);</span><br><span class="line">        op.mEnterAnim = mEnterAnim;</span><br><span class="line">        op.mExitAnim = mExitAnim;</span><br><span class="line">        op.mPopEnterAnim = mPopEnterAnim;</span><br><span class="line">        op.mPopExitAnim = mPopExitAnim;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>addToBackStack(“”)</code>是将 mAddToBackStack 变量记为 true，在 <code>commit()</code> 中会用到该变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> FragmentTransaction <span class="title">addToBackStack</span><span class="params">(@Nullable String name)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (!mAllowAddToBackStack) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(</span><br><span class="line">                   <span class="string">"This FragmentTransaction is not allowed to be added to the back stack."</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       mAddToBackStack = <span class="keyword">true</span>;</span><br><span class="line">       mName = name;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>commit()</code>是异步的，即不是立即生效的，但是后面会看到整个过程还是在主线程完成，只是把事务的执行扔给主线程的 Handler，<code>commit()</code>内部是<code>commitInternal()</code>，实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">commitInternal</span><span class="params">(<span class="keyword">boolean</span> allowStateLoss)</span> </span>&#123;</span><br><span class="line">    mCommitted = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">if</span> (mAddToBackStack) &#123;</span><br><span class="line">        mIndex = mManager.allocBackStackIndex(<span class="keyword">this</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        mIndex = -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mManager.enqueueAction(<span class="keyword">this</span>, allowStateLoss); <span class="comment">//将事务添加进待执行队列中</span></span><br><span class="line">    <span class="keyword">return</span> mIndex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果 mAddToBackStack 为 true，则调用<code>allocBackStackIndex(this)</code>将事务添加进回退栈，FragmentManager 类的变量 mBackStackIndices 就是回退栈。实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">allocBackStackIndex</span><span class="params">(BackStackRecord bse)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mBackStackIndices == <span class="keyword">null</span>) &#123;</span><br><span class="line">        mBackStackIndices = <span class="keyword">new</span> ArrayList&lt;BackStackRecord&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> index = mBackStackIndices.size();</span><br><span class="line">    mBackStackIndices.add(bse);</span><br><span class="line">    <span class="keyword">return</span> index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>commitInternal()</code>中，<code>mManager.enqueueAction(this, allowStateLoss);</code>是将 BackStackRecord 加入待执行队列中，定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">enqueueAction</span><span class="params">(Runnable action, <span class="keyword">boolean</span> allowStateLoss)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mPendingActions == <span class="keyword">null</span>) &#123;</span><br><span class="line">        mPendingActions = <span class="keyword">new</span> ArrayList&lt;Runnable&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    mPendingActions.add(action);</span><br><span class="line">    <span class="keyword">if</span> (mPendingActions.size() == <span class="number">1</span>) &#123;</span><br><span class="line">        mHost.getHandler().removeCallbacks(mExecCommit);</span><br><span class="line">        mHost.getHandler().post(mExecCommit); <span class="comment">//调用execPendingActions()执行待执行队列的事务</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>mPendingActions 就是前面说的待执行队列，<code>mHost.getHandler()</code>就是主线程的Handler，因此 Runnable 是在主线程执行的，mExecCommit 的内部就是调用了<code>execPendingActions()</code>，即把 mPendingActions 中所有积压的没被执行的事务全部执行。执行队列中的事务会怎样被执行呢？就是调用<code>BackStackRecord的run()</code>方法，<code>run()</code>方法就是执行 Fragment 的生命周期函数，还有将视图添加进 container 中。</p>
+<p>与<code>addToBackStack()</code>对应的是<code>popBackStack()</code>，有以下几种变种：</p>
+<ul>
+<li>popBackStack()：将回退栈的栈顶弹出，并回退该事务。</li>
+<li>popBackStack(String name, int flag)：name 为 addToBackStack(String name) 的参数，通过 name 能找到回退栈的特定元素，flag 可以为0或者 FragmentManager.POP_BACK_STACK_INCLUSIVE ，0表示只弹出该元素以上的所有元素，POP_BACK_STACK_INCLUSIVE 表示弹出包含该元素及以上的所有元素。这里说的弹出所有元素包含回退这些事务。</li>
+<li>popBackStack() 是异步执行的，是丢到主线程的 MessageQueue 执行，popBackStackImmediate() 是同步版本。</li>
+</ul>
+<p><code>getSupportFragmentManager().findFragmentByTag()</code>是经常用到的方法，是 FragmentManager 的方法，FragmentManager是抽象类，FragmentManagerImpl 是继承 FragmentManager 的实现类，他的内部实现是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FragmentManagerImpl</span> <span class="keyword">extends</span> <span class="title">FragmentManager</span> </span>&#123;</span><br><span class="line">    ArrayList&lt;Fragment&gt; mActive;</span><br><span class="line">    ArrayList&lt;Fragment&gt; mAdded;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Fragment <span class="title">findFragmentByTag</span><span class="params">(String tag)</span> </span>&#123; </span><br><span class="line">           <span class="keyword">if</span> (mAdded != <span class="keyword">null</span> &amp;&amp; tag != <span class="keyword">null</span>) &#123; </span><br><span class="line">               <span class="keyword">for</span> (<span class="keyword">int</span> i=mAdded.size()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                Fragment f = mAdded.get(i);</span><br><span class="line">                <span class="keyword">if</span> (f != <span class="keyword">null</span> &amp;&amp; tag.equals(f.mTag)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> f;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;       </span><br><span class="line">          <span class="keyword">if</span> (mActive != <span class="keyword">null</span> &amp;&amp; tag != <span class="keyword">null</span>) &#123;</span><br><span class="line">               <span class="keyword">for</span> (<span class="keyword">int</span> i=mActive.size()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                    Fragment f = mActive.get(i);</span><br><span class="line">                    <span class="keyword">if</span> (f != <span class="keyword">null</span> &amp;&amp; tag.equals(f.mTag)) &#123;</span><br><span class="line">                          <span class="keyword">return</span> f;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面看到，先从 mAdded 中查找是否有该 Fragment，如果没找到，再从 mActive 中查找是否有该 Fragment。mAdded 是已经添加到 Activity 的 Fragment 的集合，mActive 不仅包含 mAdded，还包含虽然不在 Activity 中，但还在回退栈中的 Fragment。</p>
+<h4 id="五、Fragment通信"><a href="#五、Fragment通信" class="headerlink" title="五、Fragment通信"></a>五、Fragment通信</h4><h5 id="Fragment向Activity传递数据"><a href="#Fragment向Activity传递数据" class="headerlink" title="Fragment向Activity传递数据"></a>Fragment向Activity传递数据</h5><p>首先，在 Fragment 中定义接口，并让 Activity 实现该接口（具体实现省略）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OnFragmentInteractionListener</span> </span>&#123;   </span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">onItemClick</span><span class="params">(String str)</span></span>;  <span class="comment">//将str从Fragment传递给Activity</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 Fragment 的 onAttach() 中，将参数 Context 强转为 OnFragmentInteractionListener 对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAttach</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onAttach(context);</span><br><span class="line">        <span class="keyword">if</span> (context <span class="keyword">instanceof</span> OnFragmentInteractionListener) &#123;</span><br><span class="line">        mListener = (OnFragmentInteractionListener) context;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(context.toString()</span><br><span class="line">                + <span class="string">" must implement OnFragmentInteractionListener"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>并在 Fragment 合适的地方调用<code>mListener.onItemClick(&quot;hello&quot;)</code>将”hello”从 Fragment 传递给 Activity。</p>
+<h5 id="Activity向Fragment传递数据"><a href="#Activity向Fragment传递数据" class="headerlink" title="Activity向Fragment传递数据"></a>Activity向Fragment传递数据</h5><p>在 Fragment 初次创建时可通过 <code>fragment.setArguments(bundle)</code> 方法传递数据，其他时候，可以获取Fragment 对象，并调用 Fragment 的方法即可，比如要将一个字符串传递给 Fragment，则在 Fragment 中定义方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setString</span><span class="params">(String str)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">this</span>.str = str;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>并在 Activity 中调用<code>fragment.setString(&quot;hello&quot;)</code>即可。</p>
+<h5 id="Fragment之间通信"><a href="#Fragment之间通信" class="headerlink" title="Fragment之间通信"></a>Fragment之间通信</h5><p>由于 Fragment 之间是没有任何依赖关系的，因此如果要进行 Fragment 之间的通信，建议通过 Activity 作为中介，不要 Fragment 之间直接通信。</p>
+<h4 id="六、Fragment中的onActivityResult"><a href="#六、Fragment中的onActivityResult" class="headerlink" title="六、Fragment中的onActivityResult"></a>六、Fragment中的onActivityResult</h4><p>假设有一个 FragmentActivity 中嵌套一个 Fragment，它们各自使用 startActivityForResult 发起数据请求。<br>经测，目标所返回结果数据，能否被它们各自的 onActivityResult 方法所接收的情况如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ghi3kbnbqwj30ks02tjrj.jpg" alt=""></p>
+<ul>
+<li>Fragment 和 FragmentActivity 都能接收到自己的发起的请求所返回的结果</li>
+<li>FragmentActivity 发起的请求，Fragment 完全接收不到结果</li>
+<li>Fragment 发起的请求，虽然在 FragmentActivity 中能获取到结果，但是requestCode完全对应不上</li>
+</ul>
+<blockquote>
+<p>Fragment.startActivityForResult<br>↓<br>FragmentActivitymHost.HostCallbacks.onStartActivityFromFragment<br>↓<br>FragmentActivity.startActivityFromFragment</p>
+</blockquote>
+<p>从 Fragment 的 <code>startActivityForResult</code> 开始：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startActivityForResult</span><span class="params">(Intent intent, <span class="keyword">int</span> requestCode, @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (mHost == <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Fragment "</span> + <span class="keyword">this</span> + <span class="string">" not attached to Activity"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       mHost.onStartActivityFromFragment(<span class="keyword">this</span> <span class="comment">/*fragment*/</span>, intent, requestCode, options);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用了一个mHost.onStartActivityFromFragment 的方法。Fragment 被添加到一个 FragmentActivity 中之后，这里的 mHost 即是当前 FragmentActivity 的一个内部类 FragmentActivity.HostCallbacks，它持有对FragmentActivity 的引用，通过调用 <code>onStartActivityFromFragment</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStartActivityFromFragment</span><span class="params">(@NonNull Fragment fragment, Intent intent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">int</span> requestCode, @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">           FragmentActivity.<span class="keyword">this</span>.startActivityFromFragment(fragment, intent, requestCode, options);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>转发到当前 FragmentActivity 的 <code>startActivityFromFragment</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startActivityFromFragment</span><span class="params">(Fragment fragment, Intent intent,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> requestCode, @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">    mStartedActivityFromFragment = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (requestCode == -<span class="number">1</span>) &#123;</span><br><span class="line">            ActivityCompat.startActivityForResult(<span class="keyword">this</span>, intent, -<span class="number">1</span>, options);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ((requestCode&amp;<span class="number">0xffff0000</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Can only use lower 16 bits for requestCode"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> requestIndex = allocateRequestIndex(fragment);</span><br><span class="line">        ActivityCompat.startActivityForResult(</span><br><span class="line">            <span class="keyword">this</span>, intent, ((requestIndex+<span class="number">1</span>)&lt;&lt;<span class="number">16</span>) + (requestCode&amp;<span class="number">0xffff</span>), options);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        mStartedActivityFromFragment = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析一下这段代码：<br>1.<code>mStartedActivityFromFragment = true</code>首先标记一下请求是来自于 Fragment。<br>2.<code>if(requestCode == -1)</code>的内容不用管，它是来自于 startActivity（没有ForResult）的情况。<br>3.然后的代码添加了对requestCode必须小于0xffff的限制 <code>if((requestCode&amp;0xffff0000) ！= 0){/*抛异常*/}</code><br>我们是从 Fragment.startActivityForResult 追踪到这里的，所以虽然文档没有明确说，但是从这里可以看出：<strong>Fragment.startActivityForResult的requestCode也是必须要&lt;=0xffff的。</strong></p>
+<p><strong>然后，下面是关键点了：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ActivityCompat.startActivityForResult(</span><br><span class="line">            <span class="keyword">this</span>, intent, ((requestIndex+<span class="number">1</span>)&lt;&lt;<span class="number">16</span>) + (requestCode&amp;<span class="number">0xffff</span>), options);</span><br></pre></td></tr></table></figure>
+
+<p>其中ActivityCompat是一个帮助类，ActivityCompat.startActivityForResult 最终还是调用的Activity.startActivityForResult。通过分析，得知 requestIndex 是请求的序号，值为从0递增的整数值。<br>又从前面得知，requestCode 的本身的值是小于0xffff的，所以<code>((requestIndex+1)&lt;&lt;16)+(requestCode&amp;0xffff)</code>简化一下就是：<code>(requestIndex+1)*65536+requestCode</code>——<strong>所以这个值是必定大于0xffff的。</strong></p>
+<p>再看一下 <code>FragmentActivity.startActivityForResult</code> 的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startActivityForResult</span><span class="params">(Intent intent, <span class="keyword">int</span> requestCode)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// If this was started from a Fragment we've already checked the upper 16 bits were not in</span></span><br><span class="line">    <span class="comment">// use, and then repurposed them for the Fragment's index.</span></span><br><span class="line">    <span class="keyword">if</span> (!mStartedActivityFromFragment) &#123;</span><br><span class="line">        <span class="keyword">if</span> (requestCode != -<span class="number">1</span> &amp;&amp; (requestCode&amp;<span class="number">0xffff0000</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Can only use lower 16 bits for requestCode"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">super</span>.startActivityForResult(intent, requestCode);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，判断了一下如果请求不是来自于 Fragment，也就是来自于 FragmentActivity 自身，就限制requestCode 不能大于0xffff。</p>
+<p>再加上前文所说的，Fragment.startActivityForResult 最终映射的 requestCode 值必定大于0xffff，所以，现在可以得出了一个初步的结果：<br><strong>SDK 把 Fragment 和 FragmentActivity 的 requestCode 都限制在了0xffff以内，然后对于 Fragment 所发起的请求，都通过一个映射，把最终的 requestCode 变成了一个大于0xffff的值。</strong></p>
+<p>可以推测到：<strong>在获取的结果的时候，也是会通过跟0xffff这个数值来比较，来区分是要把结果交给FragmentActivity 还是 Fragment 来处理。</strong></p>
+<p>再来看一下 <code>FragmentActivity.onActivityResult</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line">    mFragments.noteStateNotSaved();</span><br><span class="line">    <span class="keyword">int</span> requestIndex = requestCode&gt;&gt;<span class="number">16</span>;</span><br><span class="line">    <span class="keyword">if</span> (requestIndex != <span class="number">0</span>) &#123;</span><br><span class="line">        requestIndex--;</span><br><span class="line">        String who = mPendingFragmentActivityResults.get(requestIndex);</span><br><span class="line">        mPendingFragmentActivityResults.remove(requestIndex);</span><br><span class="line">        <span class="keyword">if</span> (who == <span class="keyword">null</span>) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Activity result delivered for unknown Fragment."</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Fragment targetFragment = mFragments.findFragmentByWho(who);</span><br><span class="line">        <span class="keyword">if</span> (targetFragment == <span class="keyword">null</span>) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Activity result no fragment exists for who: "</span> + who);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            targetFragment.onActivityResult(requestCode&amp;<span class="number">0xffff</span>, resultCode, data);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>果然，证实了我们上面的推论。在FragmentActivity.onActivityResult 中，只有 <code>requestCode&gt;0xffff</code> 时，这里得到的 requestIndex 才能满足<code>requestIndex != 0</code>，然后进入下面的逻辑：把 requestCode 通过反向之前的映射关系，还原成最初 Fragment 所指定的 requestCode，交给 Fragment.onActivityResult 进行处理。</p>
+<p><strong>注意：</strong>通过 FragementActivity 源码可以发现，源码里没有处理嵌套 Fragment 的情况，也就是说回调只到第一级Fragment，就没有继续分发。所以在第二级或者更深级别的 Fragment 调用 startActivityForResult 方法时，将无法收到 onActivityResult 回调。</p>
+<ul>
+<li><p><strong>使用 startActivityForResult 的时候，requestCode 一定不要大于 0xffff(65535)</strong>。</p>
+</li>
+<li><p>嵌套一层 Fragment 时，要在 Fragment 的 onActivityResult 接收数据，在 Fragment 中要使用 <code>Fragment.startActivityForResult</code>，而不是 <code>Fragment.getActivity().startActivityForResult</code>，如果 activity 中重写了 onActivityResult，那么一定要加上<code>super.onActivityResult(requestCode, resultCode, data)</code>。</p>
+</li>
+<li><p>嵌套多层 Fragment 时，要在第二级或更深级别的 Fragment 获取回调，需要重写 activity 的 onactivityresult 方法，继续分发回调给 Fragment。</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomAppCompatActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"TAG"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重写onactivityresult方法，使二个或多个fragment嵌套使用时能收到onactivityresut回调</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> requestCode</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> resultCode</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> data</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line">        FragmentManager fm = getSupportFragmentManager();</span><br><span class="line">        <span class="keyword">int</span> index = requestCode &gt;&gt; <span class="number">16</span>;</span><br><span class="line">        <span class="keyword">if</span> (index != <span class="number">0</span>) &#123;</span><br><span class="line">            index--;</span><br><span class="line">            <span class="keyword">if</span> (fm.getFragments() == <span class="keyword">null</span> || index &lt; <span class="number">0</span></span><br><span class="line">                    || index &gt;= fm.getFragments().size()) &#123;</span><br><span class="line">                Log.w(TAG, <span class="string">"Activity result fragment index out of range: 0x"</span></span><br><span class="line">                        + Integer.toHexString(requestCode));</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            Fragment frag = fm.getFragments().get(index);</span><br><span class="line">            <span class="keyword">if</span> (frag == <span class="keyword">null</span>) &#123;</span><br><span class="line">                Log.w(TAG, <span class="string">"Activity result no fragment exists for index: 0x"</span></span><br><span class="line">                        + Integer.toHexString(requestCode));</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                handleResult(frag, requestCode, resultCode, data);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 递归调用，对所有子Fragement生效</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> frag</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> requestCode</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> resultCode</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> data</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleResult</span><span class="params">(Fragment frag, <span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode,</span></span></span><br><span class="line"><span class="function"><span class="params">                              Intent data)</span> </span>&#123;</span><br><span class="line">        frag.onActivityResult(requestCode &amp; <span class="number">0xffff</span>, resultCode, data);</span><br><span class="line">        List&lt;Fragment&gt; frags = frag.getChildFragmentManager().getFragments();</span><br><span class="line">        <span class="keyword">if</span> (frags != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (Fragment f : frags) &#123;</span><br><span class="line">                <span class="keyword">if</span> (f != <span class="keyword">null</span>)</span><br><span class="line">                    handleResult(f, requestCode, resultCode, data);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 Fragment 中调用 startActivityForResult 时，一定要调用根 Fragment 的启动方法，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 得到根Fragment</span></span><br><span class="line"><span class="comment">  * </span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> Fragment <span class="title">getRootFragment</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Fragment fragment = getParentFragment();</span><br><span class="line">  <span class="keyword">while</span> (fragment.getParentFragment() != <span class="keyword">null</span>) &#123;</span><br><span class="line">   fragment = fragment.getParentFragment();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> fragment;</span><br><span class="line"></span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 启动Activity</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">onClickTextViewRemindAdvancetime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">  intent.setClass(getActivity(), YourActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  intent.putExtra(<span class="string">"TAG"</span>,<span class="string">"TEST"</span>); </span><br><span class="line">  getRootFragment().startActivityForResult(intent, <span class="number">1000</span>);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="七、ViewPager-Fragment相关"><a href="#七、ViewPager-Fragment相关" class="headerlink" title="七、ViewPager+Fragment相关"></a>七、ViewPager+Fragment相关</h4><p>ViewPager 是 android 中提供界面滑动的类，继承自 ViewGroup。PagerAdapter 是 ViewPager 的适配器类，为ViewPager提供界面。但是一般来说，通常都会使用 PagerAdapter 的两个子类：FragmentPagerAdapter和FragmentStatePagerAdapter 作为 ViewPager 的适配器，他们的特点是界面是 Fragment 。</p>
+<p>ViewPager 默认会缓存当前页相邻的<code>DEFAULT_OFFSCREEN_PAGES</code>(默认1)个界面，比如当滑动到第2页时，会初始化第1页和第3页的界面（即 Fragmen t对象，且生命周期函数运行到<code>onResume()</code>），可以通过<code>setOffscreenPageLimit(count)</code>设置离线缓存的界面个数。</p>
+<p>FragmentPagerAdapter 和 FragmentStatePagerAdapter 需要重写的方法都一样，常见的重写方法如下：</p>
+<ul>
+<li>public FragmentPagerAdapter(FragmentManager fm)：构造函数，参数为 FragmentManager。如果是嵌套 Fragment 场景，子 PagerAdapter的参数传入 getChildFragmentManager()。</li>
+<li>Fragment getItem(int position)：返回第 position 位置的 Fragment，必须重写。</li>
+<li>int getCount(): 返回 ViewPager 的页数，必须重写。</li>
+<li>Object instantiateItem(ViewGroup container, int position)：container 是 ViewPager 对象，返回第 position位置的 Fragment。</li>
+<li>void destroyItem(ViewGroup container, int position, Object object)：container 是 ViewPager 对象，object 是 Fragment 对象。</li>
+<li>getItemPosition(Object object)：object 是 Fragment 对象，如果返回 POSITION_UNCHANGED，则表示当前 Fragment 不刷新，如果返回 POSITION_NONE，则表示当前 Fragment 需要调用<code>destroyItem()</code>和<code>instantiateItem()</code>进行销毁和重建。 默认情况下返回 POSITION_UNCHANGED。</li>
+</ul>
+<h4 id="八、懒加载"><a href="#八、懒加载" class="headerlink" title="八、懒加载"></a>八、懒加载</h4><h5 id="为什么要使用懒加载"><a href="#为什么要使用懒加载" class="headerlink" title="为什么要使用懒加载"></a>为什么要使用懒加载</h5><p>默认情况，ViewPager 会缓存当前页和左右相邻的界面。实现懒加载的主要原因是：用户没进入的界面需要有一系列的网络、数据库等耗资源、耗时的操作，预先做这些数据加载是不必要的。为了不做预先额外的数据加载，节省资源，就需要使用懒加载。</p>
+<h5 id="什么是懒加载"><a href="#什么是懒加载" class="headerlink" title="什么是懒加载"></a>什么是懒加载</h5><p>当界面对用户可见时，才加载数据并更新UI，当界面对用户不可见时，停止加载数据等一切操作。</p>
+<h5 id="如何实现懒加载"><a href="#如何实现懒加载" class="headerlink" title="如何实现懒加载"></a>如何实现懒加载</h5><p><strong>在 androidx 之前</strong>，懒加载主要依赖 Fragment 的<code>setUserVisibleHint(boolean isVisible)</code>方法，当Fragment变为可见时，会调用<code>setUserVisibleHint(true)</code>；当Fragment变为不可见时，会调用<code>setUserVisibleHint(false)</code>，且该方法调用时机：</p>
+<ul>
+<li>onAttach() 之前，调用<code>setUserVisibleHint(false)</code>。</li>
+<li>onCreateView() 之前，如果该界面为当前页，则调用<code>setUserVisibleHint(true)</code>，否则调用<code>setUserVisibleHint(false)</code>。</li>
+<li>界面变为可见时，调用<code>setUserVisibleHint(true)</code>。</li>
+<li>界面变为不可见时，调用<code>setUserVisibleHint(false)</code>。</li>
+</ul>
+<p>懒加载 Fragment 的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LazyFragment</span> <span class="keyword">extends</span> <span class="title">Fragment</span> </span>&#123;    </span><br><span class="line">    <span class="keyword">private</span> View mRootView;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mIsPrepared; <span class="comment">//表示UI是否准备好</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mIsInited;  <span class="comment">//表示是否已经做过数据加载</span></span><br><span class="line">                                            </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> View <span class="title">onCreateView</span><span class="params">(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        mRootView = inflater.inflate(R.layout.fragment_lazy, container, <span class="keyword">false</span>);</span><br><span class="line">        mIsPrepared = <span class="keyword">true</span>;</span><br><span class="line">        lazyLoad();<span class="comment">// 解决第一次数据显示</span></span><br><span class="line">        <span class="keyword">return</span> mRootView;</span><br><span class="line">    &#125;</span><br><span class="line">            </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lazyLoad</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (getUserVisibleHint() &amp;&amp; mIsPrepared &amp;&amp; !mIsInited) &#123; </span><br><span class="line">           <span class="comment">//异步初始化，在初始化后显示正常UI</span></span><br><span class="line">           <span class="comment">//1. 加载数据  2. 更新UI  3. mIsInited = true</span></span><br><span class="line">           loadData();</span><br><span class="line">           mIsInited = <span class="keyword">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">//子类可重写</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">loadData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 加载数据</span></span><br><span class="line">    &#125;   </span><br><span class="line">   </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserVisibleHint</span><span class="params">(<span class="keyword">boolean</span> isVisibleToUser)</span> </span>&#123; </span><br><span class="line">           <span class="keyword">super</span>.setUserVisibleHint(isVisibleToUser);</span><br><span class="line">           <span class="keyword">if</span> (isVisibleToUser) &#123;</span><br><span class="line">             lazyLoad();</span><br><span class="line">           &#125;</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LazyFragment <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">new</span> LazyFragment();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>mIsPrepared：表示UI是否准备好，因为数据加载后需要更新UI，如果UI还没有inflate，就不需要做数据加载，因为setUserVisibleHint()会在onCreateView()之前调用一次，如果此时调用，UI还没有inflate，因此不能加载数据。</li>
+<li>mIsInited：表示是否已经做过数据加载，如果做过了就不需要做了。因为 setUserVisibleHint(true) 在界面可见时都会调用，如果滑到该界面做过数据加载后，滑走，再滑回来，还是会调用 setUserVisibleHint(true)，此时由于mIsInited=true，因此不会再做一遍数据加载。</li>
+<li>lazyLoad()：懒加载的核心类，在该方法中，只有界面可见（getUserVisibleHint()==true）、UI准备好（mIsPrepared==true）、过去没做过数据加载（mIsInited==false）时，才需要调loadData()做数据加载，数据加载做完后把mIsInited置为true。</li>
+</ul>
+<p><strong>在 androidx 之后</strong>，<code>setUserVisibleHint()</code>方法已经过时了，官方提出了<code>setMaxLifecycle()</code>方法来替代<code>setUserVisibleHint()</code>方法，那么肯定也提供了懒加载的新方案，这次的切入点在 <strong>FragmentPagerAdapter</strong> 中，我们会发现之前继承自 FragmentPagerAdapter 的构造方法同样过时了。提供了新的构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">FragmentPagerAdapter</span><span class="params">(@NonNull FragmentManager fm,</span></span></span><br><span class="line"><span class="function"><span class="params">                            @Behavior <span class="keyword">int</span> behavior)</span> </span>&#123;</span><br><span class="line">    mFragmentManager = fm;</span><br><span class="line">    mBehavior = behavior;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>多了一个 int 类型的参数 behavior，可选的值有以下两个：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BEHAVIOR_SET_USER_VISIBLE_HINT = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出一个参数的构造方法默认传入<strong>BEHAVIOR_SET_USER_VISIBLE_HINT</strong>，将其赋值给mBehavior，那么这个mBehavior在什么地方用到了呢。在<strong>FragmentPagerAdapter.java</strong>文件中全局搜索一下，发现只有两个地方用到了mBehavior：<code>instantiateItem()</code>方法和<code>setPrimaryItem()</code>方法。<code>instantiateItem()</code>方法我们很熟悉，是初始化ViewPager中每个Item的方法，<code>setPrimaryItem()</code>方法我此前没有接触过，简单地看了一下源码发现它的作用是设置ViewPager将要显示的Item，在ViewPager切换时会调用该方法，我们来看一下FragmentPagerAdapter中的<code>setPrimaryItem()</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPrimaryItem</span><span class="params">(@NonNull ViewGroup container, <span class="keyword">int</span> position, @NonNull Object object)</span> </span>&#123;</span><br><span class="line">        Fragment fragment = (Fragment)object;</span><br><span class="line">        <span class="keyword">if</span> (fragment != mCurrentPrimaryItem) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mCurrentPrimaryItem != <span class="keyword">null</span>) &#123;</span><br><span class="line">                mCurrentPrimaryItem.setMenuVisibility(<span class="keyword">false</span>);</span><br><span class="line">                <span class="keyword">if</span> (mBehavior == BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mCurTransaction == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        mCurTransaction = mFragmentManager.beginTransaction();</span><br><span class="line">                    &#125;</span><br><span class="line">                    mCurTransaction.setMaxLifecycle(mCurrentPrimaryItem, Lifecycle.State.STARTED);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    mCurrentPrimaryItem.setUserVisibleHint(<span class="keyword">false</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            fragment.setMenuVisibility(<span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (mBehavior == BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) &#123;</span><br><span class="line">                <span class="keyword">if</span> (mCurTransaction == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    mCurTransaction = mFragmentManager.beginTransaction();</span><br><span class="line">                &#125;</span><br><span class="line">                mCurTransaction.setMaxLifecycle(fragment, Lifecycle.State.RESUMED);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                fragment.setUserVisibleHint(<span class="keyword">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            mCurrentPrimaryItem = fragment;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果 mBehavior 的值为<strong>BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT</strong>，那么就调用<code>setMaxLifecycle()</code>方法将上一个Fragment的状态设置为<strong>STARTED</strong>，将当前要显示的Fragment的状态设置为<strong>RESUMED</strong>；反之如果mBehavior的值为<strong>BEHAVIOR_SET_USER_VISIBLE_HINT</strong>，那么依然使用<code>setUserVisibleHint()</code>方法设置Fragment的可见性，相应地可以根据<code>getUserVisibleHint()</code>方法获取到Fragment是否可见，从而实现懒加载，具体做法：</p>
+<ul>
+<li><p>在构造 Adapter 对象的时候 behavior 参数传入 <strong>FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT</strong>；</p>
+</li>
+<li><p>将 Fragment 加载数据的逻辑放到 onResume() 方法中，这样就保证了 Fragment 可见时才会加载数据。</p>
+</li>
+<li><p>声明一个变量标记是否是首次执行<code>onResume()</code>方法，因为每次 Fragment 由不可见变为可见都会执行<code>onResume()</code>方法，需要防止数据的重复加载。此外，如果我们使用的是 FragmentPagerAdapter，切换导致Fragment被销毁时是不会执行<code>onDestory()</code>和<code>onDetach()</code>方法的，只会执行到<code>onDestroyView()</code>方法，因此在<code>onDestroyView()</code>方法中我们还需要将这个变量重置，否则当Fragment再次可见时就不会重新加载数据了。</p>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文记录 Android 中 Fragment 的相关知识点，包括 Fragment 的基本定义及使用、生命周期、回退栈的内部实现、Fragment 通信、ViewPager+Fragment 的使用、懒加载等，加深了对 Fragment 的理解和学习。</p>
+<p>引用文章：</p>
+<blockquote>
+<p><a href="https://mp.weixin.qq.com/s/dUuGSVhWinAnN9uMiBaXgw" target="_blank" rel="noopener">Android基础：Fragment，看这篇就够了</a></p>
+<p><a href="https://www.jianshu.com/p/ca91fa528d5c" target="_blank" rel="noopener">彻底搞懂startActivityForResult在FragmentActivity和Fragment中的异同</a></p>
+<p><a href="https://www.cnblogs.com/xjx22/p/5263658.html" target="_blank" rel="noopener">Android的Fragment中onActivityResult不被调用的解决方案</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android%E5%9F%BA%E7%A1%80/" rel="tag"># Android基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/29/ContentProvider%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/" rel="prev" title="ContentProvider必备基础">
+      <i class="fa fa-chevron-left"></i> ContentProvider必备基础
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
