@@ -540,9 +540,9 @@
 <p>可以看到，F1被替换时，最后只调到了<code>onDestroyView()</code>，并没有调用<code>onDestroy()</code>和<code>onDetach()</code>。当用户点返回按钮回退事务时，F1会调 onCreateView()-&gt;onActivityCreated()-&gt;onStart()-&gt;onResume()，因此在 Fragment 事务中加不加<code>addToBackStack()</code>会影响 Fragment 的生命周期。</p>
 <p>FragmentTransaction 有一些基本方法，下面给出调用这些方法时，Fragment 生命周期的变化：</p>
 <ul>
-<li>add(): onAttach()-&gt;…-&gt;onResume()。</li>
-<li>remove(): onPause()-&gt;…-&gt;onDetach()。</li>
-<li>replace(): 相当于旧 Fragment 调用remove()，新 Fragment 调用add()。</li>
+<li>add(): onAttach()-&gt;…-&gt;onResume()，添加进来的 fragment 都是可见的，不能重复添加同一 fragment，切换 fragment 时，不销毁当前的，创建新的，不会重新创建，一般配合 hide 或 remove 使用。</li>
+<li>remove(): onPause()-&gt;…-&gt;onDetach()，销毁 fragment 。</li>
+<li>replace(): 相当于旧 Fragment 调用remove()，新 Fragment 调用 add()，切换 fragment 时每次都会销毁当前的，创建新的，会重新创建初始化。和 add() 区别：<strong>是否要销毁当前fragment清空容器再添加新fragment</strong></li>
 <li>show(): 不调用任何生命周期方法，调用该方法的前提是要显示的 Fragment 已经被添加到容器，只是纯粹把 Fragment UI 的 setVisibility 为 true。</li>
 <li>hide(): 不调用任何生命周期方法，调用该方法的前提是要显示的 Fragment 已经被添加到容器，只是纯粹把Fragment UI的setVisibility为false。</li>
 <li>detach(): onPause()-&gt;onStop()-&gt;onDestroyView()。UI从布局中移除，但是仍然被 FragmentManager 管理。</li>
@@ -701,7 +701,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 得到根Fragment</span></span><br><span class="line"><span class="comment">  * </span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> Fragment <span class="title">getRootFragment</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Fragment fragment = getParentFragment();</span><br><span class="line">  <span class="keyword">while</span> (fragment.getParentFragment() != <span class="keyword">null</span>) &#123;</span><br><span class="line">   fragment = fragment.getParentFragment();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> fragment;</span><br><span class="line"></span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 启动Activity</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">onClickTextViewRemindAdvancetime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">  intent.setClass(getActivity(), YourActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  intent.putExtra(<span class="string">"TAG"</span>,<span class="string">"TEST"</span>); </span><br><span class="line">  getRootFragment().startActivityForResult(intent, <span class="number">1000</span>);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
 
 <h4 id="七、ViewPager-Fragment相关"><a href="#七、ViewPager-Fragment相关" class="headerlink" title="七、ViewPager+Fragment相关"></a>七、ViewPager+Fragment相关</h4><p>ViewPager 是 android 中提供界面滑动的类，继承自 ViewGroup。PagerAdapter 是 ViewPager 的适配器类，为ViewPager提供界面。但是一般来说，通常都会使用 PagerAdapter 的两个子类：FragmentPagerAdapter和FragmentStatePagerAdapter 作为 ViewPager 的适配器，他们的特点是界面是 Fragment 。</p>
-<p>ViewPager 默认会缓存当前页相邻的<code>DEFAULT_OFFSCREEN_PAGES</code>(默认1)个界面，比如当滑动到第2页时，会初始化第1页和第3页的界面（即 Fragmen t对象，且生命周期函数运行到<code>onResume()</code>），可以通过<code>setOffscreenPageLimit(count)</code>设置离线缓存的界面个数。</p>
+<p>ViewPager 默认会缓存当前页相邻的<code>DEFAULT_OFFSCREEN_PAGES</code>(默认1)个界面，比如当滑动到第2页时，会初始化第1页和第3页的界面（即 Fragmen t对象，且生命周期函数运行到<code>onResume()</code>），可以通过<code>setOffscreenPageLimit(count)</code>设置当前页的左右两边的预加载界面数量。</p>
 <p>FragmentPagerAdapter 和 FragmentStatePagerAdapter 需要重写的方法都一样，常见的重写方法如下：</p>
 <ul>
 <li>public FragmentPagerAdapter(FragmentManager fm)：构造函数，参数为 FragmentManager。如果是嵌套 Fragment 场景，子 PagerAdapter的参数传入 getChildFragmentManager()。</li>
