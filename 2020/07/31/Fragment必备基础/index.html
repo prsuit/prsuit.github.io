@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghi3kbnbqwj30ks02tjrj.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghkm2rcvpcj32bg0u0tn8.jpg">
 <meta property="article:published_time" content="2020-07-31T12:58:51.000Z">
-<meta property="article:modified_time" content="2020-08-10T07:14:28.010Z">
+<meta property="article:modified_time" content="2020-08-10T09:09:36.901Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android基础">
 <meta name="twitter:card" content="summary">
@@ -228,20 +228,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -436,7 +436,7 @@
 <li>在一次事务中，可以做多个操作，比如同时做<code>add().remove().replace()</code>。</li>
 <li><code>commit()</code>操作是异步的，内部通过<code>mManager.enqueueAction()</code>加入处理队列。对应的同步方法为<code>commitNow()</code>，<code>commit()</code>内部会有<code>checkStateLoss()</code>操作，如果开发人员使用不当（比如<code>commit()</code>操作在<code>onSaveInstanceState()</code>之后），可能会抛出异常，而<code>commitAllowingStateLoss()</code>方法则是不会抛出异常版本的<code>commit()</code>方法，但是尽量使用<code>commit()</code>，而不要使用<code>commitAllowingStateLoss()</code>。</li>
 <li><code>addToBackStack(&quot;fname&quot;)</code>是可选的。FragmentManager 拥有回退栈（BackStack），类似于 Activity 的任务栈，如果添加了该语句，就把该事务加入回退栈，当用户点击返回按钮，会回退该事务（回退指的是如果事务是<code>add(frag1)</code>，那么回退操作就是<code>remove(frag1)</code>）；如果没添加该语句，用户点击返回按钮会直接销毁Activity。</li>
-<li>Fragment 有一个常见的问题，即 Fragment 重叠问题，这是由于 Fragment 被系统杀掉，并重新初始化时再次将 fragment 加入 activity，因此通过在外围加 if 语句能判断此时是否是被系统杀掉并重新初始化的情况。</li>
+<li>Fragment 有一个常见的问题，即 Fragment 重叠问题，这是由于页面发生销毁重建(旋转屏幕、内存不足等情况被强杀重启)回到前台，重新初始化时，再次将 fragment 加入 activity，而 FragmentActivity 帮我们保存了 Fragment 的状态，并且在页面重启后会帮我们恢复，因此可在Activity的<code>onCreate()</code>里加上页面是否是重启的判断<code>if(saveInstanceState == null){}</code>。</li>
 </ul>
 <p><strong>Fragment有个常见的异常：</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalStateException: Can not perform <span class="keyword">this</span> action after onSaveInstanceState</span><br><span class="line">    at android.support.v4.app.FragmentManagerImpl.checkStateLoss(FragmentManager.java:<span class="number">1341</span>)</span><br><span class="line">    at android.support.v4.app.FragmentManagerImpl.enqueueAction(FragmentManager.java:<span class="number">1352</span>)</span><br><span class="line">    at android.support.v4.app.BackStackRecord.commitInternal(BackStackRecord.java:<span class="number">595</span>)</span><br><span class="line">    at android.support.v4.app.BackStackRecord.commit(BackStackRecord.java:<span class="number">574</span>)</span><br></pre></td></tr></table></figure>
@@ -445,7 +445,7 @@
 <p><strong>因此避免出现该异常的方案有：</strong></p>
 <ul>
 <li>不要把 Fragment 事务放在异步线程的回调中，比如不要把 Fragment 事务放在 AsyncTask 的onPostExecute()，因此 onPostExecute() 可能会在 onSaveInstanceState() 之后执行。</li>
-<li>逼不得已时使用 commitAllowingStateLoss()。</li>
+<li>逼不得已时使用 commitAllowingStateLoss()，允许丢失一些界面的状态和信息。</li>
 </ul>
 <h4 id="四、Fragment实现原理和Back-Stack"><a href="#四、Fragment实现原理和Back-Stack" class="headerlink" title="四、Fragment实现原理和Back Stack"></a>四、Fragment实现原理和Back Stack</h4><p>我们知道 Activity 有任务栈，用户通过 startActivity 将 Activity 加入栈，点击返回按钮将 Activity 出栈。Fragment 也有类似的栈，称为回退栈（Back Stack），回退栈是由 FragmentManager 管理的。默认情况下，Fragment 事务是不会加入回退栈的，如果想将 Fragment 事务加入回退栈，则可以加入<code>addToBackStack(&quot;&quot;)</code>。如果没有加入回退栈，则用户点击返回按钮会直接将 Activity 出栈；如果加入了回退栈，则用户点击返回按钮会回滚 Fragment 事务。</p>
 <p>我们将通过最常见的 Fragment 用法，讲解 Back Stack 的实现原理：</p>
@@ -678,7 +678,10 @@
     <a href="/2020/07/29/ContentProvider%E5%BF%85%E5%A4%87%E5%9F%BA%E7%A1%80/" rel="prev" title="ContentProvider必备基础">
       <i class="fa fa-chevron-left"></i> ContentProvider必备基础
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/02/Handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/" rel="next" title="Handler消息机制">
+      Handler消息机制 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
