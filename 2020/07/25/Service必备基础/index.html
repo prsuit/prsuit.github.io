@@ -31,7 +31,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh7ysawqzfj30at0e3abt.jpg">
 <meta property="article:published_time" content="2020-07-25T11:21:49.000Z">
-<meta property="article:modified_time" content="2020-08-04T16:08:04.306Z">
+<meta property="article:modified_time" content="2020-08-14T07:50:21.249Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android基础">
 <meta name="twitter:card" content="summary">
@@ -431,7 +431,7 @@
 <p>4.<strong>设置应用白名单和电量管理</strong>。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
 <li>Service 实例对象同一应用中同时只会有一个。</li>
-<li>Service默认并不会运行在子线程中，也不运行在一个独立的进程中，它同样执行在主线程中（UI线程）。换句话说，不要在Service里执行耗时操作，除非手动打开一个子线程，否则有可能出现主线程被阻塞（ANR）的情况。</li>
+<li>Service默认并不会运行在子线程中，也不运行在一个独立的进程中，它同样执行在主线程中（UI线程）。换句话说，不要在Service里执行耗时操作，除非手动打开一个子线程，否则有可能出现主线程被阻塞（ANR）的情况。(Service执行的操作耗时最多是20s，BroadcastReceiver是10s，Activity是5s)</li>
 <li>使用了远程 Service 后，Service 已经在另外一个进程当中运行了，所以只会阻塞该进程中的主线程，并不会影响到当前的应用程序。</li>
 <li>默认 Service 和创建者在同一个进程内，如果将 Service 的 android:process 属性指定成” :remote”，表示Service 是在单独的进程创建远程服务。调用 startService 可以启动服务，但不能调用 bindService 绑定服务，因为创建者和 Service 运行在两个不同的进程中，不能再使用传统的建立关联的方式，需要使用 AIDL 来跨进程通信才可以绑定。</li>
 <li>只有Activity、Service、Content Provider 能够绑定服务；BroadcastReceiver 广播接收器不能绑定服务</li>
