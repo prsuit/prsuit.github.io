@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghndj328rcj30p20fatah.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghp0auiuk8j309r06qglm.jpg">
 <meta property="article:published_time" content="2020-08-02T09:47:36.000Z">
-<meta property="article:modified_time" content="2020-08-13T09:04:51.961Z">
+<meta property="article:modified_time" content="2020-08-16T08:56:26.610Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android基础">
 <meta name="twitter:card" content="summary">
@@ -229,7 +229,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -381,7 +381,7 @@
 <p>本质：<strong>ThreadLocal 的静态内部类 ThreadLocalMap 为每个 Thread 都维护了一个 Entry 类型数组 table，ThreadLocal 对象确定了一个数组下标，而这个下标就是 value 存储的对应位置。get的时候，都是从自己的变量中取值，所以不存在线程安全问题</strong>。</p>
 <p>Entry 类是继承自弱引用，弱引用里面放的就是 ThreadLocal 对象，Entry 的 value 存的是当前线程要存储的对象，value 作为 Entry 的成员变量。</p>
 <p><strong>每个线程都持有一个 ThreadLocalMap 对象，而 threadlocal 负责访问和维护 ThreadLocalMap</strong>。</p>
-<p><strong>ThreadLocal 内存泄漏的问题，从上面分析可以发现 ThreadLocalMap 里面的 Entry 对象存储的ThreadLocal 弱引用，而 value 直接作为 Entry 的强引用，ThreadLocal 对象可能被回收了，但 value 还在，这就造成了内存泄漏，因此在用到了 ThreadLocal 的地方，防止内存泄漏，手动调用 remove 方法。</strong></p>
+<p><strong>ThreadLocal 内存泄漏的问题，从上面分析可以发现 ThreadLocalMap 里面的 Entry 对象存储的ThreadLocal 弱引用，它并不会影响GC对于 ThreadLocal 对象的回收，但 value 直接作为 Entry 的强引用，ThreadLocal 对象可能被回收了，但 value 还在，这就造成了内存泄漏，因此在用到了 ThreadLocal 的地方，防止内存泄漏，手动调用 remove 方法。</strong></p>
 <p>ThreadLocal 常用的操作方法：</p>
 <ul>
 <li><code>ThreadLocal.set(T value)</code>：将value存储到当前线程的TLS区域，源码如下：</li>

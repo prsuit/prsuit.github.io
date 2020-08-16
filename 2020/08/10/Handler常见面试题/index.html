@@ -25,7 +25,7 @@
   <meta name="description" content="前言Handler机制是面试官非常喜欢问的知识点，本文主要是记录整理Handler相关面试题和解答。 目录1、Handler：是什么？有什么用？为什么要用Handler，不用行不行？Android定义的一套 线程(子线程与主线程)间通讯的消息传递机制 。把子线程中的 UI更新信息，传递给主线程(UI线程)，以此完成UI更新操作。Android建议要求：我们在主线程(UI)线程中更新UI。Andro">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Handler常见面试题">
-<meta property="og:url" content="http://yoursite.com/2020/08/12/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/index.html">
+<meta property="og:url" content="http://yoursite.com/2020/08/10/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/index.html">
 <meta property="og:site_name" content="SongHang&#39;s Blog">
 <meta property="og:description" content="前言Handler机制是面试官非常喜欢问的知识点，本文主要是记录整理Handler相关面试题和解答。 目录1、Handler：是什么？有什么用？为什么要用Handler，不用行不行？Android定义的一套 线程(子线程与主线程)间通讯的消息传递机制 。把子线程中的 UI更新信息，传递给主线程(UI线程)，以此完成UI更新操作。Android建议要求：我们在主线程(UI)线程中更新UI。Andro">
 <meta property="og:locale" content="en_US">
@@ -36,14 +36,14 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gho6y2oscoj30ei094jtf.jpg">
 <meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/MOu2ZNAwZwOPb5hszoy7LYnoN5FKueEqsPG4gXiawQtIibMg4JqZL9O3mGKwTvjrSvT25IiaRAf7DWd9NtbhsSJTA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gho7zziasxj30g5063wf2.jpg">
-<meta property="article:published_time" content="2020-08-12T07:42:45.000Z">
-<meta property="article:modified_time" content="2020-08-13T10:13:34.153Z">
+<meta property="article:published_time" content="2020-08-10T13:42:45.000Z">
+<meta property="article:modified_time" content="2020-08-16T10:49:47.091Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Interview">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghogfu4j9xj30hu08dt9j.jpg">
 
-<link rel="canonical" href="http://yoursite.com/2020/08/12/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/">
+<link rel="canonical" href="http://yoursite.com/2020/08/10/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/">
 
 
 <script class="page-configurations">
@@ -231,7 +231,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -281,7 +281,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/12/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/10/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -304,7 +304,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-08-12 15:42:45" itemprop="dateCreated datePublished" datetime="2020-08-12T15:42:45+08:00">2020-08-12</time>
+              <time title="Created: 2020-08-10 21:42:45" itemprop="dateCreated datePublished" datetime="2020-08-10T21:42:45+08:00">2020-08-10</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -317,7 +317,7 @@
             </span>
 
           
-            <span id="/2020/08/12/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="Handler常见面试题" title="Views">
+            <span id="/2020/08/10/Handler%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="Handler常见面试题" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -488,8 +488,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/08/06/IntentService%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="prev" title="IntentService源码分析">
-      <i class="fa fa-chevron-left"></i> IntentService源码分析
+    <a href="/2020/08/08/ThreadLocal%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="prev" title="ThreadLocal源码分析">
+      <i class="fa fa-chevron-left"></i> ThreadLocal源码分析
     </a></div>
       <div class="post-nav-item"></div>
     </div>
