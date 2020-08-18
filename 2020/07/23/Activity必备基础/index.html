@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh5o2g5wxnj30e90if75q.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1gh6iwqed6kj30890bvmxc.jpg">
 <meta property="article:published_time" content="2020-07-23T12:11:45.000Z">
-<meta property="article:modified_time" content="2020-08-03T06:40:50.055Z">
+<meta property="article:modified_time" content="2020-08-17T07:07:48.148Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android基础">
 <meta name="twitter:card" content="summary">
@@ -228,7 +228,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -427,7 +427,7 @@
 <h5 id="使用-Intent-标志"><a href="#使用-Intent-标志" class="headerlink" title="使用 Intent 标志"></a>使用 Intent 标志</h5><p>Activity常用的标记位Flags</p>
 <ul>
 <li><p><strong>FLAG_ACTIVITY_NEW_TASK</strong>：<del>对应 singleTask 启动模式</del>。</p>
-<p>1.单独的<code>FLAG_ACTIVITY_NEW_TASK</code> 并不等价于启动模式 <code>singleTask</code>，它仅表示寻找activity所需的任务栈压入，（即<code>TaskAffinity</code>指定的任务栈，<code>TaskAffinity</code> 默认为应用包名）</p>
+<p>1.单独的<code>FLAG_ACTIVITY_NEW_TASK</code> 并不等价于启动模式 <code>singleTask</code>，它仅表示寻找和activity具有相同的亲和性的任务栈压入，（即<code>TaskAffinity</code>指定的任务栈，<code>TaskAffinity</code> 默认为应用包名）</p>
 <p>2.<code>FLAG_ACTIVITY_NEW_TASK</code>+<code>FLAG_ACTIVITY_CLEAR_TOP</code>也不等价于启动模式<code>singleTask</code></p>
 <p>3.在<code>FLAG_ACTIVITY_NEW_TASK</code>+<code>FLAG_ACTIVITY_CLEAR_TOP</code>的情况下，AndroidManifest.xml中设置activity的启动模式为<code>standard</code>或<code>singleTask</code>时activity入栈方式是不一样的。分为如下3个情况：</p>
 <p>​    <strong>3.1</strong>当启动模式为<code>standard</code>时，如果activity所需的栈中已经存在该activity的实例了，那么这个实例连同它之上的activity都要出栈，然后再新建一个activity实例入栈。</p>
@@ -442,6 +442,9 @@
 <li><p><strong>FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS :</strong> 具有这个标记的 Activity 不会出现在历史 Activity 列表中。</p>
 </li>
 </ul>
+<p>注意：从 Activity 外部(Service,BroadcastReceiver,Application等)不设置 FLAG_ACTIVITY_NEW_TASK 是不能启动 Activity 的，除非调用者指定 Activity 要启动的 task 的 Id。所以建议加上 FLAG_ACTIVITY_NEW_TASK。</p>
+<p>api 24以下，非activity场景启动activity必须加new_task，原因还是任务栈的概念；<br>api 24及以上28以下，非activity场景启动activity不加new_task不会抛出异常，标记可加可不加；</p>
+<p>api 28及以上，Android9.0中非activity场景启动activity需要加new_task。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以此文记录 Android 中 Activity 的基础知识，便于对 Activity 的理解和学习。</p>
 
     </div>
