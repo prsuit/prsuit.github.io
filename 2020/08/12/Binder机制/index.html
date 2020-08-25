@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghxfotybjhj30zs0dy75l.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlly1ghyk9gwafcj30qo0t5qc1.jpg">
 <meta property="article:published_time" content="2020-08-12T14:42:35.000Z">
-<meta property="article:modified_time" content="2020-08-21T13:29:53.835Z">
+<meta property="article:modified_time" content="2020-08-25T15:04:57.284Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android进阶">
 <meta name="twitter:card" content="summary">
@@ -403,7 +403,7 @@
 </blockquote>
 <p>那么在 Android 系统中用户进程之间是如何通过这个内核模块（Binder 驱动）来实现通信的呢？这就不得不通道 Linux 下的另一个概念：<strong>内存映射</strong>。</p>
 <p>Binder IPC 机制中涉及到的内存映射通过 <strong>mmap()</strong> 来实现，mmap() 是操作系统中一种内存映射的方法。内存映射简单的讲就是<strong>将用户空间的一块内存区域映射到内核空间</strong>。映射关系建立后，用户对这块内存区域的修改可以直接反应到内核空间；反之内核空间对这段区域的修改也能直接反应到用户空间。</p>
-<p><strong>内存映射能减少数据拷贝次数</strong>，实现用户空间和内核空间的高效互动。两个空间各自的修改能直接反映在映射的内存区域，从而被对方空间及时感知。也正因为如此，内存映射能够提供对进程间通信的支持。</p>
+<p><strong>内存映射能减少数据拷贝次数</strong>，实现用户空间和内核空间的高效互动。两个空间各自的修改能直接反映在映射的内存区域，从而被对方空间及时感知。也正因为如此，内存映射能够提供对进程间通信的支持。mmap能够让虚拟内存和<strong>指定</strong>物理空间（磁盘/内存）映射起来。</p>
 <h5 id="Binder-IPC-实现原理"><a href="#Binder-IPC-实现原理" class="headerlink" title="Binder IPC 实现原理"></a>Binder IPC 实现原理</h5><p>Binder IPC 正是基于内存映射（mmap）来实现的，但是 mmap() 通常是用在有物理介质的文件系统上的。</p>
 <p>比如进程中的用户区域是不能直接和物理设备打交道的，如果想要把磁盘上的数据读取到进程的用户区域，需要两次拷贝（磁盘–&gt;内核空间–&gt;用户空间）；通常在这种场景下 mmap() 就能发挥作用，通过在物理介质和用户空间之间建立映射，减少数据的拷贝次数，用内存读写取代I/O读写，提高文件读取效率。</p>
 <p>而 Binder 并不存在物理介质，因此 Binder 驱动使用 mmap() 并不是为了在物理介质和用户空间之间建立映射，而是<strong>用来在内核空间创建数据接收的缓存空间</strong>。</p>
