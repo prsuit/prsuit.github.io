@@ -1923,13 +1923,13 @@
 </blockquote>
 <p><strong>系统启动架构图</strong></p>
 <p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gi386fq0hoj30y80u079p.jpg" alt=""></p>
-<p><strong>图解：</strong> Android系统启动过程由上图从下往上的一个过程是由Boot Loader引导开机，然后依次进入 -&gt; <code>Kernel</code> -&gt; <code>Native</code> -&gt; <code>Framework</code> -&gt; <code>App</code>，接来下简要说说每个过程：</p>
-<p>关于Loader层：</p>
+<p><strong>图解：</strong> Android系统启动过程由上图从下往上的一个过程是由BootLoader引导开机，然后依次进入 -&gt; <code>Kernel</code> -&gt; <code>Native</code> -&gt; <code>Framework</code> -&gt; <code>App</code>，接来下简要说说每个过程：</p>
+<h4 id="BootLoader"><a href="#BootLoader" class="headerlink" title="BootLoader"></a>BootLoader</h4><p>当按下电源键（加电）或者系统重启（复位）的时候，引导芯片会从 ROM（这里一般指 Flash ROM，即闪存）中预定义的位置将 Bootloader 载入到 RAM 中，接着，Bootloader 将会把 Linux 内核载入到 RAM 中并启动。</p>
 <ul>
 <li>Boot ROM: 当手机处于关机状态时，长按Power键开机，引导芯片开始从固化在<code>ROM</code>里的预设代码开始执行，然后加载引导程序到<code>RAM</code>；</li>
 <li>Boot Loader：这是启动Android系统之前的引导程序，主要是检查RAM，初始化硬件参数等功能。</li>
 </ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+<h4 id="Kernel"><a href="#Kernel" class="headerlink" title="Kernel"></a>Kernel</h4><h4 id="init进程"><a href="#init进程" class="headerlink" title="init进程"></a>init进程</h4><h4 id="ServiceManager"><a href="#ServiceManager" class="headerlink" title="ServiceManager"></a>ServiceManager</h4><h4 id="Zygote"><a href="#Zygote" class="headerlink" title="Zygote"></a>Zygote</h4><h4 id="SystemServer"><a href="#SystemServer" class="headerlink" title="SystemServer"></a>SystemServer</h4><h4 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h4><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
       <categories>
         <category>Android进阶</category>
       </categories>
