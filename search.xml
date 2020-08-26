@@ -1908,7 +1908,7 @@
     <title>Android系统启动过程分析</title>
     <url>/2020/08/16/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android系统启动流程。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h4><p>Android系统的启动，主要是指Android手机长按电源键后，Android手机开机的过程。从系统角度看，Android的启动程序可分为：</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h4><p>Android系统的启动，主要是指Android手机长按电源键后，Android手机开机的过程。</p>
 <blockquote>
 <p>1、Bootloader引导</p>
 <p>2、装载与启动Linux内核</p>
@@ -1923,13 +1923,84 @@
 </blockquote>
 <p><strong>系统启动架构图</strong></p>
 <p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gi386fq0hoj30y80u079p.jpg" alt=""></p>
-<p><strong>图解：</strong> Android系统启动过程由上图从下往上的一个过程是由BootLoader引导开机，然后依次进入 -&gt; <code>Kernel</code> -&gt; <code>Native</code> -&gt; <code>Framework</code> -&gt; <code>App</code>，接来下简要说说每个过程：</p>
-<h4 id="BootLoader"><a href="#BootLoader" class="headerlink" title="BootLoader"></a>BootLoader</h4><p>当按下电源键（加电）或者系统重启（复位）的时候，引导芯片会从 ROM（这里一般指 Flash ROM，即闪存）中预定义的位置将 Bootloader 载入到 RAM 中，接着，Bootloader 将会把 Linux 内核载入到 RAM 中并启动。</p>
+<p><strong>图解：</strong> Android系统启动过程由上图从下往上的一个过程是由BootLoader引导开机，然后依次进入 -&gt; <code>Kernel</code> -&gt; <code>Native</code> -&gt; <code>Framework</code> -&gt; <code>App</code>。</p>
+<p>Android系统启动过程可分为四步：启动电源-&gt;执行引导程序BootLoader-&gt;启动内核-&gt;启动init进程。下面分别介绍每个过程：</p>
+<h4 id="启动电源"><a href="#启动电源" class="headerlink" title="启动电源"></a>启动电源</h4><p>当电源按下，引导芯片从 ROM（一般指 Flash ROM，即闪存）中预定义的位置开始执行，加载引导程序 BootLoader 到 RAM。</p>
+<h4 id="执行引导程序BootLoader"><a href="#执行引导程序BootLoader" class="headerlink" title="执行引导程序BootLoader"></a>执行引导程序BootLoader</h4><p>Boot Loader是在系统内核运行之前运行的引导程序，也是系统运行的第一个程序。</p>
+<p>主要作用是：初始化 RAM、初始化硬件设备、建立内存空间映射图，从而将系统的软硬件环境带到一个合适状态，以便为最终调用操作系统内核准备好正确的环境。</p>
+<h4 id="启动内核Kernel"><a href="#启动内核Kernel" class="headerlink" title="启动内核Kernel"></a>启动内核Kernel</h4><p> Linux系统启动主要分为三个阶段：第一个阶段是自解压过程，第二个是设置ARM处理器的工作模式、设置一级页表等，第三个阶段主要是C代码，包括Android的初始化的全部工作。</p>
+<p>内核解压缩完成后，通过执行文件<code>head.S</code>、<code>head-common.S</code> 的汇编代码，查找处理器类型和机器码类型来调用相应的初始化函数，然后进入内核入口函数 <code>start_kernel()</code> 开始之后的内核初始化工作，主要是与硬件平台的相关初始化工作。在完成一系列的与内核相关的初始后，调用 <code>rest_init()</code> 函数来进行最后的初始化并创建第一个用户进程 init 进程，由此进入用户态进程。Linux内核启动的最后一个阶段就是挂载根文件系统，因为启动第一个init进程，必须以根文件系统为载体。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">//kernel的入口函数</span></span><br><span class="line"><span class="function">asmlinkage __visible <span class="keyword">void</span> __init <span class="title">start_kernel</span><span class="params">(<span class="keyword">void</span>)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  rest_init();</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//开启init进程</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> noinline <span class="keyword">void</span> __init_refok <span class="title">rest_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">//kernel_init函数在kernel线程中运行</span></span><br><span class="line">  kernel_thread(kernel_init, <span class="literal">NULL</span>, CLONE_FS);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//内核初始化</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> __ref <span class="title">kernel_init</span><span class="params">(<span class="keyword">void</span> *unused)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">//从下面的路径中找到init进程的可执行文件，</span></span><br><span class="line">  <span class="comment">//并开启用户态的init进程，由内核态进程跳转到用户态进程</span></span><br><span class="line">  <span class="keyword">if</span> (!try_to_run_init_process(<span class="string">"/sbin/init"</span>) || </span><br><span class="line">      !try_to_run_init_process(<span class="string">"/etc/init"</span>) ||</span><br><span class="line">      !try_to_run_init_process(<span class="string">"/bin/init"</span>) ||</span><br><span class="line">      !try_to_run_init_process(<span class="string">"/bin/sh"</span>))</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  panic(<span class="string">"No working init found.  Try passing init= option to kernel. "</span></span><br><span class="line">      <span class="string">"See Linux Documentation/init.txt for guidance."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内核启动时，会设置缓存、被保护存储器、计划列表，加载驱动。当内核完成系统设置，它首先在系统文件中寻找”init”文件，然后启动第一个用户空间进程init进程。</p>
 <ul>
-<li>Boot ROM: 当手机处于关机状态时，长按Power键开机，引导芯片开始从固化在<code>ROM</code>里的预设代码开始执行，然后加载引导程序到<code>RAM</code>；</li>
-<li>Boot Loader：这是启动Android系统之前的引导程序，主要是检查RAM，初始化硬件参数等功能。</li>
+<li>启动 Kernel 的 swapper 进程(pid=0)：该进程又称为 idle 进程，系统初始化过程 Kernel 由无到有开创的第一个进程, 用于初始化进程管理、内存管理，加载Display,Camera Driver，Binder Driver等相关工作；</li>
+<li>启动 kthreadd 进程（pid=2）：是 Linux 系统的内核进程，会创建内核工作线程 kworkder，软中断线程ksoftirqd，thermal 等内核守护进程。kthreadd 进程是所有内核进程的鼻祖。</li>
 </ul>
-<h4 id="Kernel"><a href="#Kernel" class="headerlink" title="Kernel"></a>Kernel</h4><h4 id="init进程"><a href="#init进程" class="headerlink" title="init进程"></a>init进程</h4><h4 id="ServiceManager"><a href="#ServiceManager" class="headerlink" title="ServiceManager"></a>ServiceManager</h4><h4 id="Zygote"><a href="#Zygote" class="headerlink" title="Zygote"></a>Zygote</h4><h4 id="SystemServer"><a href="#SystemServer" class="headerlink" title="SystemServer"></a>SystemServer</h4><h4 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h4><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+<h4 id="启动init进程"><a href="#启动init进程" class="headerlink" title="启动init进程"></a>启动init进程</h4><p>Kernel 启动过程会创建 init 进程(pid=1)，是用户空间的第一个进程，是所有用户空间的鼻祖。init 进程会启动servicemanager(binder服务管家)，Zygote 进程(Java进程的鼻祖)。Zygote 进程会创建  system_server 进程以及各种app进程，下图是这几个系统重量级进程之间的层级关系：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gi4jgw3dqqj30u00i2aau.jpg" alt=""></p>
+<p>Kernel 启动后会调用init进程的main()方法，init的源码位于<code>system/core/init</code>包下，init 进程对应可执行程序的源文件为<code>system/core/init/main.cpp</code>。(基于Android 10.0的源码剖析)</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> android::init;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> __has_feature(address_sanitizer)</span></span><br><span class="line">    __asan_set_error_report_callback(AsanReportCallback);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(basename(argv[<span class="number">0</span>]), <span class="string">"ueventd"</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> ueventd_main(argc, argv);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc &gt; <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">1</span>], <span class="string">"subcontext"</span>)) &#123;</span><br><span class="line">            android::base::InitLogging(argv, &amp;android::base::KernelLogger);</span><br><span class="line">            <span class="keyword">const</span> BuiltinFunctionMap function_map;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> SubcontextMain(argc, argv, &amp;function_map);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">1</span>], <span class="string">"selinux_setup"</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> SetupSelinux(argv);<span class="comment">//对SELinux进行初始化</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">1</span>], <span class="string">"second_stage"</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> SecondStageMain(argc, argv);<span class="comment">//第二阶段</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> FirstStageMain(argc, argv); <span class="comment">//第一阶段</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>FirstStageMain的工作：</p>
+<ol>
+<li>处理init进程挂掉的情况</li>
+<li>设置用户组，挂载相关系统文件</li>
+<li>根据<code>/force_debuggable</code>文件来判断是否允许adb root指令</li>
+<li>找到init的二进制文件目录，通过execv来启动init进程</li>
+</ol>
+<p>SecondStageMain的主要工作：</p>
+<ol>
+<li>使用epoll对init子进程的信号进行监听</li>
+<li>初始化系统属性，使用mmap共享内存，”/dev/<strong>properties</strong>/property_info” （重要）</li>
+<li>开启属性服务，并注册到epoll中（重要）</li>
+<li>加载系统启动脚本”/init.rc”</li>
+<li>解析启动脚本，启动相关服务</li>
+</ol>
+<p>init的主要工作：</p>
+<blockquote>
+<ul>
+<li>first stage 初始化环境变量和各种文件系统目录，klog初始化等</li>
+<li>selinux相关初始化完成，然后切换second stage 重启init进程</li>
+<li>属性服务初始化，将各种系统属性默认值填充到属性Map中</li>
+<li>创建epoll描述符结合注册socket监听，处理显示启动进程和挂掉的子进程重启</li>
+<li>解析init.rc。把各种action、service等解析出来的填充到相应链表容器管理</li>
+<li>有序将early-init、init等各种cmd加入到执行队列action_queue链表中</li>
+<li>进入while()循环依次取出执行队列action_queue中的command执行，fork包括app_process在内的各种进程，epoll阻塞监听处理来自挂掉的子进程的消息，根据设定策略restart子进程。</li>
+</ul>
+</blockquote>
+<h5 id="ServiceManager"><a href="#ServiceManager" class="headerlink" title="ServiceManager"></a>ServiceManager</h5><p>servicemanager 进程是由 init 进程通过解析 init.rc 文件来启动的。servicemanager 进程对应可执行程序的源文件为 <code>framework/native/cmds/servicemanager/service_manager.c</code>，简化后的代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">binder_state</span> *<span class="title">bs</span>;</span></span><br><span class="line">    <span class="comment">// 打开binder驱动，申请 128k 字节大小的内存空间</span></span><br><span class="line">    bs = binder_open(<span class="number">128</span>*<span class="number">1024</span>);</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 成为上下文管理者</span></span><br><span class="line">    <span class="keyword">if</span> (binder_become_context_manager(bs)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 验证 selinux 权限，判断进程是否有权注册或查看指定服务</span></span><br><span class="line">    selinux_enabled = is_selinux_enabled();</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 进入无限循环，处理 client 端发来的请求 </span></span><br><span class="line">    binder_loop(bs, svcmgr_handler);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里重点关注两点，首先，在申请了一块大小为 128k 的内存空间并验证 selinux 权限后，接着调用 framework/native/cmds/servicemanager/binder.c 中的 binder_become_context_manager 方法：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">binder_become_context_manager</span><span class="params">(struct binder_state *bs)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 通过ioctl，发送 BINDER_SET_CONTEXT_MGR 指令</span></span><br><span class="line">    <span class="keyword">return</span> ioctl(bs-&gt;fd, BINDER_SET_CONTEXT_MGR, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，调用 binder_loop 方法进入循环来处理 client 发来的请求，注意第二个参数是一个方法体，用于处理各种状态回调：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">svcmgr_handler</span><span class="params">(...)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span>(txn-&gt;code) &#123;</span><br><span class="line">    <span class="keyword">case</span> SVC_MGR_GET_SERVICE:</span><br><span class="line">    <span class="keyword">case</span> SVC_MGR_CHECK_SERVICE: </span><br><span class="line">        <span class="comment">// 获取服务名</span></span><br><span class="line">        s = bio_get_string16(msg, &amp;len); </span><br><span class="line">        <span class="comment">// 根据名称查找相应服务</span></span><br><span class="line">        handle = do_find_service(bs, s, len, txn-&gt;sender_euid, txn-&gt;sender_pid);</span><br><span class="line">        bio_put_ref(reply, handle);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> SVC_MGR_ADD_SERVICE: </span><br><span class="line">        <span class="comment">// 获取服务名</span></span><br><span class="line">        s = bio_get_string16(msg, &amp;len);</span><br><span class="line">        handle = bio_get_ref(msg);</span><br><span class="line">        allow_isolated = bio_get_uint32(msg) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">         <span class="comment">// 注册指定服务</span></span><br><span class="line">        <span class="keyword">if</span> (do_add_service(bs, s, len, handle, txn-&gt;sender_euid,</span><br><span class="line">            allow_isolated, txn-&gt;sender_pid))</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>servicemanager 进程在启动过程的工作内容如下：</p>
+<ol>
+<li>调用 binder_open 方法打开 Binder 驱动，并申请分配一块 128k 的内存空间</li>
+<li>调用 binder_become_context_manager 方法发送 BINDER_SET_CONTEXT_MGR 给 Binder 驱动，使自己成为上下文管理者</li>
+<li>验证 selinux 权限，判断进程是否有注册或查看指定服务的权限</li>
+<li>调用 binder_loop 方法进入循环状态，等待 Client 请求</li>
+<li>根据服务名称注册服务·</li>
+<li>接收 Binder 死亡通知</li>
+</ol>
+<h5 id="Zygote"><a href="#Zygote" class="headerlink" title="Zygote"></a>Zygote</h5><p>由 init 进程通过解析 init.rc 文件来启动的，zygote 进程对应的可执行程序的源文件为<code>frameworks/base/cmds/app_process/app_main.cpp</code>，它的 main 方法如下：</p>
+<h5 id="SystemServer"><a href="#SystemServer" class="headerlink" title="SystemServer"></a>SystemServer</h5><h5 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h5><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>最后，从整体上来看 Android 系统的启动流程：</p>
+<ol>
+<li>按下电源，固化在 ROM 中预定位置的 Bootloader 将会被加载到内存中</li>
+<li>Bootloader 初始化完软硬件环境后将 Linux 内核启动起来</li>
+<li>Linux 内核启动时会做设置缓存、被保护存储器、计划列表和加载驱动等一些列操作，内核启动完成后会启动 init 进程</li>
+<li>init 进程会初始化并启动属性服务，并且解析并执行所有 init.rc 文件</li>
+<li>init 通过执行特定的 init.rc 文件启动 servermanager 进程，servermanager 被启动后会向 Binder 驱动发送命令让自己成为守护进程并管理所有上下文</li>
+<li>init 通过解析 init.rc 文件启动 zygote 进程</li>
+<li>zygote 进程启动的过程会创建 DVM 并为其注册 JNI 函数，然后创建服务端 Socket、启动 system_server 进程</li>
+<li>启动 system_server 进程的过程会创建 Binder 线程池使其具有 IPC 能力，然后启动 AMS 等各种系统服务</li>
+<li>AMS 启动 Launcher，Launcher 被启动后会将已安装应用的图标显示在界面上</li>
+</ol>
+]]></content>
       <categories>
         <category>Android进阶</category>
       </categories>
