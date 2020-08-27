@@ -2043,7 +2043,25 @@
 <p>3、有了上述的JavaVM接口和JNIEnv接口之后，就可以在Zygote进程中加载指定的class了。</p>
 </blockquote>
 <p>通过 JNI 的方式进入<code>frameworks/base/core/java/com/android/internal/os/ZygoteInit.java</code>：</p>
-<h5 id="SystemServer"><a href="#SystemServer" class="headerlink" title="SystemServer"></a>SystemServer</h5><h5 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h5><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>最后，从整体上来看 Android 系统的启动流程：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>zygote 进程的任务分别是：</p>
+<ol>
+<li>创建 AppRuntime（继承自 AndroidRuntime）， 并调用它的 <strong>start</strong> 方法</li>
+<li>调用 AndroidRuntime 的 <strong>startVM()</strong> 方法创建 DVM（Dalvik Virtual Machine），并调用 <strong>startReg()</strong> 方法为 DVM 注册 JNI</li>
+<li>通过 JNI 调用 <strong>ZygoteInit.main()</strong> 方法，第一次进入 Java 的世界</li>
+<li>调用 <strong>registerZygoteSocket()</strong> 函数建立 Socket 通道，使 zygote 进程成为 Socket 服务端，并通过 <strong>runSelectLoop()</strong> 函数等待 ActivityManagerService 发送请求创建新的应用程序进程</li>
+<li>调用 <strong>startSystemServer()</strong> 函数 fock 出 system_server 进程</li>
+</ol>
+<h5 id="SystemServer"><a href="#SystemServer" class="headerlink" title="SystemServer"></a>SystemServer</h5><p>system_server 进程在启动过程中完成的工作分别是:</p>
+<ol>
+<li>启动 Binder 线程池，使进程可以通过 Binder 与其他进程进程通信</li>
+<li>创建 SystemServiceManager</li>
+<li>使用 SystemServiceManager 对各种系统服务进行创建、启动和生命周期管理</li>
+</ol>
+<h5 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h5><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>最后，从整体上来看 Android 系统的启动流程：</p>
 <ol>
 <li>按下电源，固化在 ROM 中预定位置的 Bootloader 将会被加载到内存中</li>
 <li>Bootloader 初始化完软硬件环境后将 Linux 内核启动起来</li>
