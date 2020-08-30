@@ -2246,7 +2246,7 @@
 <h4 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h4><p>在上面讲解启动各种服务时候，讲解到在<code>SystemServer.java</code>的<code>startOtherServices()</code>方法里面调用 <code>mActivityManagerService.systemReady()</code>方法如下：</p>
 <h5 id="SystemServer-startOtherServices"><a href="#SystemServer-startOtherServices" class="headerlink" title="SystemServer.startOtherServices"></a>SystemServer.startOtherServices</h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startOtherServices</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 调用 AMS 的 systemReady 方法</span></span><br><span class="line">    mActivityManagerService.systemReady(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="ActivityManagerService-systemReady"><a href="#ActivityManagerService-systemReady" class="headerlink" title="ActivityManagerService. systemReady"></a>ActivityManagerService. systemReady</h5><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>最后，从整体上来看 Android 系统的启动流程：</p>
+<h5 id="ActivityManagerService-systemReady"><a href="#ActivityManagerService-systemReady" class="headerlink" title="ActivityManagerService. systemReady"></a>ActivityManagerService. systemReady</h5><h5 id="startHomeActivityLocked-int-String-方法解析"><a href="#startHomeActivityLocked-int-String-方法解析" class="headerlink" title="startHomeActivityLocked(int,String)方法解析"></a>startHomeActivityLocked(int,String)方法解析</h5><h5 id="getHomeIntent"><a href="#getHomeIntent" class="headerlink" title="getHomeIntent()"></a>getHomeIntent()</h5><h5 id="startHomeActivity-Intent-ActivityInfo-String"><a href="#startHomeActivity-Intent-ActivityInfo-String" class="headerlink" title="startHomeActivity(Intent,ActivityInfo,String)"></a>startHomeActivity(Intent,ActivityInfo,String)</h5><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>最后，从整体上来看 Android 系统的启动流程：</p>
 <ol>
 <li>按下电源，固化在 ROM 中预定位置的 Bootloader 将会被加载到内存中</li>
 <li>Bootloader 初始化完软硬件环境后将 Linux 内核启动起来</li>
@@ -2258,6 +2258,12 @@
 <li>启动 system_server 进程的过程会创建 Binder 线程池使其具有 IPC 能力，然后启动 AMS 等各种系统服务</li>
 <li>AMS 启动 Launcher，Launcher 被启动后会将已安装应用的图标显示在界面上</li>
 </ol>
+<p>引用文章：</p>
+<blockquote>
+<p><a href="https://www.jianshu.com/p/9f978d57c683" target="_blank" rel="noopener">Android启动流程之bootloader引导与Linux启动</a></p>
+<p><a href="https://juejin.im/post/6844903958410952717#heading-6" target="_blank" rel="noopener">Android10.0系统启动流程（三）：Zygote</a></p>
+<p><a href="http://gityuan.com/2016/02/01/android-booting/" target="_blank" rel="noopener">Android系统启动-综述</a></p>
+</blockquote>
 ]]></content>
       <categories>
         <category>Android进阶</category>
