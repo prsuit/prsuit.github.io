@@ -647,15 +647,19 @@
 <ol>
 <li>调用createSystemContext()来创建系统上下文</li>
 <li>创建SystemServiceManager</li>
-<li>启动各种服务</li>
+<li>启动各种系统服务</li>
 </ol>
+<p>Todo:补充时序图</p>
 <p>system_server 进程在启动过程中完成的工作分别是:</p>
 <ol>
 <li>启动 Binder 线程池，使进程可以通过 Binder 与其他进程进程通信</li>
 <li>创建 SystemServiceManager</li>
 <li>使用 SystemServiceManager 对各种系统服务进行创建、启动和生命周期管理</li>
 </ol>
-<h4 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h4><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>最后，从整体上来看 Android 系统的启动流程：</p>
+<h4 id="Launcher"><a href="#Launcher" class="headerlink" title="Launcher"></a>Launcher</h4><p>在上面讲解启动各种服务时候，讲解到在<code>SystemServer.java</code>的<code>startOtherServices()</code>方法里面调用 <code>mActivityManagerService.systemReady()</code>方法如下：</p>
+<h5 id="SystemServer-startOtherServices"><a href="#SystemServer-startOtherServices" class="headerlink" title="SystemServer.startOtherServices"></a>SystemServer.startOtherServices</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startOtherServices</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 调用 AMS 的 systemReady 方法</span></span><br><span class="line">    mActivityManagerService.systemReady(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="ActivityManagerService-systemReady"><a href="#ActivityManagerService-systemReady" class="headerlink" title="ActivityManagerService. systemReady"></a>ActivityManagerService. systemReady</h5><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>最后，从整体上来看 Android 系统的启动流程：</p>
 <ol>
 <li>按下电源，固化在 ROM 中预定位置的 Bootloader 将会被加载到内存中</li>
 <li>Bootloader 初始化完软硬件环境后将 Linux 内核启动起来</li>
