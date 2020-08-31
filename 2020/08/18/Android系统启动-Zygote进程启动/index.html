@@ -22,20 +22,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言目录总结">
+  <meta name="description" content="前言目录概述Zygote是由init进程通过解析init.zygoteXX.rc文件而创建的，zygote所对应的可执行程序app_process，所对应的源文件是app_main.cpp，进程名为zygote。 Zygote启动过程app_process&#x2F;app_main.cpp.mainZygote 入口函数在frameworks&#x2F;base&#x2F;cmds&#x2F;app_process&#x2F;app_main.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Activity启动过程">
-<meta property="og:url" content="http://yoursite.com/2020/08/14/Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:title" content="Android系统启动-Zygote进程启动">
+<meta property="og:url" content="http://yoursite.com/2020/08/18/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-Zygote%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/index.html">
 <meta property="og:site_name" content="SongHang&#39;s Blog">
-<meta property="og:description" content="前言目录总结">
+<meta property="og:description" content="前言目录概述Zygote是由init进程通过解析init.zygoteXX.rc文件而创建的，zygote所对应的可执行程序app_process，所对应的源文件是app_main.cpp，进程名为zygote。 Zygote启动过程app_process&#x2F;app_main.cpp.mainZygote 入口函数在frameworks&#x2F;base&#x2F;cmds&#x2F;app_process&#x2F;app_main.">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-08-14T13:22:30.000Z">
-<meta property="article:modified_time" content="2020-08-31T07:10:36.146Z">
+<meta property="article:published_time" content="2020-08-18T13:23:19.000Z">
+<meta property="article:modified_time" content="2020-08-31T12:05:58.298Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android源码分析">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/08/14/Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/">
+<link rel="canonical" href="http://yoursite.com/2020/08/18/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-Zygote%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/">
 
 
 <script class="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>Activity启动过程 | SongHang's Blog</title>
+  <title>Android系统启动-Zygote进程启动 | SongHang's Blog</title>
   
 
 
@@ -209,7 +209,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">2.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Zygote启动过程"><span class="nav-number">2.2.</span> <span class="nav-text">Zygote启动过程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#app-process-app-main-cpp-main"><span class="nav-number">2.2.1.</span> <span class="nav-text">app_process&#x2F;app_main.cpp.main</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AndroidRuntime-cpp-start"><span class="nav-number">2.2.2.</span> <span class="nav-text">AndroidRuntime.cpp.start</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ZygoteInit-main"><span class="nav-number">2.2.3.</span> <span class="nav-text">ZygoteInit.main</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ZygoteInit-gcAndFinalize"><span class="nav-number">2.2.4.</span> <span class="nav-text">ZygoteInit.gcAndFinalize</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ZygoteInit-zygoteServer"><span class="nav-number">2.2.5.</span> <span class="nav-text">ZygoteInit.zygoteServer</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -273,7 +273,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/14/Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/18/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-Zygote%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -286,7 +286,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Activity启动过程
+          Android系统启动-Zygote进程启动
         </h1>
 
         <div class="post-meta">
@@ -296,7 +296,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-08-14 21:22:30" itemprop="dateCreated datePublished" datetime="2020-08-14T21:22:30+08:00">2020-08-14</time>
+              <time title="Created: 2020-08-18 21:23:19" itemprop="dateCreated datePublished" datetime="2020-08-18T21:23:19+08:00">2020-08-18</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,7 +309,7 @@
             </span>
 
           
-            <span id="/2020/08/14/Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/" class="post-meta-item leancloud_visitors" data-flag-title="Activity启动过程" title="Views">
+            <span id="/2020/08/18/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-Zygote%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/" class="post-meta-item leancloud_visitors" data-flag-title="Android系统启动-Zygote进程启动" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -326,7 +326,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>Zygote是由<a href="http://gityuan.com/2016/02/05/android-init/" target="_blank" rel="noopener">init进程</a>通过解析init.zygoteXX.rc文件而创建的，zygote所对应的可执行程序app_process，所对应的源文件是app_main.cpp，进程名为zygote。</p>
+<h4 id="Zygote启动过程"><a href="#Zygote启动过程" class="headerlink" title="Zygote启动过程"></a>Zygote启动过程</h4><h5 id="app-process-app-main-cpp-main"><a href="#app-process-app-main-cpp-main" class="headerlink" title="app_process/app_main.cpp.main"></a>app_process/app_main.cpp.main</h5><p>Zygote 入口函数在<code>frameworks/base/cmds/app_process/app_main.cpp</code>的 main 方法：</p>
+<h5 id="AndroidRuntime-cpp-start"><a href="#AndroidRuntime-cpp-start" class="headerlink" title="AndroidRuntime.cpp.start"></a>AndroidRuntime.cpp.start</h5><p>AndroidRuntime 类<code>frameworks/base/core/jni/AndroidRuntime.cpp</code> 的 start 方法：</p>
+<h5 id="ZygoteInit-main"><a href="#ZygoteInit-main" class="headerlink" title="ZygoteInit.main"></a>ZygoteInit.main</h5><p>通过 JNI 的方式进入Java层<code>frameworks/base/core/java/com/android/internal/os/ZygoteInit.java</code> 的main方法：</p>
+<h5 id="ZygoteInit-gcAndFinalize"><a href="#ZygoteInit-gcAndFinalize" class="headerlink" title="ZygoteInit.gcAndFinalize"></a>ZygoteInit.gcAndFinalize</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; ZygoteInit.java</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">gcAndFinalize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ZygoteHooks.gcAndFinalize();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&gt; ZygoteHooks.java</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">gcAndFinalize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> VMRuntime runtime = VMRuntime.getRuntime();</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* runFinalizationSync() lets finalizers be called in Zygote,</span></span><br><span class="line"><span class="comment">         * which doesn't have a HeapWorker thread.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        System.gc();</span><br><span class="line">        runtime.runFinalizationSync();</span><br><span class="line">        System.gc();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="ZygoteInit-zygoteServer"><a href="#ZygoteInit-zygoteServer" class="headerlink" title="ZygoteInit.zygoteServer"></a>ZygoteInit.zygoteServer</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">zygoteServer = <span class="keyword">new</span> ZygoteServer(isPrimaryZygote);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p><strong>ZygoteServer</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ZygoteServer</span> </span>&#123;   </span><br><span class="line">  ...</span><br><span class="line">    </span><br><span class="line">  ZygoteServer(<span class="keyword">boolean</span> isPrimaryZygote) &#123;</span><br><span class="line">        mUsapPoolEventFD = Zygote.getUsapPoolEventFD();</span><br><span class="line">        <span class="keyword">if</span> (isPrimaryZygote) &#123;</span><br><span class="line">            mZygoteSocket = Zygote.createManagedSocketFromInitSocket(Zygote.PRIMARY_SOCKET_NAME);</span><br><span class="line">            mUsapPoolSocket =</span><br><span class="line">                    Zygote.createManagedSocketFromInitSocket(</span><br><span class="line">                            Zygote.USAP_POOL_PRIMARY_SOCKET_NAME);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mZygoteSocket = Zygote.createManagedSocketFromInitSocket(Zygote.SECONDARY_SOCKET_NAME);</span><br><span class="line">            mUsapPoolSocket =</span><br><span class="line">                    Zygote.createManagedSocketFromInitSocket(</span><br><span class="line">                            Zygote.USAP_POOL_SECONDARY_SOCKET_NAME);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        fetchUsapPoolPolicyProps();</span><br><span class="line">        mUsapPoolSupported = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
     </div>
 
     
@@ -344,12 +357,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/08/12/Binder%E6%9C%BA%E5%88%B6/" rel="prev" title="Binder机制">
-      <i class="fa fa-chevron-left"></i> Binder机制
+    <a href="/2020/08/16/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-Init%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/" rel="prev" title="Android系统启动-Init进程启动">
+      <i class="fa fa-chevron-left"></i> Android系统启动-Init进程启动
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/08/14/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-%E7%BB%BC%E8%BF%B0/" rel="next" title="Android系统启动-综述">
-      Android系统启动-综述 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/08/20/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-SystemServer%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/" rel="next" title="Android系统启动-SystemServer进程启动">
+      Android系统启动-SystemServer进程启动 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
