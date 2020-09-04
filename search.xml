@@ -1895,7 +1895,7 @@
   </entry>
   <entry>
     <title>Activity启动过程</title>
-    <url>/2020/08/14/Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/</url>
+    <url>/2020/08/24/Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Activity启动流程。(基于Android 10.0的源码)</p>
 <a id="more"></a>
 
