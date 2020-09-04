@@ -30,7 +30,7 @@
 <meta property="og:description" content="前言本文是介绍Activity启动流程。(基于Android 10.0的源码)">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-08-14T13:22:30.000Z">
-<meta property="article:modified_time" content="2020-09-03T15:38:23.161Z">
+<meta property="article:modified_time" content="2020-09-04T15:26:28.831Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Android源码分析">
 <meta name="twitter:card" content="summary">
@@ -209,7 +209,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#整体流程"><span class="nav-number">2.1.</span> <span class="nav-text">整体流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -329,7 +329,16 @@
         <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Activity启动流程。(基于Android 10.0的源码)</p>
 <a id="more"></a>
 
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><ol>
+<li>Launcher通知AMS启动淘宝APP的MainActivity，也就是清单文件设置启动的Activity。</li>
+<li>AMS记录要启动的Activity信息，并且通知Launcher进入pause状态。</li>
+<li>Launcher进入pause状态后，通知AMS已经paused了，可以启动淘宝了。</li>
+<li>淘宝app未开启过，所以AMS启动新的进程，并且在新进程中创建ActivityThread对象，执行其中的main函数方法。</li>
+<li>淘宝app主线程启动完毕后通知AMS，并传入applicationThread以便通讯。</li>
+<li>AMS通知淘宝绑定Application并启动MainActivity。</li>
+<li>淘宝启动MainActivitiy，并且创建和关联Context,最后调用onCreate方法。</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
     </div>
 
     
