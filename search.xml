@@ -1908,7 +1908,11 @@
 <li>AMS通知淘宝绑定Application并启动MainActivity。</li>
 <li>淘宝启动MainActivitiy，并且创建和关联Context,最后调用onCreate方法。</li>
 </ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>引用文章：</p>
+<blockquote>
+<p><a href="https://www.jianshu.com/p/e3c89f62d49f" target="_blank" rel="noopener">Activity的启动过程详解（基于10.0源码）</a></p>
+</blockquote>
+]]></content>
       <categories>
         <category>Android源码分析</category>
       </categories>
