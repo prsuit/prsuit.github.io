@@ -2732,4 +2732,148 @@
         <tag>Android源码分析</tag>
       </tags>
   </entry>
+  <entry>
+    <title>AS常用快捷键汇总Mac</title>
+    <url>/2021/10/27/AS%E5%B8%B8%E7%94%A8%E5%BF%AB%E6%8D%B7%E9%94%AE%E6%B1%87%E6%80%BBMac/</url>
+    <content><![CDATA[<h3 id="mac上按键符号"><a href="#mac上按键符号" class="headerlink" title="mac上按键符号"></a>mac上按键符号</h3><h4 id="⌥-option-alt"><a href="#⌥-option-alt" class="headerlink" title="⌥ : option / alt"></a>⌥ : <code>option / alt</code></h4><h4 id="⇧-shift"><a href="#⇧-shift" class="headerlink" title="⇧ : shift"></a>⇧ : <code>shift</code></h4><h4 id="⌃-control"><a href="#⌃-control" class="headerlink" title="⌃ : control"></a>⌃ : <code>control</code></h4><h4 id="⌘-command"><a href="#⌘-command" class="headerlink" title="⌘ : command"></a>⌘ : <code>command</code></h4><h3 id="（一）查找-查看相关"><a href="#（一）查找-查看相关" class="headerlink" title="（一）查找/查看相关"></a>（一）查找/查看相关</h3><p>搜索任意内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">双击 sft</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>当前文件查找/替换</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + F &#x2F; cmd + R</span><br><span class="line">cmd + G  跳到下一个高亮的变量</span><br><span class="line">sft + cmd + G  跳到上一个高亮的变量</span><br></pre></td></tr></table></figure>
+
+<p>全局查找/替换</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + F&#x2F;R</span><br></pre></td></tr></table></figure>
+
+<p>全局搜索类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + O</span><br></pre></td></tr></table></figure>
+
+<p>全局搜索文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + O</span><br></pre></td></tr></table></figure>
+
+<p>全局搜索类/方法/参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + cmd + O</span><br></pre></td></tr></table></figure>
+
+<p>打开最近访问的文件列表</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + E</span><br></pre></td></tr></table></figure>
+
+<p>类/方法在全局项目中引用情况</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + fn + F7&#x2F; cmd + 鼠标点击</span><br></pre></td></tr></table></figure>
+
+<p>类/方法在当前文件中引用情况</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + fn + F7</span><br></pre></td></tr></table></figure>
+
+<p>方法被调用层级结构</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ctr + opt + H</span><br></pre></td></tr></table></figure>
+
+<p>查看接口的实现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + cmd + B</span><br></pre></td></tr></table></figure>
+
+<p>跳转至超类的方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + U</span><br></pre></td></tr></table></figure>
+
+<p>跳转至第几行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + L</span><br></pre></td></tr></table></figure>
+
+<p>返回到上次编辑位置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + [&#x2F;]</span><br><span class="line">opt + cmd + ⬅️&#x2F;➡️</span><br></pre></td></tr></table></figure>
+
+<p>当前编辑的文件中结构快速导航</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + fn + F12</span><br></pre></td></tr></table></figure>
+
+<p>列出函数方法一系列的有效参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + P</span><br></pre></td></tr></table></figure>
+
+<p>跳转至错误或警告</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fn + F2</span><br></pre></td></tr></table></figure>
+
+<p>查看类／方法的注释文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fn + F1</span><br></pre></td></tr></table></figure>
+
+<h3 id="（二）控制操作相关"><a href="#（二）控制操作相关" class="headerlink" title="（二）控制操作相关"></a>（二）控制操作相关</h3><p>Surround with快速调出if,for,try…catch,while等环绕代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + cmd + T</span><br></pre></td></tr></table></figure>
+
+<p>快速生成模版代码块，如if,while,return</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + J</span><br></pre></td></tr></table></figure>
+
+<p>快速生成getter／setter方法，构造方法，toString()方法等</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + N</span><br></pre></td></tr></table></figure>
+
+<p>行尾自动添加分号，if后面自动加“(){ }”</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + enter</span><br></pre></td></tr></table></figure>
+
+<p>引入重写父类的方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ctr + O</span><br></pre></td></tr></table></figure>
+
+<p>引入接口或抽象类方法的实现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ctr + I</span><br></pre></td></tr></table></figure>
+
+<p>将最近使用的剪贴板内容选择插入到文本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + V</span><br></pre></td></tr></table></figure>
+
+<p>单行注释与取消注释，注释效果 //…</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + &#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>多行注释与取消注释，注释效果 /<em>…</em>/</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + cmd + &#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>上下移动代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + sft + up&#x2F;down</span><br></pre></td></tr></table></figure>
+
+<p>上下代码行换位</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + up&#x2F;down</span><br></pre></td></tr></table></figure>
+
+<p>切换大小写</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + U</span><br></pre></td></tr></table></figure>
+
+<p>切换文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ctr + tab</span><br></pre></td></tr></table></figure>
+
+<p>选择区域</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + up&#x2F;down</span><br></pre></td></tr></table></figure>
+
+<p>局部代码块展开/收缩</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + +&#x2F;-</span><br></pre></td></tr></table></figure>
+
+<p>全部代码块展开/收缩</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + +&#x2F;-</span><br></pre></td></tr></table></figure>
+
+<p>撤销/取消撤销</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + Z &#x2F; sft + cmd + Z</span><br></pre></td></tr></table></figure>
+
+<p>删除行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + X&#x2F;delete</span><br></pre></td></tr></table></figure>
+
+<p>复制行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + D</span><br></pre></td></tr></table></figure>
+
+<p>合并行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + ctr + J</span><br></pre></td></tr></table></figure>
+
+<p>列编辑</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alt + 鼠标框选</span><br></pre></td></tr></table></figure>
+
+<p>格式化代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + cmd + L</span><br></pre></td></tr></table></figure>
+
+<p>清除无效包引用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + ctr + O</span><br></pre></td></tr></table></figure>
+
+<p>打开设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + ,</span><br></pre></td></tr></table></figure>
+
+<p>隐藏窗口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + esc</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="（三）代码重构相关"><a href="#（三）代码重构相关" class="headerlink" title="（三）代码重构相关"></a>（三）代码重构相关</h3><h3 id="（四）编译运行调试"><a href="#（四）编译运行调试" class="headerlink" title="（四）编译运行调试"></a>（四）编译运行调试</h3><h3 id="（五）版本控制"><a href="#（五）版本控制" class="headerlink" title="（五）版本控制"></a>（五）版本控制</h3>]]></content>
+      <categories>
+        <category>工具系列</category>
+      </categories>
+      <tags>
+        <tag>工具系列</tag>
+      </tags>
+  </entry>
 </search>
