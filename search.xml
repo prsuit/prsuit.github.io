@@ -171,7 +171,7 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + L</span><br></pre></td></tr></table></figure>
 
 <p>返回到上次编辑位置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + [&#x2F;]</span><br><span class="line">opt + cmd + ⬅️&#x2F;➡️</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + [ &#x2F; ]</span><br><span class="line">opt + cmd + ← &#x2F; →</span><br></pre></td></tr></table></figure>
 
 <p>当前编辑的文件中结构快速导航</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + fn + F12</span><br></pre></td></tr></table></figure>
@@ -228,10 +228,10 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">opt + up&#x2F;down</span><br></pre></td></tr></table></figure>
 
 <p>局部代码块展开/收缩</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + +&#x2F;-</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + &#39;+&#39; &#x2F; &#39;-&#39;</span><br></pre></td></tr></table></figure>
 
 <p>全部代码块展开/收缩</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + +&#x2F;-</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sft + cmd + &#39;+&#39; &#x2F; &#39;-&#39;</span><br></pre></td></tr></table></figure>
 
 <p>撤销/取消撤销</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmd + Z &#x2F; sft + cmd + Z</span><br></pre></td></tr></table></figure>
