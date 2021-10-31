@@ -30,7 +30,7 @@
 <meta property="og:description" content="前言泛型（Generic）是 Java 编程语言的一个强大功能。它们提高了代码的类型安全性，在编译时可以检测到更多的错误。 目录一、为什么使用泛型泛型使在定义类、接口和方法时，使类型成为参数。与方法声明中使用的形式参数非常相似，类型形参为你提供了一种让不同的输入重用相同的代码的方法。区别在于形式参数的输入是值，而类型形参的输入是类型。 使用泛型的好处：  在编译时进行更强大的类型检查，Java 编">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-10-31T07:53:30.000Z">
-<meta property="article:modified_time" content="2021-10-31T14:54:46.866Z">
+<meta property="article:modified_time" content="2021-10-31T15:05:58.387Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -360,7 +360,7 @@
 <h3 id="四、泛型中的约束和局限性"><a href="#四、泛型中的约束和局限性" class="headerlink" title="四、泛型中的约束和局限性"></a>四、泛型中的约束和局限性</h3><ul>
 <li>无法实例化具有基本类型的泛型类型。</li>
 <li>无法创建类型参数的实例。</li>
-<li>无法声明类型为类型参数的静态字段，静态域或非泛型静态方法里不能引用类型变量。</li>
+<li>无法声明类型为类型参数的静态字段，静态域或非泛型静态方法里不能引用类型变量。(对象创建时，静态代码执行会先于对象的构造方法，无法获知具体类型)</li>
 <li>无法将Casts或instanceof与参数化类型一起使用。</li>
 <li>无法创建参数化类型的数组。</li>
 <li>无法创建，捕获或抛出参数化类型的对象。 </li>
