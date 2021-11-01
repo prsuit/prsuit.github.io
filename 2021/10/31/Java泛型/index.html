@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gvzne3cxz7g309e06974c.gif">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gvzo7ls4d5g3043038wec.gif">
 <meta property="article:published_time" content="2021-10-31T07:53:30.000Z">
-<meta property="article:modified_time" content="2021-11-01T09:38:16.054Z">
+<meta property="article:modified_time" content="2021-11-01T09:52:44.607Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -400,9 +400,9 @@
 <li>如有必要，插入类型转换以保持类型安全。</li>
 <li>生成桥接方法以保留继承泛型类型中的多态性。</li>
 </ul>
-<p>类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。</p>
+<p>类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。由于JDK 5.0开始引入，为兼容之前版本采用类型擦除。</p>
 <p>在类型擦除过程中，Java 编译器将擦除所有类型形参，并在类型形参有界时将其替换为第一个边界，如果类型形参无界，则替换为 <code>Object</code>。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Java语言中的泛型，它只在程序源码中存在，在编译后的字节码文件中，就已经替换为原来的原生类型（Raw Type，也称为裸类型）了，并且在相应的地方插入了强制转型代码，因此，对于运行期的Java语言来说，ArrayList＜int＞与ArrayList＜String＞就是同一个类，所以泛型技术实际上是Java语言的一颗语法糖，Java语言中的泛型实现方法称为类型擦除，基于这种方法实现的泛型称为伪泛型。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Java语言中的泛型，它只在程序源码中存在，在编译后的字节码文件中，就已经替换为原来的原始类型（Raw Type，也称为裸类型）了，并且在相应的地方插入了强制转型代码，因此，对于运行期的Java语言来说，ArrayList＜int＞与ArrayList＜String＞就是同一个类，所以泛型技术实际上是Java语言的一颗语法糖，Java语言中的泛型实现方法称为类型擦除，基于这种方法实现的泛型称为伪泛型。</p>
 
     </div>
 
