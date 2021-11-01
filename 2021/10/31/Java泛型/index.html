@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gvzne3cxz7g309e06974c.gif">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gvzo7ls4d5g3043038wec.gif">
 <meta property="article:published_time" content="2021-10-31T07:53:30.000Z">
-<meta property="article:modified_time" content="2021-11-01T09:52:44.607Z">
+<meta property="article:modified_time" content="2021-11-01T12:11:46.572Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -212,7 +212,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、为什么使用泛型"><span class="nav-number">2.1.</span> <span class="nav-text">一、为什么使用泛型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、泛型使用"><span class="nav-number">3.</span> <span class="nav-text">二、泛型使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型类-接口"><span class="nav-number">3.1.</span> <span class="nav-text">泛型类&#x2F;接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型方法"><span class="nav-number">3.2.</span> <span class="nav-text">泛型方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、限定类型形参"><span class="nav-number">4.</span> <span class="nav-text">三、限定类型形参</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、泛型中的约束和局限性"><span class="nav-number">5.</span> <span class="nav-text">四、泛型中的约束和局限性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、泛型继承规则"><span class="nav-number">6.</span> <span class="nav-text">五、泛型继承规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六、通配符类型"><span class="nav-number">7.</span> <span class="nav-text">六、通配符类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#上界通配符"><span class="nav-number">7.1.</span> <span class="nav-text">上界通配符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PECS"><span class="nav-number">7.2.</span> <span class="nav-text">PECS</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#七、虚拟机是如何实现泛型的"><span class="nav-number">8.</span> <span class="nav-text">七、虚拟机是如何实现泛型的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#类型擦除"><span class="nav-number">8.1.</span> <span class="nav-text">类型擦除</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、为什么使用泛型"><span class="nav-number">2.1.</span> <span class="nav-text">一、为什么使用泛型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、泛型使用"><span class="nav-number">2.2.</span> <span class="nav-text">二、泛型使用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#泛型类-接口"><span class="nav-number">2.2.1.</span> <span class="nav-text">泛型类&#x2F;接口</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#泛型方法"><span class="nav-number">2.2.2.</span> <span class="nav-text">泛型方法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、限定类型形参"><span class="nav-number">2.3.</span> <span class="nav-text">三、限定类型形参</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、泛型中的约束和局限性"><span class="nav-number">2.4.</span> <span class="nav-text">四、泛型中的约束和局限性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、泛型继承规则"><span class="nav-number">2.5.</span> <span class="nav-text">五、泛型继承规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、通配符类型"><span class="nav-number">2.6.</span> <span class="nav-text">六、通配符类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#上界通配符"><span class="nav-number">2.6.1.</span> <span class="nav-text">上界通配符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PECS"><span class="nav-number">2.6.2.</span> <span class="nav-text">PECS</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#七、虚拟机是如何实现泛型的"><span class="nav-number">2.7.</span> <span class="nav-text">七、虚拟机是如何实现泛型的</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#类型擦除"><span class="nav-number">2.7.1.</span> <span class="nav-text">类型擦除</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -343,16 +343,16 @@
 </ul>
 <a id="more"></a>
 
-<h3 id="二、泛型使用"><a href="#二、泛型使用" class="headerlink" title="二、泛型使用"></a>二、泛型使用</h3><p>泛型，即“参数化类型“，将类型由原来的具体的类型参数化，定义成参数形式（类型形参），然后在使用/调用时传入具体的类型（类型实参）。在泛型使用过程中，操作的数据类型被指定为一个参数，这种参数类型可以用在类、接口和方法中，分别被称为泛型类、泛型接口、泛型方法。</p>
-<h4 id="泛型类-接口"><a href="#泛型类-接口" class="headerlink" title="泛型类/接口"></a>泛型类/接口</h4><p>在类型上参数化的泛型类或接口</p>
+<h4 id="二、泛型使用"><a href="#二、泛型使用" class="headerlink" title="二、泛型使用"></a>二、泛型使用</h4><p>泛型，即“参数化类型“，将类型由原来的具体的类型参数化，定义成参数形式（类型形参），然后在使用/调用时传入具体的类型（类型实参）。在泛型使用过程中，操作的数据类型被指定为一个参数，这种参数类型可以用在类、接口和方法中，分别被称为泛型类、泛型接口、泛型方法。</p>
+<h5 id="泛型类-接口"><a href="#泛型类-接口" class="headerlink" title="泛型类/接口"></a>泛型类/接口</h5><p>在类型上参数化的泛型类或接口</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;泛型类</span><br><span class="line">class name&lt;T1, T2, ..., Tn&gt; &#123; &#x2F;* ... *&#x2F; &#125;</span><br><span class="line">由尖括号(&lt;&gt;)分隔的类型形参部分跟在类名后面</span><br><span class="line">&#x2F;&#x2F;泛型接口</span><br><span class="line">interface name&lt;T1, T2, ..., Tn&gt; &#123; &#x2F;* ... *&#x2F; &#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h4><p>是引入自己的类型形参的方法。这类似于声明泛型类型，但类型形参的范围仅限于声明它的方法。允许使用静态和非静态泛型方法，以及泛型类构造函数。</p>
+<h5 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h5><p>是引入自己的类型形参的方法。这类似于声明泛型类型，但类型形参的范围仅限于声明它的方法。允许使用静态和非静态泛型方法，以及泛型类构造函数。</p>
 <p>泛型方法的语法包括类型形参列表，声明在尖括号内，且必须出现在方法的返回类型之前。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public &lt;T&gt; 返回类型 方法名()&#123; &#x2F;* ... *&#x2F; &#125; &lt;类型形参列表&gt; 必须在返回类型前且不能少</span><br></pre></td></tr></table></figure>
 
 <p>注：若泛型类中声明一个泛型方法，类型形参都是T，此时泛型方法定义的T是一种全新的类型，与泛型类中的T不是同一种类型，泛型类中的T只影响其内部普通方法。</p>
-<h3 id="三、限定类型形参"><a href="#三、限定类型形参" class="headerlink" title="三、限定类型形参"></a>三、限定类型形参</h3><p>有时你可能希望限制可用作参数化类型中的类型实参的类型。例如，对数字进行操作的方法可能只想接受 <code>Number</code> 或其子类的实例</p>
+<h4 id="三、限定类型形参"><a href="#三、限定类型形参" class="headerlink" title="三、限定类型形参"></a>三、限定类型形参</h4><p>有时你可能希望限制可用作参数化类型中的类型实参的类型。例如，对数字进行操作的方法可能只想接受 <code>Number</code> 或其子类的实例</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public &lt;T extends Comparable&gt; T min(T a, T b)&#123;</span><br><span class="line">if(a.compareTo(b)&gt;0) return a;else return b; &#x2F;&#x2F;确保T实现了Comparable，运算符(&gt;)仅适用于基本类型，如 short，int，double，long，float，byte 和 char。不能使用&gt;来比较对象，需限定类型形参</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>多重边界：一个类型参数可以具有多个限定:</p>
@@ -362,7 +362,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Class A &#123; &#x2F;* ... *&#x2F; &#125; </span><br><span class="line">interface B &#123; &#x2F;* ... *&#x2F; &#125; </span><br><span class="line">interface C &#123; &#x2F;* ... *&#x2F; &#125;</span><br><span class="line">class D &lt;T extends A &amp; B &amp; C&gt; &#123; &#x2F;* ... *&#x2F; &#125;</span><br></pre></td></tr></table></figure>
 
 <p>注：限定类型中，只允许有一个类，而且如果有类，这个类必须是限定列表的第一个。</p>
-<h3 id="四、泛型中的约束和局限性"><a href="#四、泛型中的约束和局限性" class="headerlink" title="四、泛型中的约束和局限性"></a>四、泛型中的约束和局限性</h3><ul>
+<h4 id="四、泛型中的约束和局限性"><a href="#四、泛型中的约束和局限性" class="headerlink" title="四、泛型中的约束和局限性"></a>四、泛型中的约束和局限性</h4><ul>
 <li>无法使用基本类型实例化泛型类型。</li>
 <li>无法创建类型形参的实例。</li>
 <li>无法声明类型为类型参数的静态字段，静态域或非泛型静态方法里不能引用类型变量。(对象创建时，静态代码执行会先于对象的构造方法，无法获知具体类型)</li>
@@ -371,30 +371,30 @@
 <li>无法创建，捕获或抛出参数化类型的对象，泛型类不能直接或间接地继承 <code>Throwable</code>/<code>Exception</code> 类</li>
 <li>无法重载每个重载的形式参数类型都擦除为相同原始类型的方法。</li>
 </ul>
-<h3 id="五、泛型继承规则"><a href="#五、泛型继承规则" class="headerlink" title="五、泛型继承规则"></a>五、泛型继承规则</h3><p>给定两种具体类型 <code>A</code> 和 <code>B</code>(例如，<code>Number</code> 和 <code>Integer</code>)，泛型<code>MyClass&lt;A&gt;</code> 与 <code>MyClass&lt;B&gt;</code> 没有任何关系，无论 <code>A</code> 与 <code>B</code> 是否相关。<code>MyClass&lt;A&gt;</code> 和 <code>MyClass&lt;B&gt;</code> 的公共父类是 <code>Object</code>。</p>
+<h4 id="五、泛型继承规则"><a href="#五、泛型继承规则" class="headerlink" title="五、泛型继承规则"></a>五、泛型继承规则</h4><p>给定两种具体类型 <code>A</code> 和 <code>B</code>(例如，<code>Number</code> 和 <code>Integer</code>)，泛型<code>MyClass&lt;A&gt;</code> 与 <code>MyClass&lt;B&gt;</code> 没有任何关系，无论 <code>A</code> 与 <code>B</code> 是否相关。<code>MyClass&lt;A&gt;</code> 和 <code>MyClass&lt;B&gt;</code> 的公共父类是 <code>Object</code>。</p>
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gvzne3cxz7g309e06974c.gif" alt=""></p>
 <p>通过继承泛型类或实现泛型接口来对其进行子类型化。一个类或接口的类型形参与另一个的类型形参之间的关系由 <code>extends</code> 和 <code>implements</code> 确定。</p>
 <p>以 <code>Collections</code> 类为例，<code>ArrayList&lt;E&gt;</code> 实现 <code>List&lt;E&gt;</code>，<code>List&lt;E&gt; extends Collection&lt;E&gt;</code>。所以 <code>ArrayList&lt;String&gt;</code> 是 <code>List&lt;String&gt;</code> 的子类型，它是 <code>Collection&lt;String&gt;</code> 的子类型。只要不改变类型实参，就会在类型之间保留子类型关系。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface Collection&lt;E&gt; &#123; &#x2F;* ... *&#x2F; &#125; </span><br><span class="line">public interface List&lt;E&gt; extends Collection&lt;E&gt; &#123; &#x2F;* ... *&#x2F; &#125; </span><br><span class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt; implements List&lt;E&gt; &#123; &#x2F;* ... *&#x2F; &#125;</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gvzo7ls4d5g3043038wec.gif" alt=""></p>
-<h3 id="六、通配符类型"><a href="#六、通配符类型" class="headerlink" title="六、通配符类型"></a>六、通配符类型</h3><p>在泛型中，通配符(<code>?</code>)问号表示未知类型。通配符一般用于方法中：作为参数、字段或局部变量的类型，有时作为返回类型。通配符从不用作泛型方法调用，泛型类实例创建或超类型的类型实参。</p>
-<h4 id="上界通配符"><a href="#上界通配符" class="headerlink" title="上界通配符"></a>上界通配符</h4><?  extends  T> 表示类型的上界，类型参数是T的子类或本身
+<h4 id="六、通配符类型"><a href="#六、通配符类型" class="headerlink" title="六、通配符类型"></a>六、通配符类型</h4><p>在泛型中，通配符(<code>?</code>)问号表示未知类型。通配符一般用于方法中：作为参数、字段或局部变量的类型，有时作为返回类型。通配符从不用作泛型方法调用，泛型类实例创建或超类型的类型实参。</p>
+<h5 id="上界通配符"><a href="#上界通配符" class="headerlink" title="上界通配符"></a>上界通配符</h5><?  extends  T> 表示类型的上界，类型参数是T的子类或本身
 
 主要用于安全地访问数据(get方法，返回类型为T)，可以访问T及其子类型，并且不能写入非null的数据。
 
-#### 下界通配符
+##### 下界通配符
 
 <?  super  T> 表示类型的下界，类型参数是T的超类或本身
 
 主要用于安全地写入数据(set方法)，可以写入T及其子类型。
 
-#### 无界通配符
+##### 无界通配符
 
 <?><p> 表示对类型没有什么限制，可以把<code>?</code>看成所有类型的父类，默认实现是&lt;?  extends  Object&gt;</p>
-<h4 id="PECS"><a href="#PECS" class="headerlink" title="PECS"></a>PECS</h4><p>方法的参数化类型代表生产者（producer）则使用<code>extends</code>，代表消费者（consumer）则使用<code>super</code>。</p>
+<h5 id="PECS"><a href="#PECS" class="headerlink" title="PECS"></a>PECS</h5><p>方法的参数化类型代表生产者（producer）则使用<code>extends</code>，代表消费者（consumer）则使用<code>super</code>。</p>
 <p>只从方法的形参集合获取值使用<code>? extends T</code>，只从方法的形参集合写入值使用<code>? super T</code></p>
-<h3 id="七、虚拟机是如何实现泛型的"><a href="#七、虚拟机是如何实现泛型的" class="headerlink" title="七、虚拟机是如何实现泛型的"></a>七、虚拟机是如何实现泛型的</h3><h4 id="类型擦除"><a href="#类型擦除" class="headerlink" title="类型擦除"></a>类型擦除</h4><p>泛型被引入到 Java 语言中，以便在编译时提供更严格的类型检查并支持泛型编程。为了实现泛型，Java 编译器将类型擦除应用于：</p>
+<h4 id="七、虚拟机是如何实现泛型的"><a href="#七、虚拟机是如何实现泛型的" class="headerlink" title="七、虚拟机是如何实现泛型的"></a>七、虚拟机是如何实现泛型的</h4><h5 id="类型擦除"><a href="#类型擦除" class="headerlink" title="类型擦除"></a>类型擦除</h5><p>泛型被引入到 Java 语言中，以便在编译时提供更严格的类型检查并支持泛型编程。为了实现泛型，Java 编译器将类型擦除应用于：</p>
 <ul>
 <li>将泛型类型中的所有类型形参替换为其边界或 <code>Object</code>（如果类型形参是无界的）。因此，生成的字节码仅包含普通的类，接口和方法。</li>
 <li>如有必要，插入类型转换以保持类型安全。</li>
