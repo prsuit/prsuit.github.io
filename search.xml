@@ -2974,13 +2974,9 @@
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、为什么使用泛型"><a href="#一、为什么使用泛型" class="headerlink" title="一、为什么使用泛型"></a>一、为什么使用泛型</h4><p>泛型使在定义类、接口和方法时，使类型成为参数。与方法声明中使用的形式参数非常相似，类型形参为你提供了一种让不同的输入重用相同的代码的方法。区别在于形式参数的输入是值，而类型形参的输入是类型。</p>
 <p>使用泛型的好处：</p>
 <ul>
-<li><p>在编译时进行更强大的类型检查，Java 编译器将强类型检查应用于泛型代码，并在代码违反类型安全时发出错误。</p>
-</li>
-<li><p>消除类型转换，泛型中的类型在使用时指定。</p>
-<ul>
+<li>在编译时进行更强大的类型检查，Java 编译器将强类型检查应用于泛型代码，并在代码违反类型安全时发出错误。</li>
+<li>消除类型转换，泛型中的类型在使用时指定。</li>
 <li>能够实现通用算法，让多种不同数据类型执行相同的代码。</li>
-</ul>
-</li>
 </ul>
 <a id="more"></a>
 
@@ -3043,8 +3039,105 @@
 </ul>
 <p>类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。由于JDK 5.0开始引入，为兼容之前版本采用类型擦除。</p>
 <p>在类型擦除过程中，Java 编译器将擦除所有类型形参，并在类型形参有界时将其替换为第一个边界，如果类型形参无界，则替换为 <code>Object</code>。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Java语言中的泛型，它只在程序源码中存在，在编译后的字节码文件中，就已经替换为原来的原始类型（Raw Type，也称为裸类型）了，并且在相应的地方插入了强制转型代码，因此，对于运行期的Java语言来说，ArrayList＜int＞与ArrayList＜String＞就是同一个类，所以泛型技术实际上是Java语言的一颗语法糖，Java语言中的泛型实现方法称为类型擦除，基于这种方法实现的泛型称为伪泛型。</p>
+<h5 id="类型识别"><a href="#类型识别" class="headerlink" title="类型识别"></a>类型识别</h5><p>由于Java泛型的引入，各种场景（虚拟机解析、反射等）下的方法调用都可能对原有的基础产生影响和新的需求，如在泛型类中如何获取传入的参数化类型等。因此，JCP组织对虚拟机规范做出了相应的修改，引入了Signature、LocalVariableTypeTable等新的属性用于解决伴随泛型而来的参数类型的识别问题，Signature是其中最重要的一项属性，它的作用就是存储一个方法在字节码层面的特征签名，这个属性中保存的参数类型并不是原生类型，而是包括了参数化类型的信息。修改后要求所有能识别Class文件的虚拟机都要能正确地识别Signature参数。</p>
+<p>另外，从Signature属性的出现我们还可以得出结论，擦除法所谓的擦除，仅仅是对方法的Code属性中的字节码进行擦除，实际上元数据中还是保留了泛型信息，这也是我们能通过反射手段取得参数化类型的根本依据。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Java语言中的泛型，它只在程序源码中存在，在编译后的字节码文件中，就已经替换为原来的原始类型（Raw Type，也称为裸类型）了，并且在相应的地方插入了强制转型代码，因此，对于运行期的Java语言来说，ArrayList＜Integer＞与ArrayList＜String＞就是同一个类，所以泛型技术实际上是Java语言的一颗语法糖，Java语言中的泛型实现方法称为类型擦除，基于这种方法实现的泛型称为伪泛型。</p>
 ]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>Java基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java注解</title>
+    <url>/2021/11/01/Java%E6%B3%A8%E8%A7%A3/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>注解是一种元数据形式，为编译器提供信息。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、注解是什么"><a href="#一、注解是什么" class="headerlink" title="一、注解是什么"></a>一、注解是什么</h4><p>Annotations (注解)，又称 Java 标注，是 JDK5.0 引入的一种注释机制。元数据的一种形式，提供有关于程序但不属于程序本身的数据。注解对它们注解的代码的操作没有直接影响。</p>
+<a id="more"></a>
+
+<h4 id="二、如何使用"><a href="#二、如何使用" class="headerlink" title="二、如何使用"></a>二、如何使用</h4><h5 id="注解声明"><a href="#注解声明" class="headerlink" title="注解声明"></a>注解声明</h5><p>使用<code>@interface</code>关键字来声明注解，需指定的元注解有两个 :<code>@Target</code>和<code>@Retention</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义注解</span><br><span class="line">@Target(ElementType.TYPE) &#x2F;&#x2F;标记注解的作用元素类型范围</span><br><span class="line">@Retention(RetentionPolicy.SOURCE) &#x2F;&#x2F;标记注解的存储方式，注解保留级别</span><br><span class="line">public @interface CustomAnnotation &#123;</span><br><span class="line">  &#x2F;&#x2F;Annotation element definitions</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Java中所有的注解，默认实现<code>Annotation</code>接口:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package java.lang.annotation; </span><br><span class="line">public interface Annotation &#123;</span><br><span class="line">    boolean equals(Object obj);</span><br><span class="line">    int hashCode();</span><br><span class="line">    String toString();</span><br><span class="line">    Class&lt;? extends Annotation&gt; annotationType();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h5><p>适用于其他注解的注解称为 meta-annotations (元注解)。在 <code>java.lang.annotation</code> 中定义了几种元注解类型。</p>
+<p><strong><code>@Retention</code></strong>指定标记注解的存储方式，注解保留级别</p>
+<ul>
+<li><code>RetentionPolicy.SOURCE</code> - 标记的注解仅保留在源码级别中，并被编译器忽略。</li>
+<li><code>RetentionPolicy.CLASS</code> - 标记的注解在编译时由编译器保留，但 Java 虚拟机(JVM)会忽略。</li>
+<li><code>RetentionPolicy.RUNTIME</code> - 标记的注解由 JVM 保留，因此运行时环境可以使用它。</li>
+</ul>
+<blockquote>
+<p>注：SOURCE &lt; CLASS &lt; RUNTIME，即CLASS包含了SOURCE，RUNTIME包含SOURCE、CLASS。</p>
+</blockquote>
+<p><strong><code>@Target</code></strong>指定标记注解的作用元素访问，以限制可以应用注解的 Java 元素类型</p>
+<ul>
+<li><code>ElementType.ANNOTATION_TYPE</code> 可以应用于注解类型。</li>
+<li><code>ElementType.CONSTRUCTOR</code> 可以应用于构造函数。</li>
+<li><code>ElementType.FIELD</code> 可以应用于字段或属性。</li>
+<li><code>ElementType.LOCAL_VARIABLE</code> 可以应用于局部变量。</li>
+<li><code>ElementType.METHOD</code> 可以应用于方法级注解。</li>
+<li><code>ElementType.PACKAGE</code> 可以应用于包声明。</li>
+<li><code>ElementType.PARAMETER</code> 可以应用于方法的参数。</li>
+<li><code>ElementType.TYPE</code> 可以应用于类的任何元素。</li>
+</ul>
+<p><code>@Documented</code>表示无论何时使用指定的注解，都应使用 Javadoc 工具记录这些元素。</p>
+<p><code>@Inherited</code>表示注解类型可以从超类继承。(默认情况下不是这样。)当用户查询注解类型并且该类没有此类型的注解时，将查询类的超类以获取注解类型。此注解仅适用于类声明。</p>
+<p><code>@Repeatable</code> Java SE 8 中引入的注解表明标记的注解可以多次应用于同一声明或类型使用。</p>
+<h5 id="注解类型元素"><a href="#注解类型元素" class="headerlink" title="注解类型元素"></a>注解类型元素</h5><p>在上文元注解中，允许在使用注解时传递参数，我们也能让自定义注解的主体包含 annotation type element (</p>
+<p>注解类型元素) 声明，它们看起来很像方法，可以定义可选的默认值。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义注解</span><br><span class="line">@Target(&#123;ElementType.TYPE,ElementType.FIELD&#125;) </span><br><span class="line">@Retention(RetentionPolicy.SOURCE)</span><br><span class="line">public @interface AnnoName &#123;</span><br><span class="line">	String value(); &#x2F;&#x2F;无默认值</span><br><span class="line">	int age() default 1; &#x2F;&#x2F;有默认值 </span><br><span class="line">	 &#x2F;&#x2F;String[] array();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;使用注解</span><br><span class="line">@AnnoName(&quot;帅&quot;) &#x2F;&#x2F;如果只存在value元素需要传值的情况，则可以省略:元素名&#x3D; </span><br><span class="line">@AnnoName(value&#x3D;&quot;帅&quot;,age &#x3D; 2)</span><br><span class="line">int i;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注:在使用注解时，如果定义的注解中的类型元素无默认值，则必须进行传值。     </p>
+</blockquote>
+<h4 id="三、运用场景"><a href="#三、运用场景" class="headerlink" title="三、运用场景"></a>三、运用场景</h4><p>由注解的三个不同保留级别可知，注解可用于源码、字节码、运行时三个场景，具体案例：</p>
+<p>源码-&gt; APT，在编译期获取注解和注解声明的类信息，用于生成辅助类。语法检查@IntDef</p>
+<p>字节码-&gt;字节码增强(字节码插桩)，在编译出Class后，通过注解区分是否修改Class数据以实现修改代码逻辑目的。</p>
+<p>运行时-&gt;反射，通过反射动态获取注解及其元素，从而完成不同的逻辑判断。</p>
+<h5 id="IDE语法检查"><a href="#IDE语法检查" class="headerlink" title="IDE语法检查"></a>IDE语法检查</h5><p>在Android开发中， <code>support-annotations</code> 与 <code>androidx.annotation</code> 中均有提供 @IntDef 注解，此注解的定义如下:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> @Retention(SOURCE) &#x2F;&#x2F;源码级别注解 </span><br><span class="line"> @Target(&#123;ANNOTATION_TYPE&#125;) </span><br><span class="line"> public @interface IntDef &#123;</span><br><span class="line">    int[] value() default &#123;&#125;;</span><br><span class="line">    boolean flag() default false;</span><br><span class="line">    boolean open() default false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此注解的意义在于能够取代枚举，实现如方法入参限制。</p>
+<p>如果使用枚举能够实现为:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public enum Type&#123;</span><br><span class="line">   TYPE_1,TYPE_2</span><br><span class="line">&#125;</span><br><span class="line">public void test(Type type) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Java中Enum(枚举)的实质是特殊单例的静态成员变量，在运行期所有枚举类作为单例，全部加载到内存中。 比常量多5到10倍的内存占用。</p>
+</blockquote>
+<p>现在为了进行内存优化，我们现在不再使用枚举，</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static final int TYPE_1 &#x3D; 1; </span><br><span class="line">public static final int TYPE_2 &#x3D; 2;</span><br><span class="line">public void test(int type) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然而此时，调用 test 方法由于采用基本数据类型int，将无法进行类型限定。此时使用<code>@IntDef</code>增加自定义注解:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static final int TYPE_1 &#x3D; 1; </span><br><span class="line">public static final int TYPE_2 &#x3D; 2;</span><br><span class="line"></span><br><span class="line">@IntDef(&#123;TYPE_1,TYPE_2&#125;)</span><br><span class="line">@Target(ElementType.PARAMETER) &#x2F;&#x2F;作用于参数的注解</span><br><span class="line">@Retention(RetentionPolicy.SOURCE)</span><br><span class="line">public @interface Type &#123;</span><br><span class="line">&#125;</span><br><span class="line">public void test(@Type int type) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时，我们再去调用 test 方法，如果传递的参数不是 TYPE_1 或者 TYPE_2 则会显示 Inspection 警告(编译不会报 错)。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>注解的保留级别有不同的应用场景：</p>
+<ul>
+<li><p>作用于源码级别的注解，可提供给IDE语法检查、APT等场景使用。</p>
+</li>
+<li><p>定义为 CLASS 的注解，会保留在class文件中，但是会被虚拟机忽略(即无法在运行期反射获取注解)。应用场景为字节码操作。如:AspectJ、热修复Roubust中应用。</p>
+</li>
+<li><p>注解保留至运行期，意味着我们能够在运行期间结合反射技术获取注解中的所有信息。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>Java基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java反射</title>
+    <url>/2021/11/02/Java%E5%8F%8D%E5%B0%84/</url>
+    <content><![CDATA[]]></content>
       <categories>
         <category>Java基础</category>
       </categories>
