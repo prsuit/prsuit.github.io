@@ -3234,9 +3234,9 @@
 <li><p>通过代理对象对访问进行控制。</p>
 </li>
 </ul>
-<p>代理模式一般会有三个角色：</p>
 <a id="more"></a>
 
+<p>代理模式一般会有三个角色：</p>
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw2922yn7mj31dm0n0djc.jpg" alt=""></p>
 <p><strong>抽象角色</strong>：指代理角色和真实角色对外提供的公共方法，一般为一个接口。</p>
 <p><strong>真实角色</strong>：需要实现抽象角色接口，定义了真实角色所要实现的业务逻辑，以便供代理角色调用。也就是真正的业务逻辑在此。</p>
@@ -3268,6 +3268,84 @@
 <h5 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：只需要一个动态代理类s就可以解决创建多个静态代理的问题，避免重复、多余代码，更强的灵活性。</p>
 <p>缺点：效率较低，相比静态代理中直接调用目标对象方法，动态代理则需要先通过Java反射机制间接调用目标对象方法。</p>
 <p>应用场景局限，因为 Java 的单继承特性（每个代理类都继承了 <code>Proxy</code> 类），即只能针对接口创建代理类，不能针对类创建代理类。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>Java基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java线程</title>
+    <url>/2021/11/04/Java%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在并发编程中，有两个基本执行单元：进程(processes) 和 线程(thread)。在 Java 编程语言中，并发编程主要涉及线程。但是，进程也很重要。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><p><strong>进程</strong>：是计算机中的程序关于某数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位，是操作系统结构的基础。进程是线程的容器，是程序的实体。程序是指令、数据及其组织形式的描述。</p>
+<p><strong>线程</strong>：是操作系统能够进行运算调度的最小单位。它被包含在进程之中，是进程中的实际运作单位。一条线程指的是进程中一个单一顺序的控制流，一个进程中可以并发多个线程，每条线程并行执行不同的任务。</p>
+<blockquote>
+<p>简单总结：</p>
+<p>进程——资源分配的最小单位。指在系统中正在运行的一个应用程序。</p>
+<p>线程——cpu调度/程序执行的最小单位。系统分配处理器时间资源的基本单元。</p>
+</blockquote>
+<a id="more"></a>
+
+<h4 id="二、使用"><a href="#二、使用" class="headerlink" title="二、使用"></a>二、使用</h4><h5 id="启动线程"><a href="#启动线程" class="headerlink" title="启动线程"></a>启动线程</h5><p>启动线程方式有两种：</p>
+<p>扩展自<code>Thread</code>类，重写<code>run()</code>方法，使用<code>start()</code>方法启动线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class UseThread extends Thread&#123;</span><br><span class="line">		@Override</span><br><span class="line">		public void run() &#123;</span><br><span class="line">			super.run();</span><br><span class="line">			&#x2F;&#x2F;do my work</span><br><span class="line">			System.out.println(&quot;I am extends Thread&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 调用</span><br><span class="line">UseThread useThread &#x3D; new UseThread();</span><br><span class="line">useThread.start();</span><br></pre></td></tr></table></figure>
+
+<p>实现<code>Runnable</code>接口，实现<code>run()</code>方法，使用先创建含Runnable的Thread对象，然后执行<code>start</code>方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class UseRunnable implements Runnable&#123;</span><br><span class="line">		@Override</span><br><span class="line">		public void run() &#123;</span><br><span class="line">			System.out.println(&quot;I am implements Runnable&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 使用UseRunnable构建一个Thread然后执行</span><br><span class="line">UseRunnable useRun &#x3D; new UseRunnable();</span><br><span class="line">new Thread(useRun).start();</span><br></pre></td></tr></table></figure>
+
+<p><code>start()</code>方法和<code>run()</code>方法的区别：</p>
+<p><code>start()</code>方法会去调用native方法开启线程，只能调用一次，多次启动线程是不合法的。</p>
+<p><code>run()</code>方法是业务逻辑代码实现的地方，相当于类的成员方法，可调用多次且可单独执行。</p>
+<blockquote>
+<p>注：Thread类是Java对线程的抽象，Runnable是对任务和业务逻辑的抽象。方法 <code>run</code>即在线程中执行的代码</p>
+</blockquote>
+<h5 id="停止线程"><a href="#停止线程" class="headerlink" title="停止线程"></a>停止线程</h5><p>推荐使用<code>interrupt()</code>方法停止线程。</p>
+<p><code>stop()</code>：强制停止，可能造成资源回收不了，不安全。</p>
+<p><code>interrupt()</code>：中断线程，其实是设置中断标志为true，由程序员决定线程如何响应中断，安全。</p>
+<blockquote>
+<p>注：interrupt (中断) 表示线程应该停止正在执行的操作并执行其他操作。由程序员决定线程如何响应中断。</p>
+</blockquote>
+<h5 id="线程是否中断"><a href="#线程是否中断" class="headerlink" title="线程是否中断"></a>线程是否中断</h5><p>线程中断状态下中断标志为true，否则为false。</p>
+<p><code>isInterrupted()</code>：检查中断时，不会更改中断标志。</p>
+<p><code>Thread</code>类的静态方法 <code>interrupted()</code>：检查中断时，会清除中断标志，即中断标志变为false。</p>
+<blockquote>
+<p>注：任何通过抛出 <code>InterruptedException</code> 退出的方法如<code>sleep()</code>，都会在执行此操作时清除中断状态，需要通过再一次调用 <code>interrupt()</code>方法 ，总是可以立即再次设置中断状态。</p>
+<p>jdk线程是协作式，而不是抢占式。</p>
+</blockquote>
+<h5 id="线程顺序执行"><a href="#线程顺序执行" class="headerlink" title="线程顺序执行"></a>线程顺序执行</h5><p><code>join</code> 方法允许当前线程等待另一个线程<code>t</code>的完成后再执行，因此可实现线程顺序执行。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">t.join();</span><br></pre></td></tr></table></figure>
+
+<h5 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h5><p>设置线程优先级<code>setPriority()</code>，范围1~10，优先级越高分配cpu时间片要多，但实际效果与操作系统有关，不能用来控制线程执行顺序。</p>
+<h5 id="守护线程"><a href="#守护线程" class="headerlink" title="守护线程"></a>守护线程</h5><p>守护线程：会随着用户线程结束而终止。</p>
+<p>在执行<code>start</code>前，调用<code>setDaemon(true)</code>可设置线程为守护线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">t.setDaemon(true);</span><br><span class="line">t.start()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：守护线程中的 finally 代码块不一定执行。</p>
+</blockquote>
+<h4 id="三、状态"><a href="#三、状态" class="headerlink" title="三、状态"></a>三、状态</h4><p>Java中线程的状态分为6种：</p>
+<ol>
+<li><p>初始(NEW)：新创建了一个线程对象，但还没有调用start()方法。</p>
+</li>
+<li><p>运行(RUNNABLE)：Java线程中将就绪（ready）和运行中（running）两种状态笼统的称为“运行”。线程对象创建后，其他线程(比如main线程）调用了该对象的start()方法。该状态的线程位于可运行线程池中，等待被线程调度选中，获取CPU的使用权，此时处于就绪状态（ready）。就绪状态的线程在获得CPU时间片后变为运行中状态（running）。</p>
+</li>
+<li><p>阻塞(BLOCKED)：表示线程阻塞于锁。</p>
+</li>
+<li><p>等待(WAITING)：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）。</p>
+</li>
+<li><p>定时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。</p>
+</li>
+<li><p>终止(TERMINATED)：表示该线程已经执行完毕。</p>
+</li>
+</ol>
+<p>状态之间的变迁如下图所示：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw3ezp5xrqj30km0cs3zp.jpg" alt=""></p>
+<blockquote>
+<p>注：调用<code>yield()</code>该线程会让出cpu执行权，但不会释放锁。</p>
+</blockquote>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
       <categories>
         <category>Java基础</category>
