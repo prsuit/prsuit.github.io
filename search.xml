@@ -3303,18 +3303,18 @@
 </blockquote>
 <h5 id="停止线程"><a href="#停止线程" class="headerlink" title="停止线程"></a>停止线程</h5><p>推荐使用<code>interrupt()</code>方法停止线程。</p>
 <p><code>stop()</code>：强制停止，可能造成资源回收不了，不安全。</p>
-<p><code>interrupt()</code>：中断线程，其实是设置中断标志为true，由程序员决定线程如何响应中断，安全。</p>
+<p><code>interrupt()</code>：中断线程，调用后线程处于就绪状态，而不是终止状态。其实是设置中断标志为true，由程序员决定线程如何响应中断，安全。</p>
 <blockquote>
 <p>注：interrupt (中断) 表示线程应该停止正在执行的操作并执行其他操作。由程序员决定线程如何响应中断。</p>
 </blockquote>
-<h5 id="线程是否中断"><a href="#线程是否中断" class="headerlink" title="线程是否中断"></a>线程是否中断</h5><p>线程中断状态下中断标志为true，否则为false。</p>
+<h5 id="线程是否中断"><a href="#线程是否中断" class="headerlink" title="线程是否中断"></a>线程是否中断</h5><p>线程中断状态下中断标志为true，否则为false。检查线程是否是中断方法：</p>
 <p><code>isInterrupted()</code>：检查中断时，不会更改中断标志。</p>
 <p><code>Thread</code>类的静态方法 <code>interrupted()</code>：检查中断时，会清除中断标志，即中断标志变为false。</p>
 <blockquote>
 <p>注：任何通过抛出 <code>InterruptedException</code> 退出的方法如<code>sleep()</code>，都会在执行此操作时清除中断状态，需要通过再一次调用 <code>interrupt()</code>方法 ，总是可以立即再次设置中断状态。</p>
 <p>jdk线程是协作式，而不是抢占式。</p>
 </blockquote>
-<h5 id="线程顺序执行"><a href="#线程顺序执行" class="headerlink" title="线程顺序执行"></a>线程顺序执行</h5><p><code>join</code> 方法允许当前线程等待另一个线程<code>t</code>的完成后再执行，因此可实现线程顺序执行。</p>
+<h5 id="线程顺序执行"><a href="#线程顺序执行" class="headerlink" title="线程顺序执行"></a>线程顺序执行</h5><p><code>join()</code> 方法允许当前线程等待另一个线程<code>t</code>的完成后再执行，因此可实现线程顺序执行。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">t.join();</span><br></pre></td></tr></table></figure>
 
 <h5 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h5><p>设置线程优先级<code>setPriority()</code>，范围1~10，优先级越高分配cpu时间片要多，但实际效果与操作系统有关，不能用来控制线程执行顺序。</p>
@@ -3333,7 +3333,7 @@
 </li>
 <li><p>阻塞(BLOCKED)：表示线程阻塞于锁。</p>
 </li>
-<li><p>等待(WAITING)：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）。</p>
+<li><p>等待(WAITING)：进入该状态的线程需要无限期等待其他线程做出一些特定动作（通知或中断）。</p>
 </li>
 <li><p>定时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。</p>
 </li>
@@ -3346,6 +3346,53 @@
 <p>注：调用<code>yield()</code>该线程会让出cpu执行权，但不会释放锁。</p>
 </blockquote>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>Java基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>线程间的共享</title>
+    <url>/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
+<h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
+<p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 <em>release (释放)*内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为 *own (拥有)</em> 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。</p>
+<p>当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
+<h4 id="二、synchronized内置锁"><a href="#二、synchronized内置锁" class="headerlink" title="二、synchronized内置锁"></a>二、synchronized内置锁</h4><p>Java 编程语言提供两种基本的同步习惯用法：<em>synchronized methods (同步方法)</em> 和 <em>synchronized statements (同步语句)</em>。</p>
+<h5 id="同步方法"><a href="#同步方法" class="headerlink" title="同步方法"></a>同步方法</h5><p>要使方法同步，只需将 <code>synchronized</code> 关键字添加到其声明中：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">    private int c &#x3D; 0;</span><br><span class="line">    public synchronized void increment() &#123;</span><br><span class="line">        c++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void decrement() &#123;</span><br><span class="line">        c--;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized int value() &#123;</span><br><span class="line">        return c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用同步方法有两个影响：</p>
+<ul>
+<li>首先，对同一对象的两个同步方法的调用不可能进行交错。当一个线程在执行一个对象的同步方法的时候，其他所有的调用该对象的同步方法的线程都会被挂起(暂停执行)，直到第一个线程对该对象的操作完毕。</li>
+<li>其次，当同步方法退出时，它会自动与同一对象的同步方法的 <em>any subsequent invocation (任何后续调用)</em> 建立 happens-before 关系。这就确保了对该对象的修改对其他线程是可见的。</li>
+</ul>
+<blockquote>
+<p>注：构造函数不能同步  将 <code>synchronized</code> 关键字与构造函数一起使用是一种语法错误。同步构造函数没有意义，因为只有创建对象的线程在构造时才能访问它。</p>
+</blockquote>
+<p>当线程调用同步方法时，它会自动获取该方法的对象的内部锁，并在方法返回时释放它。即使返回是由未捕获的异常引起的，也会释放锁。</p>
+<p>在调用静态同步方法时会发生什么，因为静态方法与类关联，而不是与对象关联。在这种情况下，线程获取与该类关联的 <code>Class</code> 对象的内部锁。因此，访问类的静态字段是由一个锁控制的，该锁与任何该类的实例的锁都不同。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;类锁，实际是锁类的class对象</span><br><span class="line">private static synchronized void synClass()&#123;</span><br><span class="line">     SleepTools.second(1);</span><br><span class="line">     System.out.println(&quot;synClass going...&quot;);</span><br><span class="line">     SleepTools.second(1);</span><br><span class="line">     System.out.println(&quot;synClass end&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="同步语句"><a href="#同步语句" class="headerlink" title="同步语句"></a>同步语句</h5><p>与同步方法不同，同步语句必须指定提供内部锁的对象：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">	private Object obj &#x3D; new Object();&#x2F;&#x2F;作为一个锁</span><br><span class="line">	&#x2F;&#x2F; 使用obj提供锁</span><br><span class="line">	public void incCount()&#123;</span><br><span class="line"> 		synchronized (obj)&#123;</span><br><span class="line">			count++;</span><br><span class="line">   	 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 或使用this提供锁</span><br><span class="line">	public void incCount2()&#123;</span><br><span class="line"> 		synchronized (this)&#123;</span><br><span class="line">			count++;</span><br><span class="line">    	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：根据提供锁的对象是否静态可分为对象锁和类锁，对象锁是锁非静态的实例对象，如同步语句/方法；类锁是锁类的class对象，如静态同步方法。</p>
+</blockquote>
+<h5 id="错误的加锁"><a href="#错误的加锁" class="headerlink" title="错误的加锁"></a>错误的加锁</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Worker implements Runnable&#123;</span><br><span class="line">	private Integer i;</span><br><span class="line">	</span><br><span class="line">	public Worker(Integer)&#123;</span><br><span class="line">		this.i &#x3D; i;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public void run()&#123;</span><br><span class="line">			synchronized(i)&#123;</span><br><span class="line">					i++;</span><br><span class="line">					System.out.println(&quot;i值为：&quot;+i);</span><br><span class="line">			&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) throws InterruptedException&#123;</span><br><span class="line">		Worker worker &#x3D; new Worker(1);</span><br><span class="line">		for(int i &#x3D;0; i&lt;5; i++)&#123;</span><br><span class="line">				new Thread(worker).start();</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;发现输出结果有时并不是2，3，4，5，6</span><br></pre></td></tr></table></figure>
+
+<p>分析在执行<code>i++</code>会调用Integer的<code>valueOf()</code>方法，会重新new一个Integer对象，因此对象i就发生了变化，锁的对象就不一样了，就不是同一个锁，synchronized也就无法锁住了。 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static Integer valueOf(int i) &#123;</span><br><span class="line">        if (i &gt;&#x3D; IntegerCache.low &amp;&amp; i &lt;&#x3D; IntegerCache.high)</span><br><span class="line">            return IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">        return new Integer(i);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：synchronized锁的都是某个具体对象，要让线程安全同步运行，保证锁的对象不会发生变化。</p>
+</blockquote>
+<h4 id="三、volatile"><a href="#三、volatile" class="headerlink" title="三、volatile"></a>三、volatile</h4><p>volatile：可见性</p>
+]]></content>
       <categories>
         <category>Java基础</category>
       </categories>

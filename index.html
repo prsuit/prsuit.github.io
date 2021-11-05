@@ -217,7 +217,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -262,6 +262,115 @@
 
         <div class="content index posts-expand">
           
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/" class="post-title-link" itemprop="url">线程间的共享</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-05 11:00:00" itemprop="dateCreated datePublished" datetime="2021-11-05T11:00:00+08:00">2021-11-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/" class="post-meta-item leancloud_visitors" data-flag-title="线程间的共享" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
+<h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
+<p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 <em>release (释放)*内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为 *own (拥有)</em> 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。</p>
+<p>当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
+<h4 id="二、synchronized内置锁"><a href="#二、synchronized内置锁" class="headerlink" title="二、synchronized内置锁"></a>二、synchronized内置锁</h4><p>Java 编程语言提供两种基本的同步习惯用法：<em>synchronized methods (同步方法)</em> 和 <em>synchronized statements (同步语句)</em>。</p>
+<h5 id="同步方法"><a href="#同步方法" class="headerlink" title="同步方法"></a>同步方法</h5><p>要使方法同步，只需将 <code>synchronized</code> 关键字添加到其声明中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">    private int c &#x3D; 0;</span><br><span class="line">    public synchronized void increment() &#123;</span><br><span class="line">        c++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void decrement() &#123;</span><br><span class="line">        c--;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized int value() &#123;</span><br><span class="line">        return c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用同步方法有两个影响：</p>
+<ul>
+<li>首先，对同一对象的两个同步方法的调用不可能进行交错。当一个线程在执行一个对象的同步方法的时候，其他所有的调用该对象的同步方法的线程都会被挂起(暂停执行)，直到第一个线程对该对象的操作完毕。</li>
+<li>其次，当同步方法退出时，它会自动与同一对象的同步方法的 <em>any subsequent invocation (任何后续调用)</em> 建立 happens-before 关系。这就确保了对该对象的修改对其他线程是可见的。</li>
+</ul>
+<blockquote>
+<p>注：构造函数不能同步  将 <code>synchronized</code> 关键字与构造函数一起使用是一种语法错误。同步构造函数没有意义，因为只有创建对象的线程在构造时才能访问它。</p>
+</blockquote>
+<p>当线程调用同步方法时，它会自动获取该方法的对象的内部锁，并在方法返回时释放它。即使返回是由未捕获的异常引起的，也会释放锁。</p>
+<p>在调用静态同步方法时会发生什么，因为静态方法与类关联，而不是与对象关联。在这种情况下，线程获取与该类关联的 <code>Class</code> 对象的内部锁。因此，访问类的静态字段是由一个锁控制的，该锁与任何该类的实例的锁都不同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;类锁，实际是锁类的class对象</span><br><span class="line">private static synchronized void synClass()&#123;</span><br><span class="line">     SleepTools.second(1);</span><br><span class="line">     System.out.println(&quot;synClass going...&quot;);</span><br><span class="line">     SleepTools.second(1);</span><br><span class="line">     System.out.println(&quot;synClass end&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="同步语句"><a href="#同步语句" class="headerlink" title="同步语句"></a>同步语句</h5><p>与同步方法不同，同步语句必须指定提供内部锁的对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">	private Object obj &#x3D; new Object();&#x2F;&#x2F;作为一个锁</span><br><span class="line">	&#x2F;&#x2F; 使用obj提供锁</span><br><span class="line">	public void incCount()&#123;</span><br><span class="line"> 		synchronized (obj)&#123;</span><br><span class="line">			count++;</span><br><span class="line">   	 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 或使用this提供锁</span><br><span class="line">	public void incCount2()&#123;</span><br><span class="line"> 		synchronized (this)&#123;</span><br><span class="line">			count++;</span><br><span class="line">    	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：根据提供锁的对象是否静态可分为对象锁和类锁，对象锁是锁非静态的实例对象，如同步语句/方法；类锁是锁类的class对象，如静态同步方法。</p>
+</blockquote>
+<h5 id="错误的加锁"><a href="#错误的加锁" class="headerlink" title="错误的加锁"></a>错误的加锁</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class Worker implements Runnable&#123;</span><br><span class="line">	private Integer i;</span><br><span class="line">	</span><br><span class="line">	public Worker(Integer)&#123;</span><br><span class="line">		this.i &#x3D; i;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public void run()&#123;</span><br><span class="line">			synchronized(i)&#123;</span><br><span class="line">					i++;</span><br><span class="line">					System.out.println(&quot;i值为：&quot;+i);</span><br><span class="line">			&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) throws InterruptedException&#123;</span><br><span class="line">		Worker worker &#x3D; new Worker(1);</span><br><span class="line">		for(int i &#x3D;0; i&lt;5; i++)&#123;</span><br><span class="line">				new Thread(worker).start();</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;发现输出结果有时并不是2，3，4，5，6</span><br></pre></td></tr></table></figure>
+
+<p>分析在执行<code>i++</code>会调用Integer的<code>valueOf()</code>方法，会重新new一个Integer对象，因此对象i就发生了变化，锁的对象就不一样了，就不是同一个锁，synchronized也就无法锁住了。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public static Integer valueOf(int i) &#123;</span><br><span class="line">        if (i &gt;&#x3D; IntegerCache.low &amp;&amp; i &lt;&#x3D; IntegerCache.high)</span><br><span class="line">            return IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">        return new Integer(i);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：synchronized锁的都是某个具体对象，要让线程安全同步运行，保证锁的对象不会发生变化。</p>
+</blockquote>
+<h4 id="三、volatile"><a href="#三、volatile" class="headerlink" title="三、volatile"></a>三、volatile</h4><p>volatile：可见性</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1012,88 +1121,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/08/22/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-Launcher%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/20/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-SystemServer%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/08/20/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-SystemServer%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/" class="post-title-link" itemprop="url">Android系统启动-SystemServer进程启动</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-08-20 21:22:54" itemprop="dateCreated datePublished" datetime="2020-08-20T21:22:54+08:00">2020-08-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">Android源码分析</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2020/08/20/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-SystemServer%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/" class="post-meta-item leancloud_visitors" data-flag-title="Android系统启动-SystemServer进程启动" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android系统启动——SystemServer进程。(基于Android 10.0的源码)</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h5 id="ZygoteInit-forkSystemServer"><a href="#ZygoteInit-forkSystemServer" class="headerlink" title="ZygoteInit.forkSystemServer"></a>ZygoteInit.forkSystemServer</h5>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/08/20/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8-SystemServer%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
