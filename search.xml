@@ -3375,14 +3375,19 @@
 <p>注：构造函数不能同步  将 <code>synchronized</code> 关键字与构造函数一起使用是一种语法错误。同步构造函数没有意义，因为只有创建对象的线程在构造时才能访问它。</p>
 </blockquote>
 <p>当线程调用同步方法时，它会自动获取该方法的对象的内部锁，并在方法返回时释放它。即使返回是由未捕获的异常引起的，也会释放锁。</p>
-<p>在调用静态同步方法时会发生什么，因为静态方法与类关联，而不是与对象关联。在这种情况下，线程获取与该类关联的 <code>Class</code> 对象的内部锁。因此，访问类的静态字段是由一个锁控制的，该锁与任何该类的实例的锁都不同。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;类锁，实际是锁类的class对象</span><br><span class="line">private static synchronized void synClass()&#123;</span><br><span class="line">     SleepTools.second(1);</span><br><span class="line">     System.out.println(&quot;synClass going...&quot;);</span><br><span class="line">     SleepTools.second(1);</span><br><span class="line">     System.out.println(&quot;synClass end&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h5 id="同步语句"><a href="#同步语句" class="headerlink" title="同步语句"></a>同步语句</h5><p>与同步方法不同，同步语句必须指定提供内部锁的对象：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">	private Object obj &#x3D; new Object();&#x2F;&#x2F;作为一个锁</span><br><span class="line">	&#x2F;&#x2F; 使用obj提供锁</span><br><span class="line">	public void incCount()&#123;</span><br><span class="line"> 		synchronized (obj)&#123;</span><br><span class="line">			count++;</span><br><span class="line">   	 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 或使用this提供锁</span><br><span class="line">	public void incCount2()&#123;</span><br><span class="line"> 		synchronized (this)&#123;</span><br><span class="line">			count++;</span><br><span class="line">    	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h5 id="类锁"><a href="#类锁" class="headerlink" title="类锁"></a>类锁</h5><p><code>synchronized</code>修饰类或静态方法时实质锁的是<code>class</code>对象。类锁的作用范围是<strong>类级别</strong>的，不会因为同一个类的不同对象执行而失效。</p>
+<p><code>synchronized</code>修饰静态方法与<code>synchronized(xxx.class)</code>互斥，因为静态方法与类关联，而不是与对象关联。在这种情况下，线程获取与该类关联的 <code>Class</code> 对象的内部锁。因此，访问类的静态字段是由一个锁控制的，该锁与任何该类的实例的锁都不同。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class ClassLock&#123;</span><br><span class="line">	  &#x2F;&#x2F;修饰静态方法</span><br><span class="line"> 		private synchronized static void test1()&#123;</span><br><span class="line">     	 	System.out.println(&quot;synClass going...&quot;);</span><br><span class="line">     		SleepTools.second(1);</span><br><span class="line">     		System.out.println(&quot;synClass end&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;修饰类ClassLock.class，test1与test2互斥</span><br><span class="line">    private static void test2()&#123;</span><br><span class="line">        synchronized(ClassLock.class)&#123;</span><br><span class="line">     	 		System.out.println(&quot;synClass going...&quot;);</span><br><span class="line">     			SleepTools.second(1);</span><br><span class="line">     			System.out.println(&quot;synClass end&quot;);</span><br><span class="line">     		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="对象锁"><a href="#对象锁" class="headerlink" title="对象锁"></a>对象锁</h5><p><code>synchronized</code>修饰实例对象或非静态方法时实质锁的是实例对象。对象锁的作用范围是<strong>对象级别</strong>的，即仅仅作用于同一个对象时锁才生效，如果是同一个类的两个不同的对象是不会互斥的，即没有效果的。</p>
+<p><code>synchronized</code>修饰非静态方法与<code>synchronized(this)</code>互斥，<code>synchronized</code>修饰非静态方法实质锁的是当前对象(this)。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class ObjectLock&#123;</span><br><span class="line">	  &#x2F;&#x2F;修饰方法</span><br><span class="line"> 		private synchronized void test1()&#123;</span><br><span class="line">     	 	System.out.println(&quot;sync going...&quot;);</span><br><span class="line">     		SleepTools.second(1);</span><br><span class="line">     		System.out.println(&quot;sync end&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;修饰当前对象this，test1与test2互斥</span><br><span class="line">    private void test2()&#123;</span><br><span class="line">        synchronized(this)&#123;</span><br><span class="line">     	 		System.out.println(&quot;sync going...&quot;);</span><br><span class="line">     			SleepTools.second(1);</span><br><span class="line">     			System.out.println(&quot;sync end&quot;);</span><br><span class="line">     		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <blockquote>
-<p>注：根据提供锁的对象是否静态可分为对象锁和类锁，对象锁是锁非静态的实例对象，如同步语句/方法；类锁是锁类的class对象，如静态同步方法。</p>
+<p>注：类锁和对象锁是相互独立的，互不相斥。两者作用范围不同。</p>
 </blockquote>
 <h5 id="错误的加锁"><a href="#错误的加锁" class="headerlink" title="错误的加锁"></a>错误的加锁</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Worker implements Runnable&#123;</span><br><span class="line">	private Integer i;</span><br><span class="line">	</span><br><span class="line">	public Worker(Integer)&#123;</span><br><span class="line">		this.i &#x3D; i;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public void run()&#123;</span><br><span class="line">			synchronized(i)&#123;</span><br><span class="line">					i++;</span><br><span class="line">					System.out.println(&quot;i值为：&quot;+i);</span><br><span class="line">			&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) throws InterruptedException&#123;</span><br><span class="line">		Worker worker &#x3D; new Worker(1);</span><br><span class="line">		for(int i &#x3D;0; i&lt;5; i++)&#123;</span><br><span class="line">				new Thread(worker).start();</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;发现输出结果有时并不是2，3，4，5，6</span><br></pre></td></tr></table></figure>
 
@@ -3392,8 +3397,11 @@
 <blockquote>
 <p>注：synchronized锁的都是某个具体对象，要让线程安全同步运行，保证锁的对象不会发生变化。</p>
 </blockquote>
+<h5 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h5><p>synchronized锁并不能被中断，可重入，不带超时功能。</p>
+<p>唤醒/等待需要synchronize锁。</p>
+<p>使用synchronized锁时尽量缩小锁的范围以保证性能，推荐尽量使用synchronized代码块来降低锁的范围，避免使用synchronized来修饰方法。尽量找到并发访问代码的临界区。</p>
 <h4 id="三、volatile"><a href="#三、volatile" class="headerlink" title="三、volatile"></a>三、volatile</h4><h5 id="最轻量的同步机制"><a href="#最轻量的同步机制" class="headerlink" title="最轻量的同步机制"></a>最轻量的同步机制</h5><p>Java语言提供了弱同步机制，即volatile变量，以确保变量的更新通知其他线程。volatile变量具备变量可见性、禁止重排序两种特性。volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取volatile类型的变量时总会返回最新写入的值。</p>
-<h5 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h5><p><strong>volatile变量的两种特性：</strong></p>
+<h5 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h5><p><strong>volatile变量的两种特性：</strong></p>
 <p><strong>·变量可见性</strong></p>
 <p>保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的值对于其他线程是可以立即获取的。</p>
 <p><strong>·禁止重排序</strong></p>
