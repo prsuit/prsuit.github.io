@@ -3405,6 +3405,12 @@
 <li><p>使用synchronized锁时尽量缩小锁的范围以保证性能，推荐尽量使用synchronized代码块来降低锁的范围，避免使用synchronized来修饰方法。尽量找到并发访问代码的临界区。</p>
 </li>
 </ul>
+<h4 id="三、ThreadLocal"><a href="#三、ThreadLocal" class="headerlink" title="三、ThreadLocal"></a>三、ThreadLocal</h4><p>ThreadLocal 是线程局部(本地)变量，提供了线程内存储变量的能力，这些变量不同之处在于每一个线程读取的变量是对应的互相独立的，通过 get 和 set 方法就可以得到当前线程对应的值。</p>
+<h5 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h5><p>Thread 类有一个 ThreadLocal.ThreadLocalMap 类型的实例变量 threadLocals，ThreadLocal 的静态内部类 ThreadLocalMap 为每个 Thread 都维护了一个数组 table，ThreadLocal 对象确定了一个数组下标，而这个下标就是 value 存储的对应位置。具体原理见《ThreadLocal源码分析》。</p>
+<h5 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h5><p>ThreadLocal和Synchonized都用于解决多线程并发访问。可是ThreadLocal与synchronized有本质的差别。synchronized是利用锁的机制，使变量或代码块在某一时该仅仅能被一个线程访问。而ThreadLocal为每个线程都提供了变量的副本，使得每个线程在某一时间访问到的并非同一个对象，这样就隔离了多个线程对数据的数据共享。</p>
+<blockquote>
+<p>注：使用ThreadLocal变量的值对各线程是不需要同步的，每个线程使用的是变量的副本。而使用synchronized可以使变量值做到同步。</p>
+</blockquote>
 <h4 id="三、volatile"><a href="#三、volatile" class="headerlink" title="三、volatile"></a>三、volatile</h4><h5 id="最轻量的同步机制"><a href="#最轻量的同步机制" class="headerlink" title="最轻量的同步机制"></a>最轻量的同步机制</h5><p>Java语言提供了弱同步机制，即volatile变量，以确保变量的更新通知其他线程。volatile变量具备变量可见性、禁止重排序两种特性。volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取volatile类型的变量时总会返回最新写入的值。</p>
 <h5 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h5><p>volatile变量的两种特性：</p>
 <p><strong>·变量可见性</strong></p>
@@ -3446,6 +3452,17 @@
 <p>解决办法：每个线程休眠随机数，错开拿锁的时间。</p>
 <p>线程饥饿：低优先级的线程，总是拿不到执行时间。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>Java基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CAS基本原理</title>
+    <url>/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><h4 id="二、CAS原理"><a href="#二、CAS原理" class="headerlink" title="二、CAS原理"></a>二、CAS原理</h4><h4 id="三、CAS问题"><a href="#三、CAS问题" class="headerlink" title="三、CAS问题"></a>三、CAS问题</h4><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
       <categories>
         <category>Java基础</category>
       </categories>
