@@ -323,7 +323,7 @@
           <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
 <h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
-<p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 <em>release (释放)*内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为 *own (拥有)</em> 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
+<p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 <em>release (释放)</em> 内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为<em>own (拥有)</em> 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/#more" rel="contents">

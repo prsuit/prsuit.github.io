@@ -3331,11 +3331,11 @@
 </li>
 <li><p>运行(RUNNABLE)：Java线程中将就绪（ready）和运行中（running）两种状态笼统的称为“运行”。线程对象创建后，其他线程(比如main线程）调用了该对象的start()方法。该状态的线程位于可运行线程池中，等待被线程调度选中，获取CPU的使用权，此时处于就绪状态（ready）。就绪状态的线程在获得CPU时间片后变为运行中状态（running）。</p>
 </li>
-<li><p>阻塞(BLOCKED)：表示线程阻塞于锁。</p>
+<li><p>阻塞(BLOCKED)：表示线程阻塞于锁，使用了synchronized。</p>
 </li>
 <li><p>等待(WAITING)：进入该状态的线程需要无限期等待其他线程做出一些特定动作（通知或中断）。</p>
 </li>
-<li><p>定时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。</p>
+<li><p>等待超时(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。</p>
 </li>
 <li><p>终止(TERMINATED)：表示该线程已经执行完毕。</p>
 </li>
@@ -3343,7 +3343,7 @@
 <p>状态之间的变迁如下图所示：</p>
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw3ezp5xrqj30km0cs3zp.jpg" alt=""></p>
 <blockquote>
-<p>注：调用<code>yield()</code>该线程会让出cpu执行权，但不会释放锁。</p>
+<p>注：调用<code>yield()</code>该线程会让出cpu执行权，但不会释放锁。<code>sleep()</code>方法也不会释放锁。</p>
 </blockquote>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
       <categories>
@@ -3359,7 +3359,7 @@
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
 <h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
-<p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 <em>release (释放)*内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为 *own (拥有)</em> 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
+<p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 <em>release (释放)</em> 内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为<em>own (拥有)</em> 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
 <a id="more"></a>
 
 <h4 id="二、synchronized"><a href="#二、synchronized" class="headerlink" title="二、synchronized"></a>二、synchronized</h4><p>Java 编程语言提供两种基本的同步习惯用法：<em>synchronized methods (同步方法)</em> 和 <em>synchronized statements (同步语句)</em>。所有加上synchronized修饰的方法和块语句，在多线程访问的时候，同一时刻只能有一个线程能够用synchronized 修饰的方法或者代码块。</p>
@@ -3397,15 +3397,20 @@
 <blockquote>
 <p>注：synchronized锁的都是某个具体对象，要让线程安全同步运行，保证锁的对象不会发生变化。</p>
 </blockquote>
-<h5 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h5><p>synchronized锁并不能被中断，可重入，不带超时功能。</p>
-<p>唤醒/等待需要synchronize锁。</p>
-<p>使用synchronized锁时尽量缩小锁的范围以保证性能，推荐尽量使用synchronized代码块来降低锁的范围，避免使用synchronized来修饰方法。尽量找到并发访问代码的临界区。</p>
+<h5 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h5><ul>
+<li><p>synchronized锁并不能被中断，可重入，不带超时功能。</p>
+</li>
+<li><p>等待/唤醒需要使用synchronize锁。当执行了对象的<code>wait()</code>方法后会释放该锁，执行<code>notify()/notifyAll()</code>方法后不会释放锁。</p>
+</li>
+<li><p>使用synchronized锁时尽量缩小锁的范围以保证性能，推荐尽量使用synchronized代码块来降低锁的范围，避免使用synchronized来修饰方法。尽量找到并发访问代码的临界区。</p>
+</li>
+</ul>
 <h4 id="三、volatile"><a href="#三、volatile" class="headerlink" title="三、volatile"></a>三、volatile</h4><h5 id="最轻量的同步机制"><a href="#最轻量的同步机制" class="headerlink" title="最轻量的同步机制"></a>最轻量的同步机制</h5><p>Java语言提供了弱同步机制，即volatile变量，以确保变量的更新通知其他线程。volatile变量具备变量可见性、禁止重排序两种特性。volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取volatile类型的变量时总会返回最新写入的值。</p>
-<h5 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h5><p><strong>volatile变量的两种特性：</strong></p>
+<h5 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h5><p>volatile变量的两种特性：</p>
 <p><strong>·变量可见性</strong></p>
 <p>保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的值对于其他线程是可以立即获取的。</p>
 <p><strong>·禁止重排序</strong></p>
-<p>volatile禁止了指令重排。比sychronized更轻量级的同步锁。在访问volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile变量是一种比sychronized关键字更轻量级的同步机制。volatile适合这种场景：一个变量被多个线程共享，线程直接给这个变量赋值。</p>
+<p>volatile禁止了指令重排。比sychronized更轻量级的同步锁。在访问volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile变量是一种比synchronized关键字更轻量级的同步机制。volatile适合这种场景：一个变量被多个线程共享，线程直接给这个变量赋值。</p>
 <p>当对非volatile 变量进行读写的时候，每个线程先从内存拷贝变量到CPU缓存中。如果计算机有多个CPU，每个线程可能在不同的CPU上被处理，这意味着每个线程可以拷贝到不同CPU cache中。而声明变量是volatile的，JVM 保证了每次读变量都从内存中读，跳过CPU cache这一步。</p>
 <h5 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h5><p>值得说明的是对volatile变量的单次读/写操作可以保证原子性的，如long和double类型变量，但是并不能保证<code>i++</code>这种操作的原子性，因为本质上<code>i++</code>是读、写两次操作。在某些场景下可以代替synchronized。但是，volatile的不能完全取代synchronized的位置，只有在一些特殊的场景下(如一写多读)，才能适用volatile。无法保证一个变量在多线程同时写的时候线程安全。</p>
 <p><strong>总体来说，需要必须同时满足下面两个条件时才能保证并发环境的线程安全：</strong></p>
@@ -3417,6 +3422,29 @@
 <h5 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h5><p>如果要深入了解volatile关键字的作用，就必须先来了解一下JVM在运行时候的内存分配过程。其中有一个内存区域是jvm虚拟机栈，每一个线程运行时都有一个线程栈，线程栈保存了线程运行时候变量值信息。当线程访问某一个对象时候值的时候，首先通过对象的引用找到对应在堆内存的变量的值，然后把堆内存变量的具体值load到线程本地内存中，建立一个变量副本，之后线程就不再和对象在堆内存变量值有任何关系，而是直接修改副本变量的值，在修改完之后的某一个时刻（线程退出之前），自动把线程变量副本的值回写到对象在堆中变量。这样在堆中的对象的值就产生变化了。如下图：</p>
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw6s3s5qc8j30g30ffwf9.jpg" alt=""></p>
 <p>因此volatile关键字作用就是强制线程每次读取变量值的时候都去“主内存”中取值。</p>
+<h4 id="四、线程间协作"><a href="#四、线程间协作" class="headerlink" title="四、线程间协作"></a>四、线程间协作</h4><p>利用等待和通知机制完成线程间协作。等待<code>wait()</code>和通知<code>notify()/notifyAll()</code>需要synchronized锁。</p>
+<h5 id="标准使用范式"><a href="#标准使用范式" class="headerlink" title="标准使用范式"></a>标准使用范式</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;等待</span><br><span class="line">public void waitXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">		while(条件不满足)&#123;</span><br><span class="line">				对象.wait();</span><br><span class="line">				&#x2F;&#x2F;业务逻辑</span><br><span class="line">				...</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;业务逻辑</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;通知</span><br><span class="line">public void notifyXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">	 	&#x2F;&#x2F;业务逻辑</span><br><span class="line">	  ...</span><br><span class="line">	  对象.notify&#x2F;notifyAll();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h5><p><code>wait()</code>方法执行后会释放锁，<code>wait()</code>之后的代码不会执行。被唤醒后，线程要重新竞争锁，拿到锁之后才会执行<code>wait()</code>之后的代码。</p>
+<h5 id="notify-notifyAll"><a href="#notify-notifyAll" class="headerlink" title="notify/notifyAll"></a>notify/notifyAll</h5><p><code>notify()/notifyAll()</code>方法执行后不会释放锁，等同步代码块执行完才释放，</p>
+<blockquote>
+<p>注：notify()方法只唤醒该对象上的一个等待线程，notifyAll()方法唤醒该对象上所有等待线程。</p>
+<p>wait()、notify()、notifyAll()方法是Object类的方法。</p>
+</blockquote>
+<h4 id="五、死锁"><a href="#五、死锁" class="headerlink" title="五、死锁"></a>五、死锁</h4><h5 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h5><p>是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。此时称系统处于死锁状态或系统产生了死锁。</p>
+<h5 id="发生条件"><a href="#发生条件" class="headerlink" title="发生条件"></a>发生条件</h5><p>1.多操作者（M&gt;=2个）情况下，争夺多个资源（N&gt;=2个，且N&lt;=M）。</p>
+<p>2.争夺资源的顺序不对。</p>
+<p>3.争夺者拿到资源不放手。</p>
+<p>学术化的定义四个必要条件：互斥条件、请求和保持条件、不剥夺条件、环路等待条件。</p>
+<h5 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h5><p>1、线程不工作了，但是整个程序还是活着的。</p>
+<p>2、没有任何的异常信息可以供我们检查。</p>
+<p>3、一旦程序发生了发生了死锁，是没有任何的办法恢复的，只能重启程序，对正式已发布程序来说，这是个很严重的问题。</p>
+<h5 id="如何避免"><a href="#如何避免" class="headerlink" title="如何避免"></a>如何避免</h5><p>避免死锁常见的算法有有序资源分配法、银行家算法，关键是保证拿锁的顺序一致。两种解决方式：</p>
+<p>1、 内部通过顺序比较，确定拿锁的顺序；</p>
+<p>2、采用尝试拿锁的机制(Lock)。</p>
+<h4 id="六、其它问题"><a href="#六、其它问题" class="headerlink" title="六、其它问题"></a>六、其它问题</h4><p>活锁：两个线程在尝试拿锁的机制中，发生多个线程之间互相谦让，不断发生同一个线程总是拿到同一把锁，在尝试拿另一把锁时因为拿不到，而将本来已经持有的锁释放的过程。</p>
+<p>解决办法：每个线程休眠随机数，错开拿锁的时间。</p>
+<p>线程饥饿：低优先级的线程，总是拿不到执行时间。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
       <categories>
         <category>Java基础</category>
