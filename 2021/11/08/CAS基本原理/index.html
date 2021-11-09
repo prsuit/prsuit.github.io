@@ -22,18 +22,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言目录一、原子操作二、CAS原理三、CAS问题总结">
+  <meta name="description" content="前言实现原子操作可以使用锁(synchronized)和CAS，synchronized锁是一种较重的机制，CAS是一种更有效，更加灵活的机制。 目录一、原子操作在编程中，atomic (原子) 动作是一次性完全发生的动作。原子动作不能在中间停止：它要么完全发生，要么根本不发生。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CAS基本原理">
 <meta property="og:url" content="http://yoursite.com/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="SongHang&#39;s Blog">
-<meta property="og:description" content="前言目录一、原子操作二、CAS原理三、CAS问题总结">
+<meta property="og:description" content="前言实现原子操作可以使用锁(synchronized)和CAS，synchronized锁是一种较重的机制，CAS是一种更有效，更加灵活的机制。 目录一、原子操作在编程中，atomic (原子) 动作是一次性完全发生的动作。原子动作不能在中间停止：它要么完全发生，要么根本不发生。">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gw8poozdyoj30cy0hqjsh.jpg">
 <meta property="article:published_time" content="2021-11-08T14:00:33.000Z">
-<meta property="article:modified_time" content="2021-11-08T14:14:04.201Z">
+<meta property="article:modified_time" content="2021-11-09T04:09:38.503Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gw8poozdyoj30cy0hqjsh.jpg">
 
 <link rel="canonical" href="http://yoursite.com/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/">
 
@@ -209,7 +211,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、原子操作"><span class="nav-number">2.1.</span> <span class="nav-text">一、原子操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、CAS原理"><span class="nav-number">2.2.</span> <span class="nav-text">二、CAS原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、CAS问题"><span class="nav-number">2.3.</span> <span class="nav-text">三、CAS问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、原子操作"><span class="nav-number">2.1.</span> <span class="nav-text">一、原子操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、CAS原理"><span class="nav-number">2.2.</span> <span class="nav-text">二、CAS原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、CAS问题"><span class="nav-number">2.3.</span> <span class="nav-text">三、CAS问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、原子操作类"><span class="nav-number">2.4.</span> <span class="nav-text">四、原子操作类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -326,7 +328,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><h4 id="二、CAS原理"><a href="#二、CAS原理" class="headerlink" title="二、CAS原理"></a>二、CAS原理</h4><h4 id="三、CAS问题"><a href="#三、CAS问题" class="headerlink" title="三、CAS问题"></a>三、CAS问题</h4><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>实现原子操作可以使用锁(synchronized)和CAS，synchronized锁是一种较重的机制，CAS是一种更有效，更加灵活的机制。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><p>在编程中，<em>atomic (原子)</em> 动作是一次性完全发生的动作。原子动作不能在中间停止：它要么完全发生，要么根本不发生。</p>
+<a id="more"></a>
+
+<h4 id="二、CAS原理"><a href="#二、CAS原理" class="headerlink" title="二、CAS原理"></a>二、CAS原理</h4><p>实现原子操作还可以现代处理器都支持CAS(Compare And Swap)指令，循环这个指令直到成功为止。</p>
+<p>每一个CAS操作过程都包含三个运算符：一个内存地址V，一个期望的值A和一个新值B，操作的时候如果这个地址上存放的值等于这个期望的值A，则将地址上的值赋为新值B，否则不做任何操作。CAS(比较并且交换)是一种原子指令。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw8poozdyoj30cy0hqjsh.jpg" alt=""></p>
+<p>与synchronized的区别：</p>
+<p>CAS是一种乐观锁，不会阻塞线程。</p>
+<p>synchronized是一种悲观锁，是基于阻塞的锁机制，也就是说当一个线程拥有锁的时候，访问同一资源的其它线程需要等待，直到该线程释放锁。如果有大量的线程来竞争资源，那CPU将会花费大量的时间和资源来处理这些竞争，上下文切换耗费时间和性能。</p>
+<h4 id="三、CAS问题"><a href="#三、CAS问题" class="headerlink" title="三、CAS问题"></a>三、CAS问题</h4><ol>
+<li>ABA问题：因为CAS需要在操作值的时候，检查值有没有发生变化，如果没有发生变化则更新，但是如果一个值原来是A，变成了B，又变成了A，那么使用CAS进行检查时会发现它的值没有发生变化，但是实际上却变化了。</li>
+<li>循环时间长开销大：自旋CAS如果长时间不成功，会给CPU带来非常大的执行开销。</li>
+<li>只能保证一个共享变量的原子操作；当对一个共享变量执行操作时，我们可以使用循环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性，这个时候就可以用锁。</li>
+</ol>
+<p>解决ABA问题：思路就是使用版本号。在变量前面追加上版本号，每次变量更新的时候把版本号加1。JDK提供<code>AtomicStampedReference</code>类和<code>AtomicMarkableReference</code>类。</p>
+<p>解决只能保证一个共享变量问题：可以把多个共享变量合并成一个共享变量来操作。从Java 1.5开始，JDK提供了<code>AtomicReference</code>类来保证引用对象之间的原子性，就可以把多个变量放在一个对象里来进行CAS操作。</p>
+<h4 id="四、原子操作类"><a href="#四、原子操作类" class="headerlink" title="四、原子操作类"></a>四、原子操作类</h4><p>更新基本类型类：AtomicBoolean、AtomicInteger、AtomicLong</p>
+<p>更新数组类：AtomicIntegerArray、AtomicLongArray、AtomicReferenceArray</p>
+<p>更新引用类型：AtomicReference、AtomicMarkableReference、AtomicStampedReference</p>
+<p>AtomicStampedReference：利用版本戳的形式记录了每次改变以后的版本号，更新带有int类型标记位的引用类型，关心的是被修改过几次。</p>
+<p>AtomicMarkableReference：更新带有boolean类型标记位的引用类型，关心的是有没有被修改过。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
     </div>
 
     
