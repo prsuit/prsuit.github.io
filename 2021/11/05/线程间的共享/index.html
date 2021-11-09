@@ -31,7 +31,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gw6s3s5qc8j30g30ffwf9.jpg">
 <meta property="article:published_time" content="2021-11-05T03:00:00.000Z">
-<meta property="article:modified_time" content="2021-11-09T04:16:08.711Z">
+<meta property="article:modified_time" content="2021-11-09T08:53:28.329Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -225,7 +225,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -401,7 +401,7 @@
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw6s3s5qc8j30g30ffwf9.jpg" alt=""></p>
 <p>因此volatile关键字作用就是强制线程每次读取变量值的时候都去“主内存”中取值。</p>
 <h4 id="五、线程间协作"><a href="#五、线程间协作" class="headerlink" title="五、线程间协作"></a>五、线程间协作</h4><p>利用等待和通知机制完成线程间协作。等待<code>wait()</code>和通知<code>notify()/notifyAll()</code>需要synchronized锁。</p>
-<h5 id="标准使用范式"><a href="#标准使用范式" class="headerlink" title="标准使用范式"></a>标准使用范式</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;等待</span><br><span class="line">public void waitXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">		while(条件不满足)&#123;</span><br><span class="line">				对象.wait();</span><br><span class="line">				&#x2F;&#x2F;业务逻辑</span><br><span class="line">				...</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;业务逻辑</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;通知</span><br><span class="line">public void notifyXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">	 	&#x2F;&#x2F;业务逻辑</span><br><span class="line">	  ...</span><br><span class="line">	  对象.notify&#x2F;notifyAll();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="标准使用范式"><a href="#标准使用范式" class="headerlink" title="标准使用范式"></a>标准使用范式</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;等待</span><br><span class="line">public void waitXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">		while(条件不满足)&#123;</span><br><span class="line">				对象.wait();</span><br><span class="line">				&#x2F;&#x2F;业务逻辑</span><br><span class="line">				...</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;业务逻辑</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;通知</span><br><span class="line">public void notifyXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">	 	&#x2F;&#x2F;业务逻辑</span><br><span class="line">	  ...</span><br><span class="line">	  改变条件</span><br><span class="line">	  对象.notify&#x2F;notifyAll();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h5 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h5><p><code>wait()</code>方法执行后会释放锁，<code>wait()</code>之后的代码不会执行。被唤醒后，线程要重新竞争锁，拿到锁之后才会执行<code>wait()</code>之后的代码。</p>
 <h5 id="notify-notifyAll"><a href="#notify-notifyAll" class="headerlink" title="notify/notifyAll"></a>notify/notifyAll</h5><p><code>notify()/notifyAll()</code>方法执行后不会释放锁，等同步代码块执行完才释放，</p>
