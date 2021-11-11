@@ -3398,16 +3398,46 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static Integer valueOf(int i) &#123;</span><br><span class="line">        if (i &gt;&#x3D; IntegerCache.low &amp;&amp; i &lt;&#x3D; IntegerCache.high)</span><br><span class="line">            return IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">        return new Integer(i);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>注：synchronized锁的都是某个具体对象，要让线程安全同步运行，保证锁的对象不会发生变化。</p>
+<p>注：synchronized锁的都是锁某个具体对象，要让线程安全同步运行，保证锁的对象不会发生变化。</p>
 </blockquote>
 <h5 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h5><ul>
-<li><p>synchronized锁并不能被中断，可重入，不带超时功能。</p>
+<li><p>synchronized锁并不能被中断，可重入锁，不带超时功能，悲观锁，非公平锁。</p>
 </li>
 <li><p>等待/唤醒需要使用synchronize锁。当执行了对象的<code>wait()</code>方法后会释放该锁，执行<code>notify()/notifyAll()</code>方法后不会释放锁。</p>
 </li>
 <li><p>使用synchronized锁时尽量缩小锁的范围以保证性能，推荐尽量使用synchronized代码块来降低锁的范围，避免使用synchronized来修饰方法。尽量找到并发访问代码的临界区。</p>
 </li>
 </ul>
+<h5 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h5><p>在JVM里的实现是基于进入和退出Monitor对象来实现方法同步和代码块同步，使用monitorenter和monitorexit指令实现的：</p>
+<ul>
+<li><p>monitorenter指令是在编译后插入到同步代码块的开始位置，而monitorexit是插入到方法结束处和异常处。</p>
+</li>
+<li><p>每个monitorenter必须有对应的monitorexit与之配对。</p>
+</li>
+<li><p>任何对象都有一个monitor与之关联，当且一个monitor被持有后，它将处于锁定状态。</p>
+</li>
+</ul>
+<p>从反编译的结果来看，对同步块，MonitorEnter指令插入在同步代码块的开始位置，当代码执行到该指令时，将会尝试获取该对象Monitor的所有权，即尝试获得该对象的锁，而monitorExit指令则插入在方法结束处和异常处。对同步方法，并没有通过指令monitorenter和monitorexit来实现，相对于普通方法，其常量池中多了ACC_SYNCHRONIZED标示符。</p>
+<p>synchronized使用的锁是存放在Java对象头里面，具体位置是对象头里面的MarkWord，MarkWord里默认数据是存储对象的HashCode等信息，但是会随着对象的运行改变而发生变化，不同的锁状态对应着不同的记录存储方式。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwb9tp7hxzj30tw062q3k.jpg" alt=""></p>
+<h5 id="了解各种锁"><a href="#了解各种锁" class="headerlink" title="了解各种锁"></a>了解各种锁</h5><p><strong>自旋锁</strong></p>
+<p>自旋锁原理非常简单，如果持有锁的线程能在很短时间内释放锁资源，那么那些等待竞争锁的线程就不需要做内核态和用户态之间的切换进入阻塞挂起状态，它们只需要等一等（自旋），等持有锁的线程释放锁后即可立即获取锁，这样就避免用户线程和内核的切换的消耗。</p>
+<p>但是线程自旋是需要消耗CPU的，说白了就是让CPU在做无用功，线程不能一直占用CPU自旋做无用功，所以需要设定一个自旋等待的最大时间。</p>
+<p>如果持有锁的线程执行的时间超过自旋等待的最大时间扔没有释放锁，就会导致其它争用锁的线程在最大等待时间内还是获取不到锁，这时争用线程会停止自旋进入阻塞状态。</p>
+<p>优缺点：</p>
+<p>自旋锁尽可能的减少线程的阻塞，这对于锁的竞争不激烈，且占用锁时间非常短的代码块来说性能能大幅度的提升，因为自旋的消耗会小于线程阻塞挂起操作的消耗！</p>
+<p>但是如果锁的竞争激烈，或者持有锁的线程需要长时间占用锁执行同步块，这时候就不适合使用自旋锁了，因为自旋锁在获取锁前一直都是占用cpu做无用功，线程自旋的消耗大于线程阻塞挂起操作的消耗，其它需要cup的线程又不能获取到cpu，造成cpu的浪费。</p>
+<p>自旋锁时间阈值：</p>
+<p>自旋锁的目的是为了占着CPU的资源不释放，等到获取到锁立即进行处理。但是如何去选择自旋的执行时间呢？如果自旋执行时间太长，会有大量的线程处于自旋状态占用CPU资源，进而会影响整体系统的性能。因此自旋次数很重要。</p>
+<p>JVM对于自旋次数的选择，jdk1.5默认为10次，在1.6引入了适应性自旋锁，适应性自旋锁意味着自旋的时间不在是固定的了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定，基本认为一个线程上下文切换的时间是最佳的一个时间。JDK1.6中-XX:+UseSpinning开启自旋锁； JDK1.7后，去掉此参数，由jvm控制。</p>
+<h5 id="锁的状态"><a href="#锁的状态" class="headerlink" title="锁的状态"></a>锁的状态</h5><p>一共有四种状态，级别从低到高依次是：<strong>无锁状态，偏向锁状态，轻量级锁状态和重量级锁状态</strong>。它会随着竞争情况逐渐升级。锁可以升级但不能降级，目的是为了提高获得锁和释放锁的效率。</p>
+<p>偏向锁：大多数情况下，锁不仅不存在多线程竞争，而且总是由同一线程多次获得，为了让线程获得锁的代价更低而引入了偏向锁。无竞争时不需要进行CAS操作来加锁和解锁。它会偏向于第一个访问锁的线程。</p>
+<p>轻量级锁：是由偏向锁升级来的，偏向锁运行在一个线程进入同步块的情况下，当第二个线程加入锁争用的时候，偏向锁就会升级为轻量级锁； 无竞争时通过CAS操作来加锁和解锁。（自旋锁——是一种锁的机制，不是状态）</p>
+<p>重量级锁：由轻量级锁自旋加锁失败多次后升级为重量级锁，真正的加锁操作，阻塞竞争线程。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwb9o31wu9j30ns04paaq.jpg" alt=""></p>
+<blockquote>
+<p>注：synchronized的实现的优化是引入了偏向锁、轻量级锁。JDK引入了自旋锁和适应性自旋锁。</p>
+</blockquote>
 <h4 id="三、ThreadLocal"><a href="#三、ThreadLocal" class="headerlink" title="三、ThreadLocal"></a>三、ThreadLocal</h4><p>ThreadLocal 是线程局部(本地)变量，提供了线程内存储变量的能力，这些变量不同之处在于每一个线程读取的变量是对应的互相独立的，通过 get 和 set 方法就可以得到当前线程对应的值。</p>
 <h5 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h5><p>Thread 类有一个 ThreadLocal.ThreadLocalMap 类型的实例变量 threadLocals，ThreadLocal 的静态内部类 ThreadLocalMap 为每个 Thread 都维护了一个数组 table，ThreadLocal 对象确定了一个数组下标，而这个下标就是 value 存储的对应位置。具体原理见《ThreadLocal源码分析》。</p>
 <h5 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h5><p>ThreadLocal和Synchonized都用于解决多线程并发访问。可是ThreadLocal与synchronized有本质的差别。synchronized是利用锁的机制，使变量或代码块在某一时该仅仅能被一个线程访问。而ThreadLocal为每个线程都提供了变量的副本，使得每个线程在某一时间访问到的并非同一个对象，这样就隔离了多个线程对数据的数据共享。</p>
@@ -3416,21 +3446,28 @@
 </blockquote>
 <h4 id="四、volatile"><a href="#四、volatile" class="headerlink" title="四、volatile"></a>四、volatile</h4><h5 id="最轻量的同步机制"><a href="#最轻量的同步机制" class="headerlink" title="最轻量的同步机制"></a>最轻量的同步机制</h5><p>Java语言提供了弱同步机制，即volatile变量，以确保变量的更新通知其他线程。volatile变量具备变量可见性、禁止重排序两种特性。volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取volatile类型的变量时总会返回最新写入的值。</p>
 <h5 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h5><p>volatile变量的两种特性：</p>
-<p><strong>·变量可见性</strong></p>
-<p>保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的值对于其他线程是可以立即获取的。</p>
-<p><strong>·禁止重排序</strong></p>
+<p><strong>变量可见性</strong></p>
+<p>保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的值对于其他线程是可以立即获取的。强制线程修改完把变量值立即同步到主内存，其它线程从主内存中读取变量值。</p>
+<p><strong>禁止重排序</strong></p>
 <p>volatile禁止了指令重排。比sychronized更轻量级的同步锁。在访问volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile变量是一种比synchronized关键字更轻量级的同步机制。volatile适合这种场景：一个变量被多个线程共享，线程直接给这个变量赋值。</p>
-<p>当对非volatile 变量进行读写的时候，每个线程先从内存拷贝变量到CPU缓存中。如果计算机有多个CPU，每个线程可能在不同的CPU上被处理，这意味着每个线程可以拷贝到不同CPU cache中。而声明变量是volatile的，JVM 保证了每次读变量都从内存中读，跳过CPU cache这一步。</p>
-<h5 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h5><p>值得说明的是对volatile变量的单次读/写操作可以保证原子性的，如long和double类型变量，但是并不能保证<code>i++</code>这种操作的原子性，因为本质上<code>i++</code>是读、写两次操作。在某些场景下可以代替synchronized。但是，volatile的不能完全取代synchronized的位置，只有在一些特殊的场景下(如一写多读)，才能适用volatile。无法保证一个变量在多线程同时写的时候线程安全。</p>
+<p><strong>原子性</strong></p>
+<p>对任意单个volatile变量的读/写具有原子性，但类似于volatile++这种复合操作不具有原子性。volatile虽然能保证执行完及时把变量刷到主内存中，但对于count++这种非原子性、多指令的情况，由于线程切换，线程A刚把count=0加载到工作内存，线程B就可以开始工作了，这样就会导致线程A和B执行完的结果都是1，都写到主内存中，主内存的值还是1不是2。</p>
+<h5 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h5><p>值得说明的是对volatile变量的单次读/写操作可以保证原子性的，如long和double类型变量，但是并不能保证<code>i++</code>这种操作的原子性，因为本质上<code>i++</code>是读、写两次操作。在某些场景下可以代替synchronized。但是，volatile的不能完全取代synchronized的位置，只有在一些特殊的场景下(如一写多读)，才能适用volatile。无法保证一个变量在多线程同时写的时候线程安全。并发编程中，使用volatile + CAS操作来实现原子操作，代替synchronized。</p>
 <p><strong>总体来说，需要必须同时满足下面两个条件时才能保证并发环境的线程安全：</strong></p>
-<p>（1）对变量的写操作不依赖于当前值（比如 i++），或者说是单纯的变量赋值（boolean flag = true）。</p>
+<p>（1）对变量的写操作不依赖于当前值，或者说是写操作独立互不关联，变量赋值（boolean flag = true）。</p>
 <p>（2）该变量没有包含在具有其他变量的不变式中，也就是说，不同的volatile变量之间，不能互相依赖。只有在状态真正独立于程序内其他内容时才能使用volatile。</p>
 <blockquote>
-<p>注：多线程下，volatile只保证可见性，不能保证原子性。</p>
+<p>注：volatile保证可见性和单个读/写操作(get/set)原子性，不能保证复合操作(volatile++)原子性。synchronized能保证可见性和操作原子性。</p>
 </blockquote>
 <h5 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h5><p>如果要深入了解volatile关键字的作用，就必须先来了解一下JVM在运行时候的内存分配过程。其中有一个内存区域是jvm虚拟机栈，每一个线程运行时都有一个线程栈，线程栈保存了线程运行时候变量值信息。当线程访问某一个对象时候值的时候，首先通过对象的引用找到对应在堆内存的变量的值，然后把堆内存变量的具体值load到线程本地内存中，建立一个变量副本，之后线程就不再和对象在堆内存变量值有任何关系，而是直接修改副本变量的值，在修改完之后的某一个时刻（线程退出之前），自动把线程变量副本的值回写到对象在堆中变量。这样在堆中的对象的值就产生变化了。如下图：</p>
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw6s3s5qc8j30g30ffwf9.jpg" alt=""></p>
-<p>因此volatile关键字作用就是强制线程每次读取变量值的时候都去“主内存”中取值。</p>
+<p>因此volatile关键字作用就是强制线程每次读取变量值的时候都去“主内存”中取值，并同步修改后的值到主内存。</p>
+<h5 id="实现原理-1"><a href="#实现原理-1" class="headerlink" title="实现原理"></a>实现原理</h5><p>通过对OpenJDK中的unsafe.cpp源码的分析，会发现被volatile关键字修饰的变量会存在一个“lock:”的前缀。Lock前缀，Lock不是一种内存屏障，但是它能完成类似内存屏障的功能。Lock会对CPU总线和高速缓存加锁，可以理解为CPU指令级的一种锁。</p>
+<p>有volatile变量修饰的共享变量进行写操作的时候会使用CPU提供的Lock前缀指令：</p>
+<ul>
+<li>将当前处理器缓存里的volatile所在行的数据(volatile变量值)写回到系统内存。</li>
+<li>这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。</li>
+</ul>
 <h4 id="五、线程间协作"><a href="#五、线程间协作" class="headerlink" title="五、线程间协作"></a>五、线程间协作</h4><p>利用等待和通知机制完成线程间协作。等待<code>wait()</code>和通知<code>notify()/notifyAll()</code>需要synchronized锁。</p>
 <h5 id="标准使用范式"><a href="#标准使用范式" class="headerlink" title="标准使用范式"></a>标准使用范式</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;等待</span><br><span class="line">public void waitXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">		while(条件不满足)&#123;</span><br><span class="line">				对象.wait();</span><br><span class="line">				&#x2F;&#x2F;业务逻辑</span><br><span class="line">				...</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;业务逻辑</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;通知</span><br><span class="line">public void notifyXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">	 	&#x2F;&#x2F;业务逻辑</span><br><span class="line">	  ...</span><br><span class="line">	  改变条件</span><br><span class="line">	  对象.notify&#x2F;notifyAll();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -3454,7 +3491,8 @@
 <h4 id="七、其它问题"><a href="#七、其它问题" class="headerlink" title="七、其它问题"></a>七、其它问题</h4><p>活锁：两个线程在尝试拿锁的机制中，发生多个线程之间互相谦让，不断发生同一个线程总是拿到同一把锁，在尝试拿另一把锁时因为拿不到，而将本来已经持有的锁释放的过程。</p>
 <p>解决办法：每个线程休眠随机数，错开拿锁的时间。</p>
 <p>线程饥饿：低优先级的线程，总是拿不到执行时间。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><a href="https://www.cnblogs.com/yeya/p/10207030.html" target="_blank" rel="noopener">Java并发编程：synchronized、Lock、ReentrantLock以及ReadWriteLock的那些事儿</a></p>
+]]></content>
       <categories>
         <category>Java基础</category>
       </categories>
@@ -3465,8 +3503,8 @@
   <entry>
     <title>CAS基本原理</title>
     <url>/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>实现原子操作可以使用锁(synchronized)和CAS，synchronized锁是一种较重的机制，CAS是一种更有效，更加灵活的机制。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><p>在编程中，<em>atomic (原子)</em> 动作是一次性完全发生的动作。原子动作不能在中间停止：它要么完全发生，要么根本不发生。</p>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>实现原子操作可以使用锁(synchronized)和CAS，synchronized锁是一种重量级锁的机制，CAS是一种更有效，更加灵活的机制。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><p>在编程中，<em>atomic (原子)</em> 动作是一次性完全发生的动作(一个或多个操作)。原子动作不能在中间停止：它要么完全发生，要么根本不发生。</p>
 <a id="more"></a>
 
 <h4 id="二、CAS原理"><a href="#二、CAS原理" class="headerlink" title="二、CAS原理"></a>二、CAS原理</h4><p>实现原子操作还可以现代处理器都支持CAS(Compare And Swap)指令，循环这个指令直到成功为止。</p>
@@ -3487,7 +3525,8 @@
 <p>更新引用类型：AtomicReference、AtomicMarkableReference、AtomicStampedReference</p>
 <p>AtomicStampedReference：利用版本戳的形式记录了每次改变以后的版本号，更新带有int类型标记位的引用类型，关心的是被修改过几次。</p>
 <p>AtomicMarkableReference：更新带有boolean类型标记位的引用类型，关心的是有没有被修改过。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><a href="https://www.cnblogs.com/yeya/p/10237376.html" target="_blank" rel="noopener">Java并发编程：什么是CAS？这回总算知道了</a></p>
+]]></content>
       <categories>
         <category>Java基础</category>
       </categories>
@@ -3520,7 +3559,7 @@
 </li>
 </ul>
 <blockquote>
-<p>注：阻塞队列的方法不全是阻塞的。</p>
+<p>注：阻塞队列的方法不全是阻塞的，只有<code>put(e)</code>和<code>take()</code>方法会阻塞。</p>
 </blockquote>
 <h5 id="常用阻塞队列"><a href="#常用阻塞队列" class="headerlink" title="常用阻塞队列"></a>常用阻塞队列</h5><ul>
 <li>ArrayBlockingQueue：一个由数组结构组成的有界阻塞队列。是一个用数组实现的有界阻塞队列。此队列按照先进先出（FIFO）的原则对元素进行排序。</li>
@@ -3694,8 +3733,9 @@
 <p>执行时间不同的任务可以交给不同规模的线程池来处理，或者可以使用优先级队列，让执行时间短的任务先执行。</p>
 <p>建议使用有界队列。有界队列能增加系统的稳定性和预警能力，可以根据需要设大一点儿，比如几千。</p>
 <p>如果当时我们设置成无界队列，那么线程池的队列就会越来越多，有可能会撑满内存，导致整个系统不可用，而不只是后台任务出现问题。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><a href="https://www.cnblogs.com/yeya/p/10218358.html" target="_blank" rel="noopener">https://www.cnblogs.com/yeya/p/10218358.html</a></p>
-<p><a href="https://www.cnblogs.com/liuzhihu/p/8177371.html" target="_blank" rel="noopener">https://www.cnblogs.com/liuzhihu/p/8177371.html</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><a href="https://www.cnblogs.com/yeya/p/10218358.html" target="_blank" rel="noopener">Java线程池核心ThreadPoolExecutor的使用和原理分析</a></p>
+<p><a href="https://www.cnblogs.com/liuzhihu/p/8177371.html" target="_blank" rel="noopener">深入理解Java线程池：ThreadPoolExecutor</a></p>
+<p><a href="https://www.cnblogs.com/dolphin0520/p/3932921.html" target="_blank" rel="noopener">Java并发编程：线程池的使用</a></p>
 ]]></content>
       <categories>
         <category>Java基础</category>
@@ -3705,10 +3745,88 @@
       </tags>
   </entry>
   <entry>
-    <title>AbstractQueueSynchronizer</title>
-    <url>/2021/11/10/AbstractQueueSynchronizer/</url>
+    <title>Java内存模型</title>
+    <url>/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Java内存模型。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><p>Java内存模型即Java Memory Model，简称JMM。JMM定义了Java 虚拟机(JVM)在计算机内存(RAM)中的工作方式。JVM是整个计算机虚拟模型，所以JMM是隶属于JVM的。Java1.5版本对其进行了重构，现在的Java仍沿用了Java1.5的版本。Jmm遇到的问题与现代计算机中遇到的问题是差不多的。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
+<p><a href="https://www.jianshu.com/p/8a58d8335270" target="_blank" rel="noopener">JMM和底层实现原理</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/29881777" target="_blank" rel="noopener">Java内存模型（JMM）总结</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>Java基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深入理解AQS</title>
+    <url>/2021/11/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍AbstractQueueSynchronizer。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><p>队列同步器AbstractQueuedSynchronizer（以下简称同步器或AQS），是用来构建锁或者其他同步组件的基础框架，它使用了一个int成员变量表示同步状态，通过维护一个双向链表FIFO队列来完成资源获取线程的排队工作。它能够成为实现大部分同步需求的基础。</p>
+<a id="more"></a>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public abstract class AbstractQueuedSynchronizer</span><br><span class="line">    extends AbstractOwnableSynchronizer</span><br><span class="line">    implements java.io.Serializable &#123;</span><br><span class="line">    </span><br><span class="line">    &#x2F;**</span><br><span class="line">      * The synchronization state.</span><br><span class="line">      *&#x2F;</span><br><span class="line">      private volatile int state;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="二、使用"><a href="#二、使用" class="headerlink" title="二、使用"></a>二、使用</h4><p>AQS的主要使用方式是继承，子类通过继承AQS并实现它的抽象方法来管理同步状态，在AQS里由一个int型的state来代表这个状态，在抽象方法的实现过程中免不了要对同步状态进行更改，这时就需要使用同步器提供的3个方法<code>getState()</code>、<code>setState(int newState)</code>和<code>compareAndSetState(int expect,int update)</code>来进行操作，因为它们能够保证状态的改变是安全的。 </p>
+<p>自定义一个同步组件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> *类说明：实现自己独占锁,不可重入</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SelfLock implements Lock &#123;</span><br><span class="line">    &#x2F;&#x2F; 静态内部类，自定义同步器</span><br><span class="line">    private static class Sync extends AbstractQueuedSynchronizer &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;*判断处于占用状态*&#x2F;</span><br><span class="line">        @Override</span><br><span class="line">        protected boolean isHeldExclusively() &#123;</span><br><span class="line">            return getState()&#x3D;&#x3D;1;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;*获得锁*&#x2F;</span><br><span class="line">        @Override</span><br><span class="line">        protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">            if(compareAndSetState(0,1))&#123;</span><br><span class="line">                setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;*释放锁*&#x2F;</span><br><span class="line">        @Override</span><br><span class="line">        protected boolean tryRelease(int arg) &#123;</span><br><span class="line">            if(getState()&#x3D;&#x3D;0)&#123;</span><br><span class="line">                throw new IllegalMonitorStateException();</span><br><span class="line">            &#125;</span><br><span class="line">            setExclusiveOwnerThread(null);</span><br><span class="line">            setState(0);</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;* 返回一个Condition，每个condition都包含了一个condition队列*&#x2F;</span><br><span class="line">        Condition newCondition() &#123;</span><br><span class="line">            return new ConditionObject();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;* 仅需要将操作代理到Sync上即可*&#x2F;</span><br><span class="line">    private final Sync sync &#x3D; new Sync();</span><br><span class="line"></span><br><span class="line">    public void lock() &#123;</span><br><span class="line">    	System.out.println(Thread.currentThread().getName()+&quot; ready get lock&quot;);</span><br><span class="line">        sync.acquire(1);</span><br><span class="line">        System.out.println(Thread.currentThread().getName()+&quot; already got lock&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean tryLock() &#123;</span><br><span class="line">        return sync.tryAcquire(1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void unlock() &#123;</span><br><span class="line">    	System.out.println(Thread.currentThread().getName()+&quot; ready release lock&quot;);</span><br><span class="line">        sync.release(1);</span><br><span class="line">        System.out.println(Thread.currentThread().getName()+&quot; already released lock&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Condition newCondition() &#123;</span><br><span class="line">        return sync.newCondition();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean isLocked() &#123;</span><br><span class="line">        return sync.isHeldExclusively();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean hasQueuedThreads() &#123;</span><br><span class="line">        return sync.hasQueuedThreads();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void lockInterruptibly() throws InterruptedException &#123;</span><br><span class="line">        sync.acquireInterruptibly(1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean tryLock(long timeout, TimeUnit unit) throws InterruptedException &#123;</span><br><span class="line">        return sync.tryAcquireNanos(1, unit.toNanos(timeout));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用自定义同步组件同步线程：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">final Lock lock &#x3D; new SelfLock();</span><br><span class="line">class Worker extends Thread &#123;</span><br><span class="line">      public void run() &#123;</span><br><span class="line">             lock.lock();</span><br><span class="line">             System.out.println(Thread.currentThread().getName());</span><br><span class="line">             try &#123;</span><br><span class="line">               ...</span><br><span class="line">             &#125; finally &#123;</span><br><span class="line">               lock.unlock();</span><br><span class="line">             &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void test() &#123;</span><br><span class="line">&#x2F;&#x2F; 启动4个子线程</span><br><span class="line">   for (int i &#x3D; 0; i &lt; 4; i++) &#123;</span><br><span class="line">   			Worker w &#x3D; new Worker();</span><br><span class="line">            w.start();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在实现上，子类推荐被定义为自定义同步组件的静态内部类，AQS自身没有实现任何同步接口，它仅仅是定义了若干同步状态获取和释放的方法来供自定义同步组件使用，同步器既可以支持独占式地获取同步状态，也可以支持共享式地获取同步状态，这样就可以方便实现不同类型的同步组件（ReentrantLock、ReentrantReadWriteLock和CountDownLatch、Thread PoolExecutor的Worker类等）。</p>
+<p>同步器是实现锁（也可以是任意同步组件）的关键，在锁的实现中聚合同步器。可以这样理解二者之间的关系：</p>
+<ul>
+<li>锁是面向使用者的，它定义了使用者与锁交互的接口（比如可以允许两个线程并行访问），隐藏了实现细节；</li>
+<li>同步器面向的是锁的实现者，它简化了锁的实现方式，屏蔽了同步状态管理、线程的排队、等待与唤醒等底层操作。锁和同步器很好地隔离了使用者和实现者所需关注的领域。</li>
+<li>实现者需要继承同步器并重写指定的方法，随后将同步器组合在自定义同步组件的实现中，并调用同步器提供的模板方法，而这些模板方法将会调用使用者重写的方法。</li>
+</ul>
+<p><strong>模板方法设计模式</strong></p>
+<p>同步器的设计基于模板方法模式。模板方法模式的意图是，定义一个操作中的算法的骨架，而将一些步骤的实现延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。</p>
+<h4 id="三、AQS中的方法"><a href="#三、AQS中的方法" class="headerlink" title="三、AQS中的方法"></a>三、AQS中的方法</h4><p>实现自定义同步组件时，将会调用同步器提供的模板方法。</p>
+<h5 id="模板方法"><a href="#模板方法" class="headerlink" title="模板方法"></a>模板方法</h5><p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwbcy93di1j31dk0tw45c.jpg" alt="img"> </p>
+<p>这些模板方法同步器提供的模板方法基本上分为3类：独占式获取与释放同步状态、共享式获取与释放、同步状态和查询同步队列中的等待线程情况。</p>
+<h5 id="可重写的方法"><a href="#可重写的方法" class="headerlink" title="可重写的方法"></a>可重写的方法</h5><p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwbczjjwymj31a806s3zq.jpg" alt="img"> <img src="https://tva1.sinaimg.cn/large/008i3skNly1gwbczjvpgrj31a807oaba.jpg" alt="img"></p>
+<h5 id="访问或修改同步状态的方法"><a href="#访问或修改同步状态的方法" class="headerlink" title="访问或修改同步状态的方法"></a>访问或修改同步状态的方法</h5><p>重写同步器指定的方法时，需要使用同步器提供的如下3个方法来访问或修改同步状态。</p>
+<ul>
+<li>getState()：获取当前同步状态。</li>
+<li>setState(int newState)：设置当前同步状态。</li>
+<li>compareAndSetState(int expect,int update)：使用CAS设置当前状态，该方法能够保证状态设置的原子性。 </li>
+</ul>
+<h4 id="四、实现原理"><a href="#四、实现原理" class="headerlink" title="四、实现原理"></a>四、实现原理</h4><p>基于<strong>CLH队列锁</strong>，即Craig, Landin, and Hagersten (CLH) lock queue。是一种基于链表的可扩展、高性能、公平的自旋锁，申请线程仅仅在本地变量上自旋，它不断轮询前驱的状态，假设发现前驱释放了锁就结束自旋。</p>
+<p>当一个线程需要获取锁时：</p>
+<ol>
+<li>创建一个的QNode，将其中的locked设置为true表示需要获取锁，myPred表示对其前驱结点的引用。</li>
+<li>线程A对tail域调用getAndSet方法，使自己成为队列的尾部，同时获取一个指向其前驱结点的引用myPred。</li>
+<li>线程就在前驱结点的locked字段上旋转，直到前驱结点释放锁(前驱节点的锁值 locked == false)。</li>
+<li>当一个线程需要释放锁时，将当前结点的locked域设置为false，同时回收前驱结点。下一个结点就获取到锁。</li>
+</ol>
+<p>CLH队列锁的优点是空间复杂度低（如果有n个线程，L个锁，每个线程每次只获取一个锁，那么需要的存储空间是O（L+n），n个线程有n个myNode，L个锁有L个tail）。CLH队列锁常用在SMP体系结构下。Java中的AQS是CLH队列锁的一种变体实现。</p>
+<h4 id="五、ReentrantLock的实现"><a href="#五、ReentrantLock的实现" class="headerlink" title="五、ReentrantLock的实现"></a>五、ReentrantLock的实现</h4><h5 id="锁的可重入"><a href="#锁的可重入" class="headerlink" title="锁的可重入"></a>锁的可重入</h5><p>重进入是指任意线程在获取到锁之后能够再次获取该锁而不会被锁所阻塞，该特性的实现需要解决以下两个问题。</p>
+<p>1）线程再次获取锁。锁需要去识别获取锁的线程是否为当前占据锁的线程，如果是，则再次成功获取。</p>
+<p>2）锁的最终释放。线程重复n次获取了锁，随后在第n次释放该锁后，其他线程能够获取到该锁。锁的最终释放要求锁对于获取进行计数自增，计数表示当前锁被重复获取的次数，而锁被释放时，计数自减，当计数等于0时表示锁已经成功释放。</p>
+<p>非公平锁的<code>nonfairTryAcquire</code>方法增加了再次获取同步状态的处理逻辑：通过判断当前线程是否为获取锁的线程来决定获取操作是否成功，如果是获取锁的线程再次请求，则将同步状态值进行增加并返回true，表示获取同步状态成功。同步状态表示锁被一个线程重复获取的次数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">final boolean nonfairTryAcquire(int acquires) &#123;</span><br><span class="line">           final Thread current &#x3D; Thread.currentThread();</span><br><span class="line">           int c &#x3D; getState();</span><br><span class="line">           if (c &#x3D;&#x3D; 0) &#123;</span><br><span class="line">               if (compareAndSetState(0, acquires)) &#123;</span><br><span class="line">                   setExclusiveOwnerThread(current);</span><br><span class="line">                   return true;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">           else if (current &#x3D;&#x3D; getExclusiveOwnerThread()) &#123;</span><br><span class="line">               int nextc &#x3D; c + acquires;</span><br><span class="line">               if (nextc &lt; 0) &#x2F;&#x2F; overflow</span><br><span class="line">                   throw new Error(&quot;Maximum lock count exceeded&quot;);</span><br><span class="line">               setState(nextc);</span><br><span class="line">               return true;</span><br><span class="line">           &#125;</span><br><span class="line">           return false;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果该锁被获取了n次，那么前(n-1)次<code>tryRelease(int releases)</code>方法必须返回false，而只有同步状态完全释放了，才能返回true。可以看到，该方法将同步状态是否为0作为最终释放的条件，当同步状态为0时，将占有线程设置为null，并返回true，表示释放成功。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected final boolean tryRelease(int releases) &#123;</span><br><span class="line">           int c &#x3D; getState() - releases;</span><br><span class="line">           if (Thread.currentThread() !&#x3D; getExclusiveOwnerThread())</span><br><span class="line">               throw new IllegalMonitorStateException();</span><br><span class="line">           boolean free &#x3D; false;</span><br><span class="line">           if (c &#x3D;&#x3D; 0) &#123;</span><br><span class="line">               free &#x3D; true;</span><br><span class="line">               setExclusiveOwnerThread(null);</span><br><span class="line">           &#125;</span><br><span class="line">           setState(c);</span><br><span class="line">           return free;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="非公平锁和公平锁"><a href="#非公平锁和公平锁" class="headerlink" title="非公平锁和公平锁"></a>非公平锁和公平锁</h5><p><code>ReentrantLock</code>的构造函数中，默认的无参构造函数将会把<code>Sync</code>对象创建为<code>NonfairSync</code>对象，这是一个非公平锁；而另一个构造函数<code>ReentrantLock(boolean fair)</code>传入参数为true时将会把<code>Sync</code>对象创建为公平锁<code>FairSync</code>，传入false则创建非公平锁<code>NonfairSync</code>。构造函数如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ReentrantLock() &#123;</span><br><span class="line">    sync &#x3D; new NonfairSync();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public ReentrantLock(boolean fair) &#123;</span><br><span class="line">    sync &#x3D; fair ? new FairSync() : new NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>区别</strong>：是否排队等待获取锁。</p>
+<p>非公平锁：<code>nonfairTryAcquire(int acquires)</code>方法，对于非公平锁，只要CAS设置同步状态成功，则表示当前线程获取了锁。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected final boolean tryAcquire(int acquires) &#123;</span><br><span class="line">     return nonfairTryAcquire(acquires);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">final boolean nonfairTryAcquire(int acquires) &#123;</span><br><span class="line">            final Thread current &#x3D; Thread.currentThread();</span><br><span class="line">            int c &#x3D; getState();</span><br><span class="line">            if (c &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                if (compareAndSetState(0, acquires)) &#123;</span><br><span class="line">                    setExclusiveOwnerThread(current);</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            else if (current &#x3D;&#x3D; getExclusiveOwnerThread()) &#123;</span><br><span class="line">                int nextc &#x3D; c + acquires;</span><br><span class="line">                if (nextc &lt; 0) &#x2F;&#x2F; overflow</span><br><span class="line">                    throw new Error(&quot;Maximum lock count exceeded&quot;);</span><br><span class="line">                setState(nextc);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">            return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>公平锁：<code>tryAcquire</code>方法，判断条件多了<code>hasQueuedPredecessors()</code>方法，即加入了同步队列中当前节点是否有前驱节点的判断，如果该方法返回true，则表示有线程比当前线程更早地请求获取锁，因此需要等待前驱线程获取并释放锁之后才能继续获取锁。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected final boolean tryAcquire(int acquires) &#123;</span><br><span class="line">            final Thread current &#x3D; Thread.currentThread();</span><br><span class="line">            int c &#x3D; getState();</span><br><span class="line">            if (c &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                if (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">                    compareAndSetState(0, acquires)) &#123;</span><br><span class="line">                    setExclusiveOwnerThread(current);</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            else if (current &#x3D;&#x3D; getExclusiveOwnerThread()) &#123;</span><br><span class="line">                int nextc &#x3D; c + acquires;</span><br><span class="line">                if (nextc &lt; 0)</span><br><span class="line">                    throw new Error(&quot;Maximum lock count exceeded&quot;);</span><br><span class="line">                setState(nextc);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">            return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><a href="https://blog.csdn.net/qq_39241239/article/details/86934059" target="_blank" rel="noopener">深入理解AQS（AbstractQueuedSynchronizer）</a></p>
+<p><a href="https://www.cnblogs.com/yeya/p/13998016.html" target="_blank" rel="noopener">图文并茂，带你深入了解AQS的源码</a></p>
+]]></content>
       <categories>
         <category>Java基础</category>
       </categories>
