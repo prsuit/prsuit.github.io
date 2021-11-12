@@ -321,12 +321,15 @@
 
       
           <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Java内存模型。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><p>Java内存模型即Java Memory Model，简称JMM。JMM定义了Java 虚拟机(JVM)在计算机内存(RAM)中的工作方式。JVM是整个计算机虚拟模型，所以JMM是隶属于JVM的。Java1.5版本对其进行了重构，现在的Java仍沿用了Java1.5的版本。Jmm遇到的问题与现代计算机中遇到的问题是差不多的。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
-<p><a href="https://www.jianshu.com/p/8a58d8335270" target="_blank" rel="noopener">JMM和底层实现原理</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/29881777" target="_blank" rel="noopener">Java内存模型（JMM）总结</a></p>
-</blockquote>
-
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、并发编程关键问题"><a href="#一、并发编程关键问题" class="headerlink" title="一、并发编程关键问题"></a>一、并发编程关键问题</h4><h5 id="线程之间的通信"><a href="#线程之间的通信" class="headerlink" title="线程之间的通信"></a>线程之间的通信</h5><p>线程的通信是指线程之间以何种机制来交换信息。在编程中，线程之间的通信机制有两种，共享内存和消息传递。Java的并发采用的是共享内存模型。<br>在共享内存的并发模型里，线程之间共享程序的公共状态，线程之间通过写-读内存中的公共状态来隐式进行通信，典型的共享内存通信方式就是通过共享对象进行通信。<br>在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信，在java中典型的消息传递方式就是wait()和notify()。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -645,7 +648,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。</p>
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。线程之间的通信机制有两种，共享内存和消息传递。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
 <h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
           <!--noindex-->

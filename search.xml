@@ -3359,7 +3359,7 @@
   <entry>
     <title>线程间的共享</title>
     <url>/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。</p>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。线程之间的通信机制有两种，共享内存和消息传递。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
 <h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
 <a id="more"></a>
@@ -3748,11 +3748,43 @@
     <title>Java内存模型</title>
     <url>/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Java内存模型。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><p>Java内存模型即Java Memory Model，简称JMM。JMM定义了Java 虚拟机(JVM)在计算机内存(RAM)中的工作方式。JVM是整个计算机虚拟模型，所以JMM是隶属于JVM的。Java1.5版本对其进行了重构，现在的Java仍沿用了Java1.5的版本。Jmm遇到的问题与现代计算机中遇到的问题是差不多的。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
-<p><a href="https://www.jianshu.com/p/8a58d8335270" target="_blank" rel="noopener">JMM和底层实现原理</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/29881777" target="_blank" rel="noopener">Java内存模型（JMM）总结</a></p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、并发编程关键问题"><a href="#一、并发编程关键问题" class="headerlink" title="一、并发编程关键问题"></a>一、并发编程关键问题</h4><h5 id="线程之间的通信"><a href="#线程之间的通信" class="headerlink" title="线程之间的通信"></a>线程之间的通信</h5><p>线程的通信是指线程之间以何种机制来交换信息。在编程中，线程之间的通信机制有两种，共享内存和消息传递。Java的并发采用的是共享内存模型。<br>在共享内存的并发模型里，线程之间共享程序的公共状态，线程之间通过写-读内存中的公共状态来隐式进行通信，典型的共享内存通信方式就是通过共享对象进行通信。<br>在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信，在java中典型的消息传递方式就是wait()和notify()。</p>
+<a id="more"></a>
+
+<h5 id="线程间的同步"><a href="#线程间的同步" class="headerlink" title="线程间的同步"></a>线程间的同步</h5><p>同步是指程序用于控制不同线程之间操作发生相对顺序的机制。<br>在共享内存并发模型里，同步是显式进行的。程序员必须显式指定某个方法或某段代码需要在线程之间互斥执行。<br>在消息传递的并发模型里，由于消息的发送必须在消息的接收之前，因此同步是隐式进行的。</p>
+<h4 id="二、Java内存模型"><a href="#二、Java内存模型" class="headerlink" title="二、Java内存模型"></a>二、Java内存模型</h4><h5 id="现代计算机的内存模型"><a href="#现代计算机的内存模型" class="headerlink" title="现代计算机的内存模型"></a>现代计算机的内存模型</h5><p>物理计算机中的并发问题，物理机遇到的并发问题与虚拟机中的情况有不少相似之处，物理机对并发的处理方案对于虚拟机的实现也有相当大的参考意义。</p>
+<p>其中一个重要的复杂性来源是绝大多数的运算任务都不可能只靠处理器“计算”就能完成，处理器至少要与内存交互，如读取运算数据、存储运算结果等，这个I/O操作是很难消除的（无法仅靠寄存器来完成所有运算任务）。早期计算机中cpu和内存的速度是差不多的，但在现代计算机中，<strong>cpu的指令速度远超内存的存取速度</strong>，由于计算机的存储设备与处理器的运算速度有几个数量级的差距，所以现代计算机系统都<strong>不得不加入一层读写速度尽可能接近处理器运算速度的高速缓存（Cache）来作为内存与处理器之间的缓冲</strong>：将运算需要使用到的数据复制到缓存中，让运算能快速进行，当运算结束后再从缓存同步回内存之中，这样处理器就无须等待缓慢的内存读写了。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwcfd4y619j30dq0dm0tt.jpg" alt=""></p>
+<p>基于高速缓存的存储交互很好地解决了处理器与内存的速度矛盾，但是也为计算机系统带来更高的复杂度，因为它引入了一个新的问题：缓存一致性（Cache Coherence）。在多处理器系统中，每个处理器都有自己的高速缓存，而它们又共享同一主内存（MainMemory）。当多个处理器的运算任务都涉及同一块主内存区域时，将可能导致各自的缓存数据不一致，举例说明变量在多个CPU之间的共享。如果真的发生这种情况，那同步回到主内存时以谁的缓存数据为准呢？为了解决一致性的问题，需要各个处理器访问缓存时都遵循一些协议，在读写时要根据协议来进行操作，这类协议有MSI、MESI（Illinois Protocol）、MOSI、Synapse、Firefly及Dragon Protocol等。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwcfby1twwj30fm09iwex.jpg" alt=""></p>
+<h5 id="Java内存模型"><a href="#Java内存模型" class="headerlink" title="Java内存模型"></a>Java内存模型</h5><p>Java内存模型即Java Memory Model，简称JMM。JMM定义了Java 虚拟机(JVM)在计算机内存(RAM)中的工作方式。JVM是整个计算机虚拟模型，所以JMM是隶属于JVM的。</p>
+<p>从抽象的角度来看，JMM定义了线程和主内存之间的抽象关系：<strong>线程之间的共享变量存储在主内存（Main Memory）中，每个线程都有一个私有的本地内存（Local Memory），本地内存中存储了该线程以读/写共享变量的副本</strong>。本地内存是JMM的一个抽象概念，并不真实存在。<strong>它涵盖了缓存、写缓冲区、寄存器以及其他的硬件和编译器优化</strong>。 </p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwcefvvsayj30g306zjrs.jpg" alt=""></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwcff11ny6j31440fkdhi.jpg" alt="img"> </p>
+<p><strong>JVM对Java内存模型的实现</strong></p>
+<p>在JVM内部，Java内存模型把内存分成了两部分：<strong>线程栈区和堆区</strong>。<br>JVM中运行的每个线程都拥有自己的线程栈，线程栈包含了当前线程执行的方法调用相关信息，我们也把它称作调用栈。随着代码的不断执行，调用栈会不断变化。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwcf1zbyxgj30fd0bwaad.jpg" alt=""></p>
+<p>栈区：所有原始类型(boolean,byte,short,char,int,long,float,double)的局部变量都直接保存在线程栈当中，对于它们的值各个线程之间都是独立的。对于原始类型的局部变量，一个线程可以传递一个副本给另一个线程，但它们之间是无法共享的。</p>
+<p>堆区：包含了Java应用创建的所有对象信息，不管对象是哪个线程创建的，其中的对象包括原始类型的封装类（如Byte、Integer、Long等等）。不管对象是属于一个成员变量还是方法中的局部变量，它都会被存储在堆区。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwcf23wy7yj30di0c3dgz.jpg" alt=""></p>
+<blockquote>
+<p>注：栈区存放所有原始类型和局部变量对象引用，堆区存放对象、对象的成员变量、static变量、static类及类相关信息。</p>
 </blockquote>
+<h5 id="Java内存模型带来的问题"><a href="#Java内存模型带来的问题" class="headerlink" title="Java内存模型带来的问题"></a>Java内存模型带来的问题</h5><h6 id="可见性问题"><a href="#可见性问题" class="headerlink" title="可见性问题"></a>可见性问题</h6><p>可见性：是指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值。</p>
+<p>由于线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存中的变量，那么对于共享变量V，它们首先是在自己的工作内存，之后再同步到主内存。可是并不会及时的刷到主存中，而是会有一定时间差，这个时候线程 A 对变量 V 的操作对于线程 B 而言就不具备可见性了 。要解决共享对象可见性这个问题，我们可以使用volatile关键字或者是加锁。</p>
+<h6 id="竞争现象"><a href="#竞争现象" class="headerlink" title="竞争现象"></a>竞争现象</h6><p>我们都知道CPU资源的分配都是以线程为单位的，并且是分时调用，操作系统允许某个进程执行一小段时间。当多个线程对同一个共享对象执行操作时，不能保证操作的原子性。 要解决操作原子性问题，我们可以使用synchronized关键字。</p>
+<p>原子性：即一个操作或者多个操作，要么全部执行并且执行的过程不会被任何因素打断，要么就都不执行。</p>
+<h5 id="Java内存模型中的重排序"><a href="#Java内存模型中的重排序" class="headerlink" title="Java内存模型中的重排序"></a>Java内存模型中的重排序</h5><p>在执行程序时，为了提高性能，编译器和处理器常常会对指令做重排序。</p>
+<p>重排序类型</p>
+<p>1）编译器优化的重排序。编译器在不改变单线程程序语义的前提下，可以重新安排语句的执行顺序。</p>
+<p>2）指令级并行的重排序。现代处理器采用了指令级并行技术（Instruction-LevelParallelism，ILP）来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序。</p>
+<p>3）内存系统的重排序。由于处理器使用缓存和读/写缓冲区，这使得加载和存储操作看上去可能是在乱序执行。</p>
+<p>解决在并发下的问题</p>
+<p>在多线程程序中，对存在控制依赖的操作重排序，可能会改变程序的执行结果。</p>
+<p>内存屏障——禁止重排序(volatile)：Java编译器在生成指令序列的适当位置会插入内存屏障指令来禁止特定类型的处理器重排序，从而让程序按我们预想的流程去执行。</p>
+<p>临界区(synchronized)：临界区内的代码可以重排序，但JMM不允许临界区内的代码“逸出”到临界区之外，那样会破坏监视器的语义。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><a href="https://www.jianshu.com/p/8a58d8335270" target="_blank" rel="noopener">JMM和底层实现原理</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/29881777" target="_blank" rel="noopener">Java内存模型（JMM）总结</a></p>
 ]]></content>
       <categories>
         <category>Java基础</category>
