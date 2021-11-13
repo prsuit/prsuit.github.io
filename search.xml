@@ -3090,8 +3090,7 @@
 <p><code>@Documented</code>表示无论何时使用指定的注解，都应使用 Javadoc 工具记录这些元素。</p>
 <p><code>@Inherited</code>表示注解类型可以从超类继承。(默认情况下不是这样。)当用户查询注解类型并且该类没有此类型的注解时，将查询类的超类以获取注解类型。此注解仅适用于类声明。</p>
 <p><code>@Repeatable</code> Java SE 8 中引入的注解表明标记的注解可以多次应用于同一声明或类型使用。</p>
-<h5 id="注解类型元素"><a href="#注解类型元素" class="headerlink" title="注解类型元素"></a>注解类型元素</h5><p>在上文元注解中，允许在使用注解时传递参数，我们也能让自定义注解的主体包含 annotation type element (</p>
-<p>注解类型元素) 声明，它们看起来很像方法，可以定义可选的默认值。</p>
+<h5 id="注解类型元素"><a href="#注解类型元素" class="headerlink" title="注解类型元素"></a>注解类型元素</h5><p>在上文元注解中，允许在使用注解时传递参数，我们也能让自定义注解的主体包含 annotation type element (注解类型元素) 声明，它们看起来很像方法，可以定义可选的默认值。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义注解</span><br><span class="line">@Target(&#123;ElementType.TYPE,ElementType.FIELD&#125;) </span><br><span class="line">@Retention(RetentionPolicy.SOURCE)</span><br><span class="line">public @interface AnnoName &#123;</span><br><span class="line">	String value(); &#x2F;&#x2F;无默认值</span><br><span class="line">	int age() default 1; &#x2F;&#x2F;有默认值 </span><br><span class="line">	 &#x2F;&#x2F;String[] array();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;使用注解</span><br><span class="line">@AnnoName(&quot;帅&quot;) &#x2F;&#x2F;如果只存在value元素需要传值的情况，则可以省略:元素名&#x3D; </span><br><span class="line">@AnnoName(value&#x3D;&quot;帅&quot;,age &#x3D; 2)</span><br><span class="line">int i;</span><br></pre></td></tr></table></figure>
@@ -3100,7 +3099,7 @@
 <p>注:在使用注解时，如果定义的注解中的类型元素无默认值，则必须进行传值。     </p>
 </blockquote>
 <h4 id="三、运用场景"><a href="#三、运用场景" class="headerlink" title="三、运用场景"></a>三、运用场景</h4><p>由注解的三个不同保留级别可知，注解可用于源码、字节码、运行时三个场景，具体案例：</p>
-<p>源码-&gt; APT，在编译期获取注解和注解声明的类信息，用于生成辅助类。语法检查@IntDef</p>
+<p>源码-&gt; APT(注解处理器)，在编译期获取注解和注解声明的类信息，用于生成辅助类。语法检查@IntDef</p>
 <p>字节码-&gt;字节码增强(字节码插桩)，在编译出Class后，通过注解区分是否修改Class数据以实现修改代码逻辑目的。</p>
 <p>运行时-&gt;反射，通过反射动态获取注解及其元素，从而完成不同的逻辑判断。</p>
 <h5 id="IDE语法检查"><a href="#IDE语法检查" class="headerlink" title="IDE语法检查"></a>IDE语法检查</h5><p>在Android开发中， <code>support-annotations</code> 与 <code>androidx.annotation</code> 中均有提供 @IntDef 注解，此注解的定义如下:</p>
@@ -3140,8 +3139,8 @@
   <entry>
     <title>Java反射</title>
     <url>/2021/11/02/Java%E5%8F%8D%E5%B0%84/</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的，并且能够获得此类的引用。于是我们直接 对这个类进行实例化，之后使用这个类对象进行操作。</p>
-<p>反射则是一开始并不知道我要初始化的类对象是什么，自然也无法使用 new 关键字来创建对象了。这时候，我们 使用 JDK 提供的反射 API 进行反射调用。</p>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的，并且能够获得此类的引用。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。</p>
+<p>反射则是一开始并不知道我要初始化的类对象是什么，自然也无法使用 new 关键字来创建对象了。这时候，我们使用 JDK 提供的反射 API 进行反射调用。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、反射是什么"><a href="#一、反射是什么" class="headerlink" title="一、反射是什么"></a>一、反射是什么</h4><p>反射就是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；并且能改变它的属性。是Java被视为动态语言的关键。</p>
 <p>Java反射机制主要提供了以下功能:</p>
 <ul>
@@ -3155,7 +3154,7 @@
 <a id="more"></a>
 
 <h4 id="二、Class类"><a href="#二、Class类" class="headerlink" title="二、Class类"></a>二、Class类</h4><p>反射始于Class，Class是一个类，封装了当前对象所对应的类的信息。一个类中有属性，方法，构造器等，比如说 有一个Person类，一个Order类，一个Book类，这些都是不同的类，现在需要一个类，用来描述类，这就是 Class，它应该有类名，属性，方法，构造器等。Class是用来描述类的类。</p>
-<p>Class类是一个对象照镜子的结果，对象可以看到自己有哪些属性，方法，构造器，实现了哪些接口等等。对于每 个类而言，JRE 都为其保留一个不变的 Class 类型的对象。一个 Class 对象包含了特定某个类的有关信息。 对象只 能由系统建立对象，一个类(而不是一个对象)在 JVM 中只会有一个Class实例。</p>
+<p>Class类是一个对象照镜子的结果，对象可以看到自己有哪些属性，方法，构造器，实现了哪些接口等等。对于每 个类而言，JRE 都为其保留一个不变的 Class 类型的对象。一个 Class 对象包含了特定某个类的有关信息。 对象只能由系统建立对象，一个类(而不是一个对象)在 JVM 中只会有一个Class实例。</p>
 <h5 id="获得-Class-对象"><a href="#获得-Class-对象" class="headerlink" title="获得 Class 对象"></a>获得 Class 对象</h5><p>获取Class对象的三种方式:</p>
 <p>通过类名获取 <code>类名.class</code></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Class&lt;?&gt; cls &#x3D; int.class;</span><br><span class="line">Class&lt;?&gt; classInt &#x3D; Integer.TYPE;</span><br></pre></td></tr></table></figure>
@@ -3203,7 +3202,7 @@
 <h5 id="反射创建数组"><a href="#反射创建数组" class="headerlink" title="反射创建数组"></a>反射创建数组</h5><p>通过<code>Array.newInstance()</code>创建数组对象，它的原型是:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static Object newInstance(Class&lt;?&gt; componentType, int length)</span><br></pre></td></tr></table></figure>
 
-<h4 id="三、反射泛型"><a href="#三、反射泛型" class="headerlink" title="三、反射泛型"></a>三、反射泛型</h4><h5 id="获取泛型真实类型"><a href="#获取泛型真实类型" class="headerlink" title="获取泛型真实类型"></a>获取泛型真实类型</h5><p>当我们对一个泛型类进行反射时，需要的到泛型中的真实数据类型，来完成如json反序列化的操作。此时需要通 过 Type 体系来完成。 Type 接口包含了一个实现类<code>Class&lt;T&gt;</code>和四个实现接口，分别是:</p>
+<h4 id="三、反射泛型"><a href="#三、反射泛型" class="headerlink" title="三、反射泛型"></a>三、反射泛型</h4><h5 id="获取泛型真实类型"><a href="#获取泛型真实类型" class="headerlink" title="获取泛型真实类型"></a>获取泛型真实类型</h5><p>当我们对一个泛型类进行反射时，需要得到泛型中的真实数据类型，来完成如json反序列化的操作。此时需要通 过 Type 体系来完成。 Type 接口包含了一个实现类<code>Class&lt;T&gt;</code>和四个实现接口，分别是:</p>
 <ul>
 <li><p>TypeVariable 泛型类型变量，可获得泛型上限等信息。</p>
 </li>
@@ -3268,7 +3267,7 @@
 <p>动态代理类class的文件在内存中是byte数组形式存在，通过<code>ProxyGenerator.generateProxyClass()</code>生成的</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; ProxyGenerator.class </span><br><span class="line"> public static byte[] generateProxyClass(final String var0, Class&lt;?&gt;[] var1, int var2) &#123;</span><br><span class="line">        ProxyGenerator var3 &#x3D; new ProxyGenerator(var0, var1, var2);</span><br><span class="line">        final byte[] var4 &#x3D; var3.generateClassFile();</span><br><span class="line">        ...</span><br><span class="line">        return var4;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：只需要一个动态代理类s就可以解决创建多个静态代理的问题，避免重复、多余代码，更强的灵活性。</p>
+<h5 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：只需要一个动态代理类就可以解决创建多个静态代理的问题，避免重复、多余代码，更强的灵活性。</p>
 <p>缺点：效率较低，相比静态代理中直接调用目标对象方法，动态代理则需要先通过Java反射机制间接调用目标对象方法。</p>
 <p>应用场景局限，因为 Java 的单继承特性（每个代理类都继承了 <code>Proxy</code> 类），即只能针对接口创建代理类，不能针对类创建代理类。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
@@ -3375,7 +3374,7 @@
 <li>其次，当同步方法退出时，它会自动与同一对象的同步方法的 <em>any subsequent invocation (任何后续调用)</em> 建立 happens-before 关系。这就确保了对该对象的修改对其他线程是可见的。</li>
 </ul>
 <blockquote>
-<p>注：构造函数不能同步  将 <code>synchronized</code> 关键字与构造函数一起使用是一种语法错误。同步构造函数没有意义，因为只有创建对象的线程在构造时才能访问它。</p>
+<p>注：构造函数不能同步，将 <code>synchronized</code> 关键字与构造函数一起使用是一种语法错误。同步构造函数没有意义，因为只有创建对象的线程在构造时才能访问它。</p>
 </blockquote>
 <p>当线程调用同步方法时，它会自动获取该方法的对象的内部锁，并在方法返回时释放它。即使返回是由未捕获的异常引起的，也会释放锁。</p>
 <h5 id="同步语句"><a href="#同步语句" class="headerlink" title="同步语句"></a>同步语句</h5><p>与同步方法不同，同步语句必须指定提供内部锁的对象：</p>
@@ -3403,7 +3402,7 @@
 <h5 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h5><ul>
 <li><p>synchronized锁并不能被中断，可重入锁，不带超时功能，悲观锁，非公平锁。</p>
 </li>
-<li><p>等待/唤醒需要使用synchronize锁。当执行了对象的<code>wait()</code>方法后会释放该锁，执行<code>notify()/notifyAll()</code>方法后不会释放锁。</p>
+<li><p>等待/唤醒需要使用synchronized锁。当执行了对象的<code>wait()</code>方法后会释放该锁，执行<code>notify()/notifyAll()</code>方法后不会释放锁。</p>
 </li>
 <li><p>使用synchronized锁时尽量缩小锁的范围以保证性能，推荐尽量使用synchronized代码块来降低锁的范围，避免使用synchronized来修饰方法。尽量找到并发访问代码的临界区。</p>
 </li>

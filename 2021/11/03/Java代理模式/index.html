@@ -31,7 +31,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gw2922yn7mj31dm0n0djc.jpg">
 <meta property="article:published_time" content="2021-11-03T08:02:08.000Z">
-<meta property="article:modified_time" content="2021-11-03T13:12:58.716Z">
+<meta property="article:modified_time" content="2021-11-13T05:45:18.098Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -367,7 +367,7 @@
 <p>动态代理类class的文件在内存中是byte数组形式存在，通过<code>ProxyGenerator.generateProxyClass()</code>生成的</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; ProxyGenerator.class </span><br><span class="line"> public static byte[] generateProxyClass(final String var0, Class&lt;?&gt;[] var1, int var2) &#123;</span><br><span class="line">        ProxyGenerator var3 &#x3D; new ProxyGenerator(var0, var1, var2);</span><br><span class="line">        final byte[] var4 &#x3D; var3.generateClassFile();</span><br><span class="line">        ...</span><br><span class="line">        return var4;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：只需要一个动态代理类s就可以解决创建多个静态代理的问题，避免重复、多余代码，更强的灵活性。</p>
+<h5 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：只需要一个动态代理类就可以解决创建多个静态代理的问题，避免重复、多余代码，更强的灵活性。</p>
 <p>缺点：效率较低，相比静态代理中直接调用目标对象方法，动态代理则需要先通过Java反射机制间接调用目标对象方法。</p>
 <p>应用场景局限，因为 Java 的单继承特性（每个代理类都继承了 <code>Proxy</code> 类），即只能针对接口创建代理类，不能针对类创建代理类。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
