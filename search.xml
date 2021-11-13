@@ -3364,7 +3364,7 @@
 <a id="more"></a>
 
 <p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 release (释放) 内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为own (拥有) 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
-<h4 id="二、synchronized"><a href="#二、synchronized" class="headerlink" title="二、synchronized"></a>二、synchronized</h4><p>Java 编程语言提供两种基本的同步习惯用法：<em>synchronized methods (同步方法)</em> 和 <em>synchronized statements (同步语句)</em>。所有加上synchronized修饰的方法和块语句，在多线程访问的时候，同一时刻只能有一个线程能够用synchronized 修饰的方法或者代码块。</p>
+<h4 id="二、synchronized"><a href="#二、synchronized" class="headerlink" title="二、synchronized"></a>二、synchronized</h4><p>Java 编程语言提供两种基本的同步习惯用法：<em>synchronized methods (同步方法)</em> 和 <em>synchronized statements (同步语句)</em>。所有加上synchronized修饰的方法和块语句，在多线程访问的时候，同一时刻只能有一个线程能够执行synchronized修饰的方法或者代码块。</p>
 <h5 id="同步方法"><a href="#同步方法" class="headerlink" title="同步方法"></a>同步方法</h5><p>要使方法同步，只需将 <code>synchronized</code> 关键字添加到其声明中：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">    private int c &#x3D; 0;</span><br><span class="line">    public synchronized void increment() &#123;</span><br><span class="line">        c++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void decrement() &#123;</span><br><span class="line">        c--;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized int value() &#123;</span><br><span class="line">        return c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -3502,7 +3502,7 @@
   <entry>
     <title>CAS基本原理</title>
     <url>/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>实现原子操作可以使用锁(synchronized)和CAS，synchronized锁是一种重量级锁的机制，CAS是一种更有效，更加灵活的机制。</p>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>实现原子操作可以使用锁(synchronized)和CAS，synchronized锁基于阻塞的重量级锁的机制，CAS是一种不会阻塞线程，更有效，更加灵活的机制。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><p>在编程中，<em>atomic (原子)</em> 动作是一次性完全发生的动作(一个或多个操作)。原子动作不能在中间停止：它要么完全发生，要么根本不发生。</p>
 <a id="more"></a>
 
@@ -3569,7 +3569,7 @@
 <li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。多了<code>transfer</code>和<code>tryTransfer</code>方法<code>transfer</code>方法可以把生产者传入的元素立刻transfer（传输）给消费者，必须等到消费者消费了才返回。<code>tryTransfer</code>方法是用来试探生产者传入的元素是否能直接传给消费者。无论消费者是否接收，方法立即返回。</li>
 <li>LinkedBlockingDeque(双向阻塞队列)：一个由链表结构组成的双向阻塞队列。所谓双向队列指的是可以从队列的两端插入和移出元素。双向队列因为多了一个操作队列的入口，在多线程同时入队时，也就减少了一半的竞争。可设置容量防止其过度膨胀。双向阻塞队列可以运用在“工作窃取”模式中。</li>
 </ul>
-<p>以上的阻塞队列都实现了<code>BlockingQueue</code>接口，也都是线程安全的。</p>
+<p>以上的阻塞队列都实现了<code>BlockingQueue</code>接口，也都是线程安全的，内部使用了ReentrantLock实现同步。</p>
 <h5 id="有界无界"><a href="#有界无界" class="headerlink" title="有界无界"></a>有界无界</h5><p>有限队列就是长度有限，满了以后生产者会阻塞，无界队列就是里面能放无数的东西而不会因为队列长度限制被阻塞，当然空间限制来源于系统资源的限制，如果处理不及时，导致队列越来越大越来越大，超出一定的限制致使内存超限，操作系统或者JVM帮你解决烦恼，直接把你 OOM kill 了。</p>
 <p>无界也会阻塞，为何？因为阻塞不仅仅体现在生产者放入元素时会阻塞，消费者拿取元素时，如果没有元素，同样也会阻塞。</p>
 <h5 id="Array实现和Linked实现的区别"><a href="#Array实现和Linked实现的区别" class="headerlink" title="Array实现和Linked实现的区别"></a>Array实现和Linked实现的区别</h5><ol>
@@ -3637,7 +3637,7 @@
 <p><strong>handler</strong>：任务拒绝策略，当线程池已关闭(shutdown)或已达到其容量时所采用的处理策略。即当线程数达到最大线程数，且阻塞队列已满了，如果继续提交任务，会拒绝新任务，必须采取一种策略处理该任务，线程池提供了4种策略：</p>
 <p>（1）AbortPolicy：直接抛出异常，默认策略；</p>
 <p>（2）CallerRunsPolicy：用调用者所在的线程来执行任务；</p>
-<p>（3）DiscardOldestPolicy：丢弃阻塞队列中靠最前的任务，并执行当前任务；</p>
+<p>（3）DiscardOldestPolicy：丢弃阻塞队列中靠最前的最旧任务，并执行当前任务；</p>
 <p>（4）DiscardPolicy：直接丢弃任务；</p>
 <p>当然也可以根据应用场景实现<code>RejectedExecutionHandler</code>接口，自定义饱和策略，如记录日志或持久化存储不能处理的任务。</p>
 <blockquote>
