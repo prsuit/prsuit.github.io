@@ -31,7 +31,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gweobeyt96j30y50u0tb4.jpg">
 <meta property="article:published_time" content="2021-11-12T14:17:21.000Z">
-<meta property="article:modified_time" content="2021-11-14T13:43:58.940Z">
+<meta property="article:modified_time" content="2021-11-15T12:52:21.041Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="面试题">
 <meta name="twitter:card" content="summary">
@@ -225,7 +225,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -330,10 +330,10 @@
       
         <h4 id="sychronied修饰普通方法和静态方法的区别？什么是可见性"><a href="#sychronied修饰普通方法和静态方法的区别？什么是可见性" class="headerlink" title="sychronied修饰普通方法和静态方法的区别？什么是可见性?"></a>sychronied修饰普通方法和静态方法的区别？什么是可见性?</h4><p>对象锁是用于对象实例方法，或者一个对象实例上的，类锁是用于类的静态方法或者一个类的class对象上的。我们知道，类的对象实例可以有很多个，但是每个类只有一个class对象，所以不同对象实例的对象锁是互不干扰的，但是每个类只有一个类锁。</p>
 <p>但是有一点必须注意的是，其实类锁只是一个概念上的东西，并不是真实存在的，类锁其实锁的是每个类的对应的class对象。类锁和对象锁之间也是互不干扰的。</p>
-<p>可见性是指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值。</p>
-<p>由于线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存中的变量，那么对于共享变量V，它们首先是在自己的工作内存，之后再同步到主内存。可是并不会及时的刷到主存中，而是会有一定时间差。很明显，这个时候线程 A 对变量 V 的操作对于线程 B 而言就不具备可见性了 。要解决共享对象可见性这个问题，我们可以使用volatile关键字或者是加锁。</p>
 <a id="more"></a>
 
+<p>可见性是指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值。</p>
+<p>由于线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存中的变量，那么对于共享变量V，它们首先是在自己的工作内存，之后再同步到主内存。可是并不会及时的刷到主存中，而是会有一定时间差。很明显，这个时候线程 A 对变量 V 的操作对于线程 B 而言就不具备可见性了 。要解决共享对象可见性这个问题，我们可以使用volatile关键字或者是加锁。</p>
 <h4 id="锁分哪几类？"><a href="#锁分哪几类？" class="headerlink" title="锁分哪几类？"></a>锁分哪几类？</h4><p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gweobeyt96j30y50u0tb4.jpg" alt="img"> </p>
 <h4 id="CAS无锁编程的原理"><a href="#CAS无锁编程的原理" class="headerlink" title="CAS无锁编程的原理"></a>CAS无锁编程的原理</h4><p>使用当前的处理器基本都支持CAS()的指令，只不过每个厂家所实现的算法并不一样，每一个CAS操作过程都包含三个运算符：一个内存地址V，一个期望的值A和一个新值B，操作的时候如果这个地址上存放的值等于这个期望的值A，则将地址上的值赋为新值B，否则不做任何操作。<br>CAS的基本思路就是，如果这个地址上的值和期望的值相等，则给其赋予新值，否则不做任何事儿，但是要返回原值是多少。循环CAS就是在一个循环里不断的做cas操作，直到成功为止。<br>还可以说说CAS的三大问题。ABA、循环时间长开销大、只单个共享变量的原子操作。</p>
 <h4 id="AQS原理"><a href="#AQS原理" class="headerlink" title="AQS原理"></a>AQS原理</h4><p>是用来构建锁或者其他同步组件的基础框架，比如ReentrantLock、ReentrantReadWriteLock和CountDownLatch就是基于AQS实现的。它使用了一个int成员变量表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作。它是CLH队列锁的一种变体实现。它可以实现2种同步方式：独占式，共享式。</p>
