@@ -4286,8 +4286,10 @@
     <title>Android虚拟机与类加载机制</title>
     <url>/2021/11/18/Android%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android虚拟机与类加载机制。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Android虚拟机"><a href="#一、Android虚拟机" class="headerlink" title="一、Android虚拟机"></a>一、Android虚拟机</h4><p><strong>虚拟机</strong>是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。虚拟机有自己完善的硬件架构，如处理器、堆栈等，还具有相应的指令系统。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Android虚拟机"><a href="#一、Android虚拟机" class="headerlink" title="一、Android虚拟机"></a>一、Android虚拟机</h4><p>虚拟机是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。虚拟机有自己完善的硬件架构，如处理器、堆栈等，还具有相应的指令系统。</p>
 <h5 id="JVM虚拟机是什么"><a href="#JVM虚拟机是什么" class="headerlink" title="JVM虚拟机是什么"></a>JVM虚拟机是什么</h5><p>不是真实的物理机，JVM是一种用于计算设备的规范，它是一个虚构出来的计算机。它没有寄存器，所以指令集是使用Java栈来存储中间数据，这样做的目的就是为了保持Java虚拟机的指令集尽量的紧凑，同时也便于JAVA虚拟机在那些只有很少通用寄存器的平台上实现。所以，JVM本质上就是一个程序。</p>
+<a id="more"></a>
+
 <h5 id="Android虚拟机是什么"><a href="#Android虚拟机是什么" class="headerlink" title="Android虚拟机是什么"></a>Android虚拟机是什么</h5><p>是Google公司设计的用于Android平台的虚拟机，根据移动设备的一些特性进行优化，最终形成了Android的虚拟机。Android虚拟机是面向Linux，嵌入式操作系统的虚拟机，主要负责生命周期管理、堆栈管理、线程管理、安全和线程管理，垃圾回收等。它是Android平台的重要组成部分，支持dex格式（Dalvik Executable）的Java应用程序的运行。dex格式是专门为Dalvik设计的一种压缩格式，适合内存和处理器速度有限的系统。从Android系统架构图知，Android虚拟机运行在Android的运行时库层。</p>
 <p><strong>android虚拟机特点</strong></p>
 <p>首先，android虚拟机体积小、占用内存空间小。移动设备无论是存储空间、内存资源还是电池资源都是有限的。其次，基于寄存器的指令集合使得android虚拟机性能更好、执行更高效。每个进程对应一个虚拟机。最后，android虚拟机支持dex可执行文件格式。</p>
