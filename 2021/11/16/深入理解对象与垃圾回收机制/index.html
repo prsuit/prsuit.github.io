@@ -44,7 +44,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwh3qrfqbrj314g0eignq.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwh3ia8n2sj31r20jg77t.jpg">
 <meta property="article:published_time" content="2021-11-16T12:10:51.000Z">
-<meta property="article:modified_time" content="2021-11-17T02:16:28.749Z">
+<meta property="article:modified_time" content="2021-11-17T06:00:44.010Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -238,7 +238,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -373,7 +373,7 @@
 <h5 id="判断对象的存活"><a href="#判断对象的存活" class="headerlink" title="判断对象的存活"></a>判断对象的存活</h5><p>在堆里面存放着几乎所有的对象实例，垃圾回收器在对对进行回收前，要做的事情就是确定这些对象中哪些还是“存活”着，哪些已经“死去”（死去代表着不可能再被任何途径使用的对象）。</p>
 <p><strong>引用计数法</strong>：在对象中添加一个引用计数器，每当有一个地方引用它，计数器就加1，当引用失效时，计数器减1。主流虚拟机没有使用，因为存在对象相互引用的情况，难以判断对象是否该回收。</p>
 <p><strong>可达性分析</strong>：来判定对象是否存活的。基本思路就是通过一系列的称为“GC Roots”的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为引用链（Reference Chain），当一个对象到GC Roots没有任何引用链相连时，则证明此对象是不可用的。</p>
-<p>作为GC Roots的对象包括下面几种：静态变量、线程栈变量、常量池、JNI指针</p>
+<p>作为GC Roots的对象包括下面几种：线程栈引用、类静态属性引用、常量引用、JNI指针等引用对象。</p>
 <ul>
 <li>虚拟机栈（栈帧中的本地变量表）中引用的对象。</li>
 <li>方法区中类静态属性引用的对象。</li>

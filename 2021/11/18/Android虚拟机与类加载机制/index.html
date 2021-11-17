@@ -22,28 +22,37 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="SongHang&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="前言本文是介绍Android虚拟机与类加载机制。 目录一、Android虚拟机虚拟机是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。虚拟机有自己完善的硬件架构，如处理器、堆栈等，还具有相应的指令系统。 JVM虚拟机是什么不是真实的物理机，JVM是一种用于计算设备的规范，它是一个虚构出来的计算机。它没有寄存器，所以指令集是使用Java栈来存储中间数据，这样做的目的就是为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android虚拟机与类加载机制">
+<meta property="og:url" content="http://yoursite.com/2021/11/18/Android%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/index.html">
 <meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="前言本文是介绍Android虚拟机与类加载机制。 目录一、Android虚拟机虚拟机是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。虚拟机有自己完善的硬件架构，如处理器、堆栈等，还具有相应的指令系统。 JVM虚拟机是什么不是真实的物理机，JVM是一种用于计算设备的规范，它是一个虚构出来的计算机。它没有寄存器，所以指令集是使用Java栈来存储中间数据，这样做的目的就是为">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwibo823ppj315q0nk0wd.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwicupawh1j31040qeacj.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwid3e3xxgj318c0gy75d.jpg">
+<meta property="article:published_time" content="2021-11-18T08:18:15.000Z">
+<meta property="article:modified_time" content="2021-11-17T12:59:43.476Z">
 <meta property="article:author" content="prsuit">
+<meta property="article:tag" content="Android基础">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwibo823ppj315q0nk0wd.jpg">
 
-<link rel="canonical" href="http://yoursite.com/">
+<link rel="canonical" href="http://yoursite.com/2021/11/18/Android%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>SongHang's Blog</title>
+  <title>Android虚拟机与类加载机制 | SongHang's Blog</title>
   
 
 
@@ -192,7 +201,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -204,6 +213,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、Android虚拟机"><span class="nav-number">2.1.</span> <span class="nav-text">一、Android虚拟机</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#JVM虚拟机是什么"><span class="nav-number">2.1.1.</span> <span class="nav-text">JVM虚拟机是什么</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android虚拟机是什么"><span class="nav-number">2.1.2.</span> <span class="nav-text">Android虚拟机是什么</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Dalvik和ART"><span class="nav-number">2.1.3.</span> <span class="nav-text">Dalvik和ART</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、类加载机制"><span class="nav-number">2.2.</span> <span class="nav-text">二、类加载机制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ClassLoader"><span class="nav-number">2.2.1.</span> <span class="nav-text">ClassLoader</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#双亲委托机制"><span class="nav-number">2.2.2.</span> <span class="nav-text">双亲委托机制</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、热修复原理"><span class="nav-number">2.3.</span> <span class="nav-text">三、热修复原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -260,9 +270,10 @@
       <div class="main-inner">
         
 
-        <div class="content index posts-expand">
+        <div class="content post posts-expand">
           
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
@@ -278,10 +289,9 @@
       <meta itemprop="name" content="SongHang's Blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/18/Android%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">Android虚拟机与类加载机制</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Android虚拟机与类加载机制
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -320,7 +330,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android虚拟机与类加载机制。</p>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android虚拟机与类加载机制。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Android虚拟机"><a href="#一、Android虚拟机" class="headerlink" title="一、Android虚拟机"></a>一、Android虚拟机</h4><p><strong>虚拟机</strong>是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。虚拟机有自己完善的硬件架构，如处理器、堆栈等，还具有相应的指令系统。</p>
 <h5 id="JVM虚拟机是什么"><a href="#JVM虚拟机是什么" class="headerlink" title="JVM虚拟机是什么"></a>JVM虚拟机是什么</h5><p>不是真实的物理机，JVM是一种用于计算设备的规范，它是一个虚构出来的计算机。它没有寄存器，所以指令集是使用Java栈来存储中间数据，这样做的目的就是为了保持Java虚拟机的指令集尽量的紧凑，同时也便于JAVA虚拟机在那些只有很少通用寄存器的平台上实现。所以，JVM本质上就是一个程序。</p>
 <h5 id="Android虚拟机是什么"><a href="#Android虚拟机是什么" class="headerlink" title="Android虚拟机是什么"></a>Android虚拟机是什么</h5><p>是Google公司设计的用于Android平台的虚拟机，根据移动设备的一些特性进行优化，最终形成了Android的虚拟机。Android虚拟机是面向Linux，嵌入式操作系统的虚拟机，主要负责生命周期管理、堆栈管理、线程管理、安全和线程管理，垃圾回收等。它是Android平台的重要组成部分，支持dex格式（Dalvik Executable）的Java应用程序的运行。dex格式是专门为Dalvik设计的一种压缩格式，适合内存和处理器速度有限的系统。从Android系统架构图知，Android虚拟机运行在Android的运行时库层。</p>
@@ -382,767 +392,34 @@
 <li>反射修改pathList的dexElements。把补丁包的dex文件转化为Element[]，将转化得到的数组和获得pathList的dexElements的旧值进行合并，最后反射赋值给pathList的dexElements。</li>
 </ul>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/Android%E5%9F%BA%E7%A1%80/" rel="tag"># Android基础</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/17/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/17/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">JVM面试题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-17 20:40:04" itemprop="dateCreated datePublished" datetime="2021-11-17T20:40:04+08:00">2021-11-17</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/17/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="JVM面试题" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="JVM内存结构说一下"><a href="#JVM内存结构说一下" class="headerlink" title="JVM内存结构说一下"></a>JVM内存结构说一下</h4><p>一般从两个维度出发：线程私有和线程共享。到每一个内存区域的细节点。</p>
-<p>程序计数器：是一块较小的内存空间，它的作用可以看作是当前线程所执行的字节码的行号指示器。</p>
-<p>Java 虚拟机栈：是基于线程的。哪怕你只有一个 main() 方法，也是以线程的方式运行的。在线程的生命周期中，参与计算的数据会频繁地入栈和出栈，栈的生命周期是和线程一样的。<br>栈里的每条数据，就是栈帧。在每个 Java 方法被调用的时候，都会创建一个栈帧，并入栈。一旦完成相应的调用，则出栈。所有的栈帧都出栈后，线程也就结束了。每个栈帧，都包含四个区域：局部变量表、操作数栈、动态连接、返回地址。<br>本地方法栈：是和虚拟机栈非常相似的一个区域，它服务的对象是 native 方法。</p>
-<p>堆：是 JVM 上最大的内存区域，我们申请的几乎所有的对象，都是在这里存储的。我们常说的垃圾回收，操作的对象就是堆。<br>方法区：这个区域存储的内容，包括：类的信息、常量池、静态变量、编译后的代码。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/17/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">深入理解对象与垃圾回收机制</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-16 20:10:51" itemprop="dateCreated datePublished" datetime="2021-11-16T20:10:51+08:00">2021-11-16</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" class="post-meta-item leancloud_visitors" data-flag-title="深入理解对象与垃圾回收机制" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍对象与垃圾回收机制。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、虚拟机中对象的创建过程"><a href="#一、虚拟机中对象的创建过程" class="headerlink" title="一、虚拟机中对象的创建过程"></a>一、虚拟机中对象的创建过程</h4><h5 id="对象的分配"><a href="#对象的分配" class="headerlink" title="对象的分配"></a>对象的分配</h5><p>虚拟机遇到一条new指令时，首先检查是否被类加载器加载，如果没有，那必须先执行相应的类加载过程。类加载就是把class加载到JVM的运行时数据区的过程。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/17/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="prev" title="JVM面试题">
+      <i class="fa fa-chevron-left"></i> JVM面试题
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
   
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/15/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/15/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">JVM基础知识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-15 13:14:00" itemprop="dateCreated datePublished" datetime="2021-11-15T13:14:00+08:00">2021-11-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/15/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="post-meta-item leancloud_visitors" data-flag-title="JVM基础知识" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 JVM（Java Virtual Machine）。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、JVM"><a href="#一、JVM" class="headerlink" title="一、JVM"></a>一、JVM</h4><p>JVM 全称 Java Virtual Machine，也就是我们耳熟能详的 Java 虚拟机。它能识别 .class后缀的文件，并且能够解析它的指令，最终调用操作系统上的函数，完成我们想要的操作。</p>
-<h5 id="JVM工作"><a href="#JVM工作" class="headerlink" title="JVM工作"></a>JVM工作</h5><p>Java 程序不一样，使用 javac 编译成 .class 文件之后，还需要使用 Java 命令去主动执行它，操作系统并不认识这些 .class 文件。所以JVM就是一个翻译，将 .class 文件字节码翻译成机器识别的二进制机器码。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/15/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/12/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/12/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">并发面试题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-12 22:17:21" itemprop="dateCreated datePublished" datetime="2021-11-12T22:17:21+08:00">2021-11-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/12/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="并发面试题" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="sychronied修饰普通方法和静态方法的区别？什么是可见性"><a href="#sychronied修饰普通方法和静态方法的区别？什么是可见性" class="headerlink" title="sychronied修饰普通方法和静态方法的区别？什么是可见性?"></a>sychronied修饰普通方法和静态方法的区别？什么是可见性?</h4><p>对象锁是用于对象实例方法，或者一个对象实例上的，类锁是用于类的静态方法或者一个类的class对象上的。我们知道，类的对象实例可以有很多个，但是每个类只有一个class对象，所以不同对象实例的对象锁是互不干扰的，但是每个类只有一个类锁。</p>
-<p>但是有一点必须注意的是，其实类锁只是一个概念上的东西，并不是真实存在的，类锁其实锁的是每个类的对应的class对象。类锁和对象锁之间也是互不干扰的。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/12/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">Java内存模型</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-11 22:00:21" itemprop="dateCreated datePublished" datetime="2021-11-11T22:00:21+08:00">2021-11-11</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="post-meta-item leancloud_visitors" data-flag-title="Java内存模型" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Java内存模型。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、并发编程关键问题"><a href="#一、并发编程关键问题" class="headerlink" title="一、并发编程关键问题"></a>一、并发编程关键问题</h4><h5 id="线程之间的通信"><a href="#线程之间的通信" class="headerlink" title="线程之间的通信"></a>线程之间的通信</h5><p>线程的通信是指线程之间以何种机制来交换信息。在编程中，线程之间的通信机制有两种，共享内存和消息传递。Java的并发采用的是共享内存模型。<br>在共享内存的并发模型里，线程之间共享程序的公共状态，线程之间通过写-读内存中的公共状态来隐式进行通信，典型的共享内存通信方式就是通过共享对象进行通信。<br>在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信，在java中典型的消息传递方式就是wait()和notify()。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/" class="post-title-link" itemprop="url">深入理解AQS</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-10 22:17:21" itemprop="dateCreated datePublished" datetime="2021-11-10T22:17:21+08:00">2021-11-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/" class="post-meta-item leancloud_visitors" data-flag-title="深入理解AQS" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍AbstractQueueSynchronizer。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><p>队列同步器AbstractQueuedSynchronizer（以下简称同步器或AQS），是用来构建锁或者其他同步组件的基础框架，它使用了一个int成员变量表示同步状态，通过维护一个双向链表FIFO队列来完成资源获取线程的排队工作。它能够成为实现大部分同步需求的基础。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/09/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/09/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">阻塞队列和线程池原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-09 14:05:25" itemprop="dateCreated datePublished" datetime="2021-11-09T14:05:25+08:00">2021-11-09</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/09/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="阻塞队列和线程池原理" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍阻塞队列和线程池。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、阻塞队列"><a href="#一、阻塞队列" class="headerlink" title="一、阻塞队列"></a>一、阻塞队列</h4><h5 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h5><p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端（front）进行删除操作，而在表的后端（rear）进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能最先从队列中删除，故队列又称为先进先出（FIFO—first in first out）线性表。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/09/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">CAS基本原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-08 22:00:33" itemprop="dateCreated datePublished" datetime="2021-11-08T22:00:33+08:00">2021-11-08</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="CAS基本原理" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>实现原子操作可以使用锁(synchronized)和CAS，synchronized锁基于阻塞的重量级锁的机制，CAS是一种不会阻塞线程，更有效，更加灵活的机制。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><p>在编程中，<em>atomic (原子)</em> 动作是一次性完全发生的动作(一个或多个操作)。原子动作不能在中间停止：它要么完全发生，要么根本不发生。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/08/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="prsuit">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SongHang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/" class="post-title-link" itemprop="url">线程间的共享</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-05 11:00:00" itemprop="dateCreated datePublished" datetime="2021-11-05T11:00:00+08:00">2021-11-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/" class="post-meta-item leancloud_visitors" data-flag-title="线程间的共享" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。线程之间的通信机制有两种，共享内存和消息传递。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
-<h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/05/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
-  </nav>
 
 
 
