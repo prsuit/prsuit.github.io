@@ -4356,4 +4356,16 @@
         <tag>Android基础</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Java基本IO</title>
+    <url>/2021/11/19/Java%E5%9F%BA%E6%9C%ACIO/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍用于基本 I/O 的 Java 平台类。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+      <categories>
+        <category>Android基础</category>
+      </categories>
+      <tags>
+        <tag>Android基础</tag>
+      </tags>
+  </entry>
 </search>
