@@ -4360,7 +4360,18 @@
     <title>Java基本IO</title>
     <url>/2021/11/19/Java%E5%9F%BA%E6%9C%ACIO/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍用于基本 I/O 的 Java 平台类。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、IO简介"><a href="#一、IO简介" class="headerlink" title="一、IO简介"></a>一、IO简介</h4><p>数据流是一组有序，有起点和终点的字节的数据序列。包括输入流和输出流。</p>
+<p>流序列中的数据既可以是未经加工的原始二进制数据，也可以是经一定编码处理后符合某种格式规定的特定数据。因 此Java中的流分为两种: </p>
+<p>1) 字节流:数据流中最小的数据单元是字节<br>2) 字符流:数据流中最小的数据单元是字符， Java中的字符是Unicode编码，一个字符占用两个字节。</p>
+<p>Java.io包中最重要的就是5个类和一个接口。</p>
+<p>5个类指的是File、OutputStream、InputStream、Writer、Reader; 一个接口指的是Serializable。掌握了这些就掌握了Java I/O的精髓了。</p>
+<p>在Android 平台，从应用的角度出发，我们最需要关注和研究的就是 字节流(Stream)字符流(Reader/Writer) 和 File/ RandomAccessFile。当我们需要的时候再深入研究也未尝不是一件好事。关于字符和字节，例如文本文件， XML这些都是用字符流来读取和写入。而如RAR，EXE文件，图片等非文本，则用字节流来读取和写入。面对如此复 杂的类关系，有一个点是我们必须要首先掌握的，那就是设计模式中的修饰模式，学会并理解修饰模式是搞懂流必备 的前提条件哦。</p>
+<h5 id="字节流的学习"><a href="#字节流的学习" class="headerlink" title="字节流的学习"></a>字节流的学习</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DataOutputStream out &#x3D; new DataOutputStream(</span><br><span class="line">            new BufferedOutputStream(</span><br><span class="line">            new FileOutputStream(</span><br><span class="line">            new File(file)));</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>扬长避短、说清楚你做的事情、数字化简历、引导思维</p>
+]]></content>
       <categories>
         <category>Android基础</category>
       </categories>
