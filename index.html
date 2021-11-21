@@ -378,7 +378,6 @@
 <h4 id="四、字符流"><a href="#四、字符流" class="headerlink" title="四、字符流"></a>四、字符流</h4><p>字节流面向的是我们未知或者即使知道了他们的编码格式也意义不大的文件(png，exe, zip)的时候是采用字节，而面对一些我们知道文件构造我们就能够搞懂它的意义的文件(json，xml)等文件的时候我们还是需要以字符的形式来读取，所以就出现了字符流。英文字符占一个字节，而中文是一个字符，至少占2个字节，就需要指定字符集编码。</p>
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwn50bhv7sj31da0pswhe.jpg" alt=""></p>
 <p>Writer- &gt;FilterWriter-&gt;BufferedWriter-&gt;OutputStreamWriter-&gt;FileWriter-&gt;其他</p>
-<p> reader 和 Stream最大的区别是它包含了一个<code>readline()</code>接口，这个接口标明了，一行数据的意义，这也是可以理解的，因为自有字符才具备行的概念，相反字节流中的行也就是一个字节符号。</p>
 <h5 id="Writer"><a href="#Writer" class="headerlink" title="Writer"></a>Writer</h5><p>用于写入字符流的抽象类。</p>
 <h5 id="FilterWriter"><a href="#FilterWriter" class="headerlink" title="FilterWriter"></a>FilterWriter</h5><p>用于编写过滤字符流的抽象类。抽象类 FilterWriter 本身提供了将所有请求传递给包含的流的默认方法。 FilterWriter 的子类应该覆盖其中一些方法，并且还可以提供额外的方法和字段。</p>
 <h5 id="BufferedWriter"><a href="#BufferedWriter" class="headerlink" title="BufferedWriter"></a>BufferedWriter</h5><p>将文本写入字符输出流，缓冲字符以提供单个字符、数组和字符串的高效写入。可以指定缓冲区大小，也可以接受默认大小。</p>
@@ -386,6 +385,15 @@
 <h5 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h5><p>用于写入字符流。用于编写字符文件的类。</p>
 <p>FileOutputStream ：是字节流，它一个字节一个字节的向外边送数据 </p>
 <p>OutputStreamWriter：是字符流，它一个字符一个字符的向外边送数据 </p>
+<p> BufferedReader 和 BufferedInputStream最大的区别是它包含了一个<code>readline()</code>接口，这个接口标明了，一行数据的意义，这也是可以理解的，因为自有字符才具备行的概念，相反字节流中的行也就是一个字节符号。</p>
+<blockquote>
+<p>1.字节：byte：用来计量存储容量的一种计量单位；位：bit</p>
+<p>2.一个字节等于8位  1byte = 8bit</p>
+<p>Java中，char占用的是2个字节 16位，所以一个char类型的可以存储一个汉字。</p>
+</blockquote>
+<h4 id="五、字节流与字符流的关系"><a href="#五、字节流与字符流的关系" class="headerlink" title="五、字节流与字符流的关系"></a>五、字节流与字符流的关系</h4><p>在所有的硬盘上保存文件或进行传输的时候都是以字节的方法进行的，包括图片也是按字节完成，而字符是只有在内存中才会形成的，所以使用字节的操作是最多的。</p>
+<p>如果要Java程序实现一个拷贝功能，应该选用字节流进行操作(可能拷贝的是图片)，并且采用边读边写的方式 (节省内存)。</p>
+<p>虽然Java支持字节流和字符流，但有时需要在字节流和字符流两者之间转换。InputStreamReader和OutputStreamWriter，这两个为类是字节流和字符流之间相互转换的类。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>扬长避短、说清楚你做的事情、数字化简历、引导思维</p>
 
       
