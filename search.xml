@@ -4359,24 +4359,79 @@
   <entry>
     <title>Java基本IO</title>
     <url>/2021/11/19/Java%E5%9F%BA%E6%9C%ACIO/</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍用于基本 I/O 的 Java 平台类。</p>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 Java 基本 I/O 。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、IO简介"><a href="#一、IO简介" class="headerlink" title="一、IO简介"></a>一、IO简介</h4><p>数据流是一组有序，有起点和终点的字节的数据序列。包括输入流和输出流。</p>
-<p>流序列中的数据既可以是未经加工的原始二进制数据，也可以是经一定编码处理后符合某种格式规定的特定数据。因 此Java中的流分为两种: </p>
-<p>1) 字节流:数据流中最小的数据单元是字节<br>2) 字符流:数据流中最小的数据单元是字符， Java中的字符是Unicode编码，一个字符占用两个字节。</p>
+<p>流序列中的数据既可以是未经加工的原始二进制数据，也可以是经一定编码处理后符合某种格式规定的特定数据。因此Java中的流分为两种: </p>
+<p>1) 字节流：数据流中最小的数据单元是字节<br>2) 字符流：数据流中最小的数据单元是字符， Java中的字符是Unicode编码，一个字符占用两个字节。</p>
 <p>Java.io包中最重要的就是5个类和一个接口。</p>
 <p>5个类指的是File、OutputStream、InputStream、Writer、Reader; 一个接口指的是Serializable。掌握了这些就掌握了Java I/O的精髓了。</p>
-<p>在Android 平台，从应用的角度出发，我们最需要关注和研究的就是 字节流(Stream)字符流(Reader/Writer) 和 File/ RandomAccessFile。当我们需要的时候再深入研究也未尝不是一件好事。关于字符和字节，例如文本文件， XML这些都是用字符流来读取和写入。而如RAR，EXE文件，图片等非文本，则用字节流来读取和写入。面对如此复 杂的类关系，有一个点是我们必须要首先掌握的，那就是设计模式中的修饰模式，学会并理解修饰模式是搞懂流必备 的前提条件哦。</p>
-<h5 id="字节流的学习"><a href="#字节流的学习" class="headerlink" title="字节流的学习"></a>字节流的学习</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DataOutputStream out &#x3D; new DataOutputStream(</span><br><span class="line">            new BufferedOutputStream(</span><br><span class="line">            new FileOutputStream(</span><br><span class="line">            new File(file)));</span><br></pre></td></tr></table></figure>
+<p> Java I/O主要包括如下3层次:</p>
+<ol>
+<li><p>流式部分——最主要的部分。如:OutputStream、InputStream、Writer、Reader等</p>
+</li>
+<li><p>非流式部分——如:File类、RandomAccessFile类和FileDescriptor等类</p>
+</li>
+<li><p>其他——文件读取部分的与安全相关的类，如:SerializablePermission类，以及与本地操作系统相关的文件系</p>
+<p>统的类，如:FileSystem类和Win32FileSystem类和WinNTFileSystem类。</p>
+</li>
+</ol>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmmih4yhrj31360m03zz.jpg" alt=""></p>
+<h4 id="二、装饰器模式"><a href="#二、装饰器模式" class="headerlink" title="二、装饰器模式"></a>二、装饰器模式</h4><p>IO类的实现使用了设计模式中的装饰器模式。可以动态地为一个对象增加新的功能；用于代替继承的技术，无须通过继承增加子类就能扩展对象的新功能，使用对象的关联关系代替继承关系，更加灵活，同时避免类型体系的快速膨胀。有以下几个角色：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmmuze01pj30vi0iymzt.jpg" alt=""></p>
+<ul>
+<li><p>Component：抽象构建接口，真实对象和装饰对象有相同的接口 </p>
+</li>
+<li><p>ConcreteComponent：具体的构建对象，实现组件对象接口，通常就是被装饰的原始对象。就对这个对象添加功能。 </p>
+</li>
+<li><p>Decorator：所有装饰器的抽象父类，需要定义一个与组件接口一致的接口，内部持有一个被装饰的 Component对象。 装饰对象接受所有客户端的请求，并把这些请求转发给真实的对象 。这样就能在真实对象调用前后增加新的功能。</p>
+</li>
+<li><p>ConreteDecoratorA/ConreteDecoratorB：实际的装饰器对象，实现具体添加功能。</p>
+</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>扩展对象功能，比继承灵活，不会导致类个数急剧增加。</li>
+<li>可以对一个对象进行多次装饰，创造出不同行为的组合，得到功能更加强大的对象。</li>
+<li>具体构建类和具体装饰类可以独立变化，用户可以根据需要自己增加新的具体构件子类和具体装饰子类。</li>
+</ul>
+<p>缺点 ：</p>
+<ul>
+<li>产生很多小对象。大量小对象占据内存，一定程度上影响性能，调试排查比较麻烦。</li>
+</ul>
+<p>Java IO中的装饰器模式：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmne6of2bj31ig0qo0xm.jpg" alt=""></p>
+<h4 id="三、字节流"><a href="#三、字节流" class="headerlink" title="三、字节流"></a>三、字节流</h4><p>在Android 平台，从应用的角度出发，我们最需要关注和研究的就是字节流(Stream)、字符流(Reader/Writer) 和 File/ RandomAccessFile。关于字符和字节，例如文本文件， XML这些都是用字符流来读取和写入。而如RAR，EXE文件，图片等非文本，则用字节流来读取和写入。</p>
+<p>因为从流的整个发展历史，出现的各种类之间的关系看，都是沿用了修饰模式，都是一个类的功能可以用来修饰其他类，然后组合成为一个比较复杂的流。比如说:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DataOutputStream out &#x3D; new DataOutputStream(</span><br><span class="line">            new BufferedOutputStream(</span><br><span class="line">            new FileOutputStream(</span><br><span class="line">            new File(file)));</span><br></pre></td></tr></table></figure>
 
-
-
+<p>为了向文件中写入数据，首先需要创建一个FileOutputStream，然 后为了提升访问的效率，所以将它发送给具备缓存功能的BufferedOutputStream，而为了实现与机器类型无关的 java基本类型数据的输出，所以，我们将缓存的流传递给了DataOutputStream。从上面的关系，我们可以看到， 其根本目的都是为outputSteam添加额外的功能。而这种额外功能的添加就是采用了装饰模式来构建的代码。</p>
+<p>下面的图是一个关于字节流的图谱，这张图谱比较全面的概况了我们字节流中间的各个类以及他们之间的关系。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmvjzlrroj31em0dw0v1.jpg" alt=""></p>
+<p>根据它们的功能可得出：OutputStream -&gt; FileOutputStream/FilterOutputStream -&gt;DataOutputStream-&gt;BufferedOutputStream</p>
+<h5 id="OutputStream"><a href="#OutputStream" class="headerlink" title="OutputStream"></a>OutputStream</h5><p>抽象类，是所有表示字节输出流的类的超类。从内存中把字节流写出到数据目的地。</p>
+<h5 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h5><p>是OutputStream的具体构建对象，继承自OutputStream。文件输出流用于将数据写入 File的输出流，用于写入原始字节流，如图像数据。具体构建对象还有ByteArrayOutputStream/PipeOutputStream/ObjectOutputStream。</p>
+<h5 id="FilterOutputStream"><a href="#FilterOutputStream" class="headerlink" title="FilterOutputStream"></a>FilterOutputStream</h5><p>是OutputStream的装饰类，是所有具体装饰器的父类，继承自OutputStream，并持有OutputStream的引用。将所有请求传递给底层输出流，覆盖了OutputStream所有方法。  其子类可以进一步覆盖这些方法，并提供额外的方法和字段。</p>
+<h5 id="DataOutputStream"><a href="#DataOutputStream" class="headerlink" title="DataOutputStream"></a>DataOutputStream</h5><p>是OutputStream的一个具体装饰器类，继承自FilterOutputStream，数据输出流允许将Java基础数据类型写入输出流，可使用DataInputStream数据输入流将数据读回。</p>
+<h5 id="BufferedOutputStream"><a href="#BufferedOutputStream" class="headerlink" title="BufferedOutputStream"></a>BufferedOutputStream</h5><p>是OutputStream的一个具体装饰器类，继承自FilterOutputStream，实现了一个缓冲输出流。可以一次性写入一个字节数组到输出流，减少了对磁盘的访问次数以提升性能。</p>
+<p>同样的有对应的输入流，InputStream-&gt;FileInputStream/FilterInputStream-&gt;DataInputStream-&gt;BufferedInputStream。</p>
+<h4 id="四、字符流"><a href="#四、字符流" class="headerlink" title="四、字符流"></a>四、字符流</h4><p>字节流面向的是我们未知或者即使知道了他们的编码格式也意义不大的文件(png，exe, zip)的时候是采用字节，而面对一些我们知道文件构造我们就能够搞懂它的意义的文件(json，xml)等文件的时候我们还是需要以字符的形式来读取，所以就出现了字符流。英文字符占一个字节，而中文是一个字符，至少占2个字节，就需要指定字符集编码。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwn50bhv7sj31da0pswhe.jpg" alt=""></p>
+<p>Writer- &gt;FilterWriter-&gt;BufferedWriter-&gt;OutputStreamWriter-&gt;FileWriter-&gt;其他</p>
+<p> reader 和 Stream最大的区别是它包含了一个<code>readline()</code>接口，这个接口标明了，一行数据的意义，这也是可以理解的，因为自有字符才具备行的概念，相反字节流中的行也就是一个字节符号。</p>
+<h5 id="Writer"><a href="#Writer" class="headerlink" title="Writer"></a>Writer</h5><p>用于写入字符流的抽象类。</p>
+<h5 id="FilterWriter"><a href="#FilterWriter" class="headerlink" title="FilterWriter"></a>FilterWriter</h5><p>用于编写过滤字符流的抽象类。抽象类 FilterWriter 本身提供了将所有请求传递给包含的流的默认方法。 FilterWriter 的子类应该覆盖其中一些方法，并且还可以提供额外的方法和字段。</p>
+<h5 id="BufferedWriter"><a href="#BufferedWriter" class="headerlink" title="BufferedWriter"></a>BufferedWriter</h5><p>将文本写入字符输出流，缓冲字符以提供单个字符、数组和字符串的高效写入。可以指定缓冲区大小，也可以接受默认大小。</p>
+<h5 id="OutputStreamWriter"><a href="#OutputStreamWriter" class="headerlink" title="OutputStreamWriter"></a>OutputStreamWriter</h5><p>是从字符流到字节流的桥梁：写入其中的字符使用指定的字符集编码写入字节流。它使用的字符集可以通过名称指定或明确给出，或者可以接受平台的默认字符集。</p>
+<h5 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h5><p>用于写入字符流。用于编写字符文件的类。</p>
+<p>FileOutputStream ：是字节流，它一个字节一个字节的向外边送数据 </p>
+<p>OutputStreamWriter：是字符流，它一个字符一个字符的向外边送数据 </p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>扬长避短、说清楚你做的事情、数字化简历、引导思维</p>
 ]]></content>
       <categories>
-        <category>Android基础</category>
+        <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Android基础</tag>
+        <tag>Java基础</tag>
       </tags>
   </entry>
 </search>
