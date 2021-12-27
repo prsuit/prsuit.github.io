@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="JVM内存结构说一下一般从两个维度出发：线程私有和线程共享。到每一个内存区域的细节点。 程序计数器：是一块较小的内存空间，它的作用可以看作是当前线程所执行的字节码的行号指示器。 Java 虚拟机栈：是基于线程的。哪怕你只有一个 main() 方法，也是以线程的方式运行的。在线程的生命周期中，参与计算的数据会频繁地入栈和出栈，栈的生命周期是和线程一样的。栈里的每条数据，就是栈帧。在每个 Java 方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM面试题">
+<meta property="og:url" content="http://yoursite.com/2021/12/14/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="JVM内存结构说一下一般从两个维度出发：线程私有和线程共享。到每一个内存区域的细节点。 程序计数器：是一块较小的内存空间，它的作用可以看作是当前线程所执行的字节码的行号指示器。 Java 虚拟机栈：是基于线程的。哪怕你只有一个 main() 方法，也是以线程的方式运行的。在线程的生命周期中，参与计算的数据会频繁地入栈和出栈，栈的生命周期是和线程一样的。栈里的每条数据，就是栈帧。在每个 Java 方">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwhdqam5gaj316o0u0wgr.jpg">
+<meta property="article:published_time" content="2021-12-14T12:40:04.000Z">
+<meta property="article:modified_time" content="2021-12-27T11:18:56.231Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="面试题">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwhdqam5gaj316o0u0wgr.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2021/12/14/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>JVM面试题 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#JVM内存结构说一下"><span class="nav-number">1.</span> <span class="nav-text">JVM内存结构说一下</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么情况下内存栈溢出？"><span class="nav-number">2.</span> <span class="nav-text">什么情况下内存栈溢出？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#描述new一个对象的流程"><span class="nav-number">3.</span> <span class="nav-text">描述new一个对象的流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java对象会不会分配在栈中"><span class="nav-number">4.</span> <span class="nav-text">Java对象会不会分配在栈中</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如果判断一个对象是否被回收，有哪些算法，实际虚拟机使用得最多的是什么？"><span class="nav-number">5.</span> <span class="nav-text">如果判断一个对象是否被回收，有哪些算法，实际虚拟机使用得最多的是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GC收集算法有哪些？他们的特点是什么？"><span class="nav-number">6.</span> <span class="nav-text">GC收集算法有哪些？他们的特点是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JVM中一次完整的GC流程是怎样的？对象如何晋级到老年代？"><span class="nav-number">7.</span> <span class="nav-text">JVM中一次完整的GC流程是怎样的？对象如何晋级到老年代？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java中的几种引用关系，他们的区别是什么？"><span class="nav-number">8.</span> <span class="nav-text">Java中的几种引用关系，他们的区别是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#final、finally、finalize的区别"><span class="nav-number">9.</span> <span class="nav-text">final、finally、finalize的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#String-s-new-String-“xxx”-创建了几个对象？"><span class="nav-number">10.</span> <span class="nav-text">String s &#x3D; new String(“xxx”);创建了几个对象？</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/14/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM面试题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-14 20:40:04" itemprop="dateCreated datePublished" datetime="2021-12-14T20:40:04+08:00">2021-12-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/12/14/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="JVM面试题" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="JVM内存结构说一下"><a href="#JVM内存结构说一下" class="headerlink" title="JVM内存结构说一下"></a>JVM内存结构说一下</h4><p>一般从两个维度出发：线程私有和线程共享。到每一个内存区域的细节点。</p>
+<p>程序计数器：是一块较小的内存空间，它的作用可以看作是当前线程所执行的字节码的行号指示器。</p>
+<p>Java 虚拟机栈：是基于线程的。哪怕你只有一个 main() 方法，也是以线程的方式运行的。在线程的生命周期中，参与计算的数据会频繁地入栈和出栈，栈的生命周期是和线程一样的。<br>栈里的每条数据，就是栈帧。在每个 Java 方法被调用的时候，都会创建一个栈帧，并入栈。一旦完成相应的调用，则出栈。所有的栈帧都出栈后，线程也就结束了。每个栈帧，都包含四个区域：局部变量表、操作数栈、动态连接、返回地址。<br>本地方法栈：是和虚拟机栈非常相似的一个区域，它服务的对象是 native 方法。</p>
+<p>堆：是 JVM 上最大的内存区域，我们申请的几乎所有的对象，都是在这里存储的。我们常说的垃圾回收，操作的对象就是堆。<br>方法区：这个区域存储的内容，包括：类的信息、常量池、静态变量、编译后的代码。</p>
+<a id="more"></a>
+
+<h4 id="什么情况下内存栈溢出？"><a href="#什么情况下内存栈溢出？" class="headerlink" title="什么情况下内存栈溢出？"></a>什么情况下内存栈溢出？</h4><p>java.lang.StackOverflowError：如果出现了可能会是无限递归，栈内存分配耗尽。</p>
+<p>OutOfMemoryError：不断建立线程，JVM申请栈内存，机器没有足够的内存。</p>
+<h4 id="描述new一个对象的流程"><a href="#描述new一个对象的流程" class="headerlink" title="描述new一个对象的流程"></a>描述new一个对象的流程</h4><p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwhdqam5gaj316o0u0wgr.jpg" alt="img"> </p>
+<h4 id="Java对象会不会分配在栈中"><a href="#Java对象会不会分配在栈中" class="headerlink" title="Java对象会不会分配在栈中"></a>Java对象会不会分配在栈中</h4><p>可以，如果这个对象不满足逃逸分析且对象不大，其作用域没有超出自个的方法和线程(不被其它方法调用和不被其它线程访问)，那么虚拟机在特定的情况下会走栈上分配。</p>
+<h4 id="如果判断一个对象是否被回收，有哪些算法，实际虚拟机使用得最多的是什么？"><a href="#如果判断一个对象是否被回收，有哪些算法，实际虚拟机使用得最多的是什么？" class="headerlink" title="如果判断一个对象是否被回收，有哪些算法，实际虚拟机使用得最多的是什么？"></a>如果判断一个对象是否被回收，有哪些算法，实际虚拟机使用得最多的是什么？</h4><p>引用计数法和根可达性分析两种，用得最多是根可达性分析。</p>
+<h4 id="GC收集算法有哪些？他们的特点是什么？"><a href="#GC收集算法有哪些？他们的特点是什么？" class="headerlink" title="GC收集算法有哪些？他们的特点是什么？"></a>GC收集算法有哪些？他们的特点是什么？</h4><p>复制、标记清除、标记整理。</p>
+<p>复制速度快，但是要浪费空间，不会内存碎片。</p>
+<p>标记清除空间利用率高，但是有内存碎片。</p>
+<p>标记整理算法没有内存碎片，但是要移动对象，性能较低。三种算法各有所长，各有所短。</p>
+<h4 id="JVM中一次完整的GC流程是怎样的？对象如何晋级到老年代？"><a href="#JVM中一次完整的GC流程是怎样的？对象如何晋级到老年代？" class="headerlink" title="JVM中一次完整的GC流程是怎样的？对象如何晋级到老年代？"></a>JVM中一次完整的GC流程是怎样的？对象如何晋级到老年代？</h4><p>对象优先在新生代区中分配，若没有足够空间，进行Minor GC；有四种方式晋升到老年代</p>
+<ul>
+<li><p>长期存活的对象进入老年代：如果对象在新生代出生并经过第一次Minor GC后仍然存活，年龄+1，若年龄超过一定限制（15），则被晋升到老年代。</p>
+</li>
+<li><p>大对象（需要大量连续内存空间）直接进入老年代。</p>
+</li>
+<li><p>动态年龄判断：在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半时，进入老年代。</p>
+</li>
+<li><p>空间分配担保：发生Minor GC，Survivor空间不够存放活对象时，会借助老年代存放。</p>
+</li>
+</ul>
+<h4 id="Java中的几种引用关系，他们的区别是什么？"><a href="#Java中的几种引用关系，他们的区别是什么？" class="headerlink" title="Java中的几种引用关系，他们的区别是什么？"></a>Java中的几种引用关系，他们的区别是什么？</h4><p>强引用<br>一般的Object obj = new Object() ，就属于强引用。在任何情况下，只有有强引用关联（与根可达）还在，垃圾回收器就永远不会回收掉被引用的对象。<br>软引用 SoftReference<br>一些有用但是并非必需，用软引用关联的对象，系统将要发生内存溢出（OuyOfMemory）之前，这些对象就会被回收（如果这次回收后还是没有足够的空间，才会抛出内存溢出）。<br>弱引用 WeakReference<br>一些有用（程度比软引用更低）但是并非必需，用弱引用关联的对象，只能生存到下一次垃圾回收之前，GC发生时，不管内存够不够，都会被回收。<br>虚引用 PhantomReference<br>幽灵引用，最弱（随时会被回收掉）。垃圾回收的时候收到一个通知，就是为了监控垃圾回收器是否正常工作。</p>
+<h4 id="final、finally、finalize的区别"><a href="#final、finally、finalize的区别" class="headerlink" title="final、finally、finalize的区别"></a>final、finally、finalize的区别</h4><p>在java中，final可以用来修饰类，方法和变量（成员变量或局部变量）<br>当用final修饰类的时，表明该类不能被其他类所继承。当我们需要让一个类永远不被继承，此时就可以用final修饰，但要注意：<br>final类中所有的成员方法都会隐式的定义为final方法。<br>使用final方法的原因主要有两个：<br>　　(1) 把方法锁定，以防止继承类对其进行更改。<br>　　(2) 效率，在早期的java版本中，会将final方法转为内嵌调用。但若方法过于庞大，可能在性能上不会有多大提升。因此在最近版本中，不需要final方法进行这些优化了。<br>final成员变量表示常量，只能被赋值一次，赋值后其值不再改变。<br>finally：作为异常处理的一部分，它只能用在try/catch语句中，并且附带一个语句块，表示这段语句最终一定会被执行（不管有没有抛出异常），经常被用在需要释放资源的情况下<br>Object中的Finalize方法<br>即使通过可达性分析判断不可达的对象，也不是“非死不可”，它还会处于“缓刑”阶段，真正要宣告一个对象死亡，需要经过两次标记过程，一次是没有找到与GCRoots的引用链，它将被第一次标记。随后进行一次筛选（如果对象覆盖了finalize），我们可以在finalize中去拯救。<br>所以建议大家尽量不要使用finalize，因为这个方法太不可靠。在生产中你很难控制方法的执行或者对象的调用顺序。</p>
+<h4 id="String-s-new-String-“xxx”-创建了几个对象？"><a href="#String-s-new-String-“xxx”-创建了几个对象？" class="headerlink" title="String s = new String(“xxx”);创建了几个对象？"></a>String s = new String(“xxx”);创建了几个对象？</h4><p>2个。“xxx”在常量池创建一个字符串对象，new会在堆一个上创建一个 String 对象。<br>1、在一开始字符串”xxx”会在加载类时，在常量池中创建一个字符串对象。<br>2、调用 new时 会在堆内存中创建一个 String 对象，String 对象中的 char 数组将会引用常量池中字符串。</p>
+<p>Java对象的元数据指的是Class数据。jdk1.8使用元空间来实现方法区。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag"># 面试题</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/12/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="prev" title="JVM基础知识">
+      <i class="fa fa-chevron-left"></i> JVM基础知识
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" rel="next" title="深入理解对象与垃圾回收机制">
+      深入理解对象与垃圾回收机制 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

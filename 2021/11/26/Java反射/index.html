@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的，并且能够获得此类的引用。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。 反射则是一开始并不知道我要初始化的类对象是什么，自然也无法使用 new 关键字来创建对象了。这时候，我们使用 JDK 提供的反射 API 进行反射调用。 目录一、反射是什么反射就是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java反射">
+<meta property="og:url" content="http://yoursite.com/2021/11/26/Java%E5%8F%8D%E5%B0%84/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="前言一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的，并且能够获得此类的引用。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。 反射则是一开始并不知道我要初始化的类对象是什么，自然也无法使用 new 关键字来创建对象了。这时候，我们使用 JDK 提供的反射 API 进行反射调用。 目录一、反射是什么反射就是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-26T08:38:08.000Z">
+<meta property="article:modified_time" content="2021-12-27T11:23:19.217Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="Java基础">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/11/26/Java%E5%8F%8D%E5%B0%84/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Java反射 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、反射是什么"><span class="nav-number">2.1.</span> <span class="nav-text">一、反射是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、Class类"><span class="nav-number">2.2.</span> <span class="nav-text">二、Class类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#获得-Class-对象"><span class="nav-number">2.2.1.</span> <span class="nav-text">获得 Class 对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#判断类的实例"><span class="nav-number">2.2.2.</span> <span class="nav-text">判断类的实例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建实例"><span class="nav-number">2.2.3.</span> <span class="nav-text">创建实例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#获取构造器信息"><span class="nav-number">2.2.4.</span> <span class="nav-text">获取构造器信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#获取类的成员变量-字段-信息"><span class="nav-number">2.2.5.</span> <span class="nav-text">获取类的成员变量(字段)信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#调用方法"><span class="nav-number">2.2.6.</span> <span class="nav-text">调用方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#反射创建数组"><span class="nav-number">2.2.7.</span> <span class="nav-text">反射创建数组</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、反射泛型"><span class="nav-number">2.3.</span> <span class="nav-text">三、反射泛型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#获取泛型真实类型"><span class="nav-number">2.3.1.</span> <span class="nav-text">获取泛型真实类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Gson反序列化"><span class="nav-number">2.3.2.</span> <span class="nav-text">Gson反序列化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/26/Java%E5%8F%8D%E5%B0%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java反射
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-26 16:38:08" itemprop="dateCreated datePublished" datetime="2021-11-26T16:38:08+08:00">2021-11-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/26/Java%E5%8F%8D%E5%B0%84/" class="post-meta-item leancloud_visitors" data-flag-title="Java反射" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的，并且能够获得此类的引用。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。</p>
+<p>反射则是一开始并不知道我要初始化的类对象是什么，自然也无法使用 new 关键字来创建对象了。这时候，我们使用 JDK 提供的反射 API 进行反射调用。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、反射是什么"><a href="#一、反射是什么" class="headerlink" title="一、反射是什么"></a>一、反射是什么</h4><p>反射就是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；并且能改变它的属性。是Java被视为动态语言的关键。</p>
+<p>Java反射机制主要提供了以下功能:</p>
+<ul>
+<li><p>在运行时构造任意一个类的对象 </p>
+</li>
+<li><p>在运行时获取或者修改任意一个类所具有的成员变量和方法 </p>
+</li>
+<li><p>在运行时调用任意一个对象的方法(属性)</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<h4 id="二、Class类"><a href="#二、Class类" class="headerlink" title="二、Class类"></a>二、Class类</h4><p>反射始于Class，Class是一个类，封装了当前对象所对应的类的信息。一个类中有属性，方法，构造器等，比如说 有一个Person类，一个Order类，一个Book类，这些都是不同的类，现在需要一个类，用来描述类，这就是 Class，它应该有类名，属性，方法，构造器等。Class是用来描述类的类。</p>
+<p>Class类是一个对象照镜子的结果，对象可以看到自己有哪些属性，方法，构造器，实现了哪些接口等等。对于每 个类而言，JRE 都为其保留一个不变的 Class 类型的对象。一个 Class 对象包含了特定某个类的有关信息。 对象只能由系统建立对象，一个类(而不是一个对象)在 JVM 中只会有一个Class实例。</p>
+<h5 id="获得-Class-对象"><a href="#获得-Class-对象" class="headerlink" title="获得 Class 对象"></a>获得 Class 对象</h5><p>获取Class对象的三种方式:</p>
+<p>通过类名获取 <code>类名.class</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; cls &#x3D; int.class;</span><br><span class="line">Class&lt;?&gt; classInt &#x3D; Integer.TYPE;</span><br></pre></td></tr></table></figure>
+
+<p>通过对象获取 <code>对象名.getClass()</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">StringBuilder str &#x3D; new StringBuilder(&quot;123&quot;);</span><br><span class="line">Class&lt;?&gt; cls &#x3D; str.getClass();</span><br></pre></td></tr></table></figure>
+
+<p>通过全类名获取 <code>Class.forName(&quot;全类名&quot;)</code>  <code>classLoader.loadClass(&quot;全类名&quot;)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; cls &#x3D; Class.forName(&quot;xxx&quot;);</span><br><span class="line">ClassLoader.getSystemClassLoader().loadClass(&quot;xxx&quot;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="判断类的实例"><a href="#判断类的实例" class="headerlink" title="判断类的实例"></a>判断类的实例</h5><p>判断是否为某个类的实例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public boolean isInstance(Object obj) &#123;</span><br><span class="line">        if (obj &#x3D;&#x3D; null) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return isAssignableFrom(obj.getClass());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>判断是否为某个类的类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public boolean isAssignableFrom(Class&lt;?&gt; cls) &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="创建实例"><a href="#创建实例" class="headerlink" title="创建实例"></a>创建实例</h5><p>通过反射来生成对象主要有两种方式:</p>
+<ul>
+<li><p>使用Class对象的<code>newInstance()</code>方法来创建Class对象对应类的实例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; c &#x3D; String.class; </span><br><span class="line">Object str &#x3D; c.newInstance();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>先通过Class对象获取指定的Constructor对象，再调用Constructor对象的<code>newInstance()</code>方法来创建实例。这 种方法可以用指定的构造器构造类的实例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;获取String所对应的Class对象</span><br><span class="line">Class&lt;?&gt; c &#x3D; String.class; &#x2F;&#x2F;获取String类带一个String参数的构造器</span><br><span class="line">Constructor constructor &#x3D; c.getConstructor(String.class); &#x2F;&#x2F;根据构造器创建实例</span><br><span class="line">Object obj &#x3D; constructor.newInstance(&quot;23333&quot;);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h5 id="获取构造器信息"><a href="#获取构造器信息" class="headerlink" title="获取构造器信息"></a>获取构造器信息</h5><p>得到构造器的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Constructor&lt;T&gt; getConstructor(Class&lt;?&gt;... parameterTypes) &#x2F;&#x2F;获得使用特殊的参数类型的public构造函数(包括父类) </span><br><span class="line">Constructor&lt;?&gt;[] getConstructors() &#x2F;&#x2F;获得类的所有公共构造函数</span><br><span class="line">Constructor&lt;T&gt; getDeclaredConstructor(Class&lt;?&gt;... parameterTypes) &#x2F;&#x2F;获得使用特定参数类型的构造函数(包括私有) </span><br><span class="line">Constructor&lt;?&gt;[] getDeclaredConstructors() &#x2F;&#x2F;获得类的所有构造函数(与接入级别无关)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：构造器的parameterTypes需要什么类型就传什么类型，不存在类型转换。如：若参数是int类型就只能传 int.class，而不能传Integer.class。</p>
+</blockquote>
+<h5 id="获取类的成员变量-字段-信息"><a href="#获取类的成员变量-字段-信息" class="headerlink" title="获取类的成员变量(字段)信息"></a>获取类的成员变量(字段)信息</h5><p>获得字段信息的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Field getField(String name) &#x2F;&#x2F;获取类指定的public字段</span><br><span class="line">Field[] getFields() &#x2F;&#x2F;获取类所有public字段，包括父类</span><br><span class="line">native Field getDeclaredField(String name) &#x2F;&#x2F;获取类指定的字段</span><br><span class="line">native Field[] getDeclaredFields() &#x2F;&#x2F;获取当前类所有(public&#x2F;protected&#x2F;default&#x2F;private)字段，不包括父类</span><br></pre></td></tr></table></figure>
+
+<h5 id="调用方法"><a href="#调用方法" class="headerlink" title="调用方法"></a>调用方法</h5><p>获得方法信息的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Method getMethod(String name, Class&lt;?&gt;... parameterTypes) &#x2F;&#x2F;获得指定命名和参数类型的公共方法</span><br><span class="line">Method[] getMethods() &#x2F;&#x2F;获得所有的公共方法，包括父类</span><br><span class="line">Method getDeclaredMethod(String name, Class&lt;?&gt;... parameterTypes) &#x2F;&#x2F;获得指定命名和参数类型的方法</span><br><span class="line">Method[] getDeclaredMethods() &#x2F;&#x2F;获得当前类所有的方法，不包括父类</span><br></pre></td></tr></table></figure>
+
+<p>当我们从类中获取了一个方法后，我们就可以用 invoke() 方法来调用这个方法。 invoke 方法的原型为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public native Object invoke(Object obj, Object... args)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：在调用私有方法或设置私有属性值前，需设置方法或属性可访问<code>setAccessible(true)</code>。</p>
+</blockquote>
+<h5 id="反射创建数组"><a href="#反射创建数组" class="headerlink" title="反射创建数组"></a>反射创建数组</h5><p>通过<code>Array.newInstance()</code>创建数组对象，它的原型是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public static Object newInstance(Class&lt;?&gt; componentType, int length)</span><br></pre></td></tr></table></figure>
+
+<h4 id="三、反射泛型"><a href="#三、反射泛型" class="headerlink" title="三、反射泛型"></a>三、反射泛型</h4><h5 id="获取泛型真实类型"><a href="#获取泛型真实类型" class="headerlink" title="获取泛型真实类型"></a>获取泛型真实类型</h5><p>当我们对一个泛型类进行反射时，需要得到泛型中的真实数据类型，来完成如json反序列化的操作。此时需要通 过 Type 体系来完成。 Type 接口包含了一个实现类<code>Class&lt;T&gt;</code>和四个实现接口，分别是:</p>
+<ul>
+<li><p>TypeVariable 泛型类型变量，可获得泛型上限等信息。</p>
+</li>
+<li><p>ParameterizedType 具体的泛型类型，可以获得元数据中泛型签名类型(泛型真实类型)。</p>
+</li>
+<li><p>GenericArrayType 当需要描述的类型是泛型类的数组时，可获得数组元素类型，比如<code>List&lt;String&gt;[]</code>。</p>
+</li>
+<li><p>WildcardType 通配符泛型，获得上下限信息。</p>
+</li>
+</ul>
+<h5 id="Gson反序列化"><a href="#Gson反序列化" class="headerlink" title="Gson反序列化"></a>Gson反序列化</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">		Response&lt;Data&gt; dataResponse &#x3D; new Response(new Data(&quot;数据&quot;), 1, &quot;成功&quot;);</span><br><span class="line">		Gson gson &#x3D; new Gson();</span><br><span class="line">		String json &#x3D; gson.toJson(dataResponse); System.out.println(json);</span><br><span class="line">		&#x2F;&#x2F;为什么TypeToken要定义为抽象类或受保护的构造方法?</span><br><span class="line">		Response&lt;Data&gt; resp &#x3D; gson.fromJson(json, </span><br><span class="line">		               new TypeToken&lt;Response&lt;Data&gt;&gt;() &#123;&#125;.getType());</span><br><span class="line">	  System.out.println(resp.data.result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在进行GSON反序列化时，存在泛型时，可以借助 TypeToken 获取Type以完成泛型的反序列化。但是为什么 TypeToken 要被定义为抽象类或受保护的构造方法呢?</p>
+<p>因为只有定义为抽象类或受保护的构造方法，这样在使用时，需要创建对应的实现类，此时确定泛型类型，编译才能够将泛型 signature信息记录到Class元数据中。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java%E5%9F%BA%E7%A1%80/" rel="tag"># Java基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/24/Java%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" rel="prev" title="Java代理模式">
+      <i class="fa fa-chevron-left"></i> Java代理模式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/28/Java%E7%BA%BF%E7%A8%8B/" rel="next" title="Java线程">
+      Java线程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本文是介绍 Java 基本 I&#x2F;O 。 目录一、IO简介I&#x2F;O（Input&#x2F;Outpu） 即输入／输出 。从计算机结构的视角来看的话， I&#x2F;O 描述了计算机系统与外部设备之间通信的过程。从应用程序的视角来看的话，应用程序对操作系统的内核发起 IO 调用（系统调用），操作系统负责的内核执行具体的 IO 操作。 为了保证操作系统的稳定性和安全性，一个进程的地址空间划分为 用户空间（User spa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java基本IO">
+<meta property="og:url" content="http://yoursite.com/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="前言本文是介绍 Java 基本 I&#x2F;O 。 目录一、IO简介I&#x2F;O（Input&#x2F;Outpu） 即输入／输出 。从计算机结构的视角来看的话， I&#x2F;O 描述了计算机系统与外部设备之间通信的过程。从应用程序的视角来看的话，应用程序对操作系统的内核发起 IO 调用（系统调用），操作系统负责的内核执行具体的 IO 操作。 为了保证操作系统的稳定性和安全性，一个进程的地址空间划分为 用户空间（User spa">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwmmih4yhrj31360m03zz.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwmmuze01pj30vi0iymzt.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwmne6of2bj31ig0qo0xm.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwmvjzlrroj31em0dw0v1.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwn50bhv7sj31da0pswhe.jpg">
+<meta property="article:published_time" content="2021-12-20T12:22:29.000Z">
+<meta property="article:modified_time" content="2021-12-27T11:17:47.063Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="Java基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwmmih4yhrj31360m03zz.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Java基本IO | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、IO简介"><span class="nav-number">2.1.</span> <span class="nav-text">一、IO简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、Java-I-O"><span class="nav-number">2.2.</span> <span class="nav-text">二、Java I&#x2F;O</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、装饰器模式"><span class="nav-number">2.3.</span> <span class="nav-text">三、装饰器模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、字节流"><span class="nav-number">2.4.</span> <span class="nav-text">四、字节流</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#OutputStream"><span class="nav-number">2.4.1.</span> <span class="nav-text">OutputStream</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#FileOutputStream"><span class="nav-number">2.4.2.</span> <span class="nav-text">FileOutputStream</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#FilterOutputStream"><span class="nav-number">2.4.3.</span> <span class="nav-text">FilterOutputStream</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#DataOutputStream"><span class="nav-number">2.4.4.</span> <span class="nav-text">DataOutputStream</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#BufferedOutputStream"><span class="nav-number">2.4.5.</span> <span class="nav-text">BufferedOutputStream</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、字符流"><span class="nav-number">2.5.</span> <span class="nav-text">五、字符流</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Writer"><span class="nav-number">2.5.1.</span> <span class="nav-text">Writer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#FilterWriter"><span class="nav-number">2.5.2.</span> <span class="nav-text">FilterWriter</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#OutputStreamWriter"><span class="nav-number">2.5.3.</span> <span class="nav-text">OutputStreamWriter</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#FileWriter"><span class="nav-number">2.5.4.</span> <span class="nav-text">FileWriter</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#BufferedWriter"><span class="nav-number">2.5.5.</span> <span class="nav-text">BufferedWriter</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、字节流与字符流的关系"><span class="nav-number">2.6.</span> <span class="nav-text">六、字节流与字符流的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#七、RandomAccessFile"><span class="nav-number">2.7.</span> <span class="nav-text">七、RandomAccessFile</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java基本IO
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-20 20:22:29" itemprop="dateCreated datePublished" datetime="2021-12-20T20:22:29+08:00">2021-12-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/" class="post-meta-item leancloud_visitors" data-flag-title="Java基本IO" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 Java 基本 I/O 。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、IO简介"><a href="#一、IO简介" class="headerlink" title="一、IO简介"></a>一、IO简介</h4><p>I/O（Input/Outpu） 即<strong>输入／输出</strong> 。从计算机结构的视角来看的话， I/O 描述了计算机系统与外部设备之间通信的过程。从应用程序的视角来看的话，应用程序对操作系统的内核发起 IO 调用（系统调用），操作系统负责的内核执行具体的 IO 操作。</p>
+<p>为了保证操作系统的稳定性和安全性，一个进程的地址空间划分为 <strong>用户空间（User space）</strong> 和 <strong>内核空间（Kernel space ）</strong> 。用户进程想要执行 IO 操作的话，必须通过 <strong>系统调用</strong> 来间接访问内核空间。</p>
+<p>当应用程序发起 I/O 调用后，会经历两个步骤：</p>
+<ol>
+<li>内核等待 I/O 设备准备好数据；</li>
+<li>内核将数据从内核空间拷贝到用户空间。</li>
+</ol>
+<p>在开发过程中接触最多的就是磁盘 IO（读写文件）和 网络 IO（网络请求和响应）。UNIX 系统下， IO 模型一共有5种： 同步阻塞 I/O、同步非阻塞 I/O、I/O多路复用、信号驱动 I/O和异步I/O。</p>
+<a id="more"></a>
+
+<h4 id="二、Java-I-O"><a href="#二、Java-I-O" class="headerlink" title="二、Java I/O"></a>二、Java I/O</h4><p>数据流是一组有序，有起点和终点的字节的数据序列。包括输入流和输出流。</p>
+<p>流序列中的数据既可以是未经加工的原始二进制数据，也可以是经一定编码处理后符合某种格式规定的特定数据。因此Java中的流分为两种: </p>
+<p>1) 字节流：数据流中最小的数据单元是字节<br>2) 字符流：数据流中最小的数据单元是字符， Java中的字符是Unicode编码，一个字符占用两个字节。</p>
+<p>Java.io包中最重要的就是5个类和一个接口。</p>
+<p>5个类指的是File、OutputStream、InputStream、Writer、Reader; 一个接口指的是Serializable。掌握了这些就掌握了Java I/O的精髓了。</p>
+<p> Java I/O主要包括如下3层次:</p>
+<ol>
+<li><p>流式部分——最主要的部分。如:OutputStream、InputStream、Writer、Reader等</p>
+</li>
+<li><p>非流式部分——如:File类、RandomAccessFile类和FileDescriptor等类</p>
+</li>
+<li><p>其他——文件读取部分的与安全相关的类，如:SerializablePermission类，以及与本地操作系统相关的文件系</p>
+<p>统的类，如:FileSystem类和Win32FileSystem类和WinNTFileSystem类。</p>
+</li>
+</ol>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmmih4yhrj31360m03zz.jpg" alt=""></p>
+<h4 id="三、装饰器模式"><a href="#三、装饰器模式" class="headerlink" title="三、装饰器模式"></a>三、装饰器模式</h4><p>IO类的实现使用了设计模式中的装饰器模式。可以动态地为一个对象增加新的功能；用于代替继承的技术，无须通过继承增加子类就能扩展对象的新功能，使用对象的关联关系代替继承关系，更加灵活，同时避免类型体系的快速膨胀。有以下几个角色：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmmuze01pj30vi0iymzt.jpg" alt=""></p>
+<ul>
+<li><p>Component：抽象构建接口，真实对象和装饰对象有相同的接口 </p>
+</li>
+<li><p>ConcreteComponent：具体的构建对象，实现组件对象接口，通常就是被装饰的原始对象。就对这个对象添加功能。 </p>
+</li>
+<li><p>Decorator：所有装饰器的抽象父类，需要定义一个与组件接口一致的接口，内部持有一个被装饰的 Component对象。 装饰对象接受所有客户端的请求，并把这些请求转发给真实的对象 。这样就能在真实对象调用前后增加新的功能。</p>
+</li>
+<li><p>ConreteDecoratorA/ConreteDecoratorB：实际的装饰器对象，实现具体添加功能。</p>
+</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>扩展对象功能，比继承灵活，不会导致类个数急剧增加。</li>
+<li>可以对一个对象进行多次装饰，创造出不同行为的组合，得到功能更加强大的对象。</li>
+<li>具体构建类和具体装饰类可以独立变化，用户可以根据需要自己增加新的具体构件子类和具体装饰子类。</li>
+</ul>
+<p>缺点 ：</p>
+<ul>
+<li>产生很多小对象。大量小对象占据内存，一定程度上影响性能，调试排查比较麻烦。</li>
+</ul>
+<p>Java IO中的装饰器模式：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmne6of2bj31ig0qo0xm.jpg" alt=""></p>
+<h4 id="四、字节流"><a href="#四、字节流" class="headerlink" title="四、字节流"></a>四、字节流</h4><p>在Android 平台，从应用的角度出发，我们最需要关注和研究的就是字节流(Stream)、字符流(Reader/Writer) 和 File/ RandomAccessFile。关于字符和字节，例如文本文件， XML这些都是用字符流来读取和写入。而如RAR，EXE文件，图片等非文本，则用字节流来读取和写入。</p>
+<p>因为从流的整个发展历史，出现的各种类之间的关系看，都是沿用了修饰模式，都是一个类的功能可以用来修饰其他类，然后组合成为一个比较复杂的流。比如说:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DataOutputStream out &#x3D; new DataOutputStream(</span><br><span class="line">            new BufferedOutputStream(</span><br><span class="line">            new FileOutputStream(</span><br><span class="line">            new File(file)));</span><br></pre></td></tr></table></figure>
+
+<p>为了向文件中写入数据，首先需要创建一个FileOutputStream，然 后为了提升访问的效率，所以将它发送给具备缓存功能的BufferedOutputStream，而为了实现与机器类型无关的 java基本类型数据的输出，所以，我们将缓存的流传递给了DataOutputStream。从上面的关系，我们可以看到， 其根本目的都是为outputSteam添加额外的功能。而这种额外功能的添加就是采用了装饰模式来构建的代码。</p>
+<p>下面的图是一个关于字节流的图谱，这张图谱比较全面的概况了我们字节流中间的各个类以及他们之间的关系。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwmvjzlrroj31em0dw0v1.jpg" alt=""></p>
+<p>根据它们的功能可得出：OutputStream -&gt; FileOutputStream/FilterOutputStream -&gt;DataOutputStream-&gt;BufferedOutputStream</p>
+<h5 id="OutputStream"><a href="#OutputStream" class="headerlink" title="OutputStream"></a>OutputStream</h5><p>抽象类，是所有表示字节输出流的类的超类。从内存中把字节流写出到数据目的地。</p>
+<h5 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h5><p>是OutputStream的具体构建对象，继承自OutputStream。文件输出流用于将数据写入 File的输出流，用于写入原始字节流，如图像数据。具体构建对象还有ByteArrayOutputStream/PipeOutputStream/ObjectOutputStream。</p>
+<h5 id="FilterOutputStream"><a href="#FilterOutputStream" class="headerlink" title="FilterOutputStream"></a>FilterOutputStream</h5><p>是OutputStream的装饰类，是所有具体装饰器的父类，继承自OutputStream，并持有OutputStream的引用。将所有请求传递给底层输出流，覆盖了OutputStream所有方法。  其子类可以进一步覆盖这些方法，并提供额外的方法和字段。</p>
+<h5 id="DataOutputStream"><a href="#DataOutputStream" class="headerlink" title="DataOutputStream"></a>DataOutputStream</h5><p>是OutputStream的一个具体装饰器类，继承自FilterOutputStream，数据输出流允许将Java基础数据类型写入输出流，可使用DataInputStream数据输入流将数据读回。</p>
+<h5 id="BufferedOutputStream"><a href="#BufferedOutputStream" class="headerlink" title="BufferedOutputStream"></a>BufferedOutputStream</h5><p>是OutputStream的一个具体装饰器类，继承自FilterOutputStream，实现了一个缓冲输出流。可以一次性写入一个字节数组到输出流，减少了对磁盘的访问次数以提升性能。</p>
+<p>对应的输入流相关类有：InputStream-&gt;FileInputStream/FilterInputStream-&gt;DataInputStream-&gt;BufferedInputStream。</p>
+<h4 id="五、字符流"><a href="#五、字符流" class="headerlink" title="五、字符流"></a>五、字符流</h4><p>字节流面向的是我们未知或者即使知道了他们的编码格式也意义不大的文件(png，exe, zip)的时候是采用字节，而面对一些我们知道文件构造我们就能够搞懂它的意义的文件(json，xml)等文件的时候我们还是需要以字符的形式来读取，所以就出现了字符流。英文字符占一个字节，而中文是一个字符，至少占2个字节，就需要指定字符集编码。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwn50bhv7sj31da0pswhe.jpg" alt=""></p>
+<p>Writer- &gt;FilterWriter-&gt;OutputStreamWriter-&gt;FileWriter-&gt;BufferedWriter-&gt;其他</p>
+<h5 id="Writer"><a href="#Writer" class="headerlink" title="Writer"></a>Writer</h5><p>用于写入字符流的抽象类。</p>
+<h5 id="FilterWriter"><a href="#FilterWriter" class="headerlink" title="FilterWriter"></a>FilterWriter</h5><p>是Writer的装饰类，本身提供了将所有请求传递给包含的流的默认方法。其子类应该覆盖其中一些方法，并且还可以提供额外的方法和字段。</p>
+<h5 id="OutputStreamWriter"><a href="#OutputStreamWriter" class="headerlink" title="OutputStreamWriter"></a>OutputStreamWriter</h5><p>是从字符流到字节流的桥梁：写入其中的字符使用指定的字符集编码成字节写入输出流。</p>
+<h5 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h5><p>用于写入字符流。用于编写字符文件的类。</p>
+<h5 id="BufferedWriter"><a href="#BufferedWriter" class="headerlink" title="BufferedWriter"></a>BufferedWriter</h5><p>将文本写入字符输出流，缓冲字符以提供多个字符的高效写入。可以指定缓冲区大小，也可以接受默认大小。</p>
+<p>对应的读取字符流相关类有：Reader-&gt;FilterReader-&gt;InputStreamReader-&gt;FileReader-&gt;BufferedReader-&gt;其他。</p>
+<blockquote>
+<p>1.字节：byte：用来计量存储容量的一种计量单位；位：bit</p>
+<p>2.一个字节等于8位  1byte = 8bit</p>
+<p>Java中，char占用的是2个字节 16位，所以一个char类型的可以存储一个汉字。</p>
+</blockquote>
+<h4 id="六、字节流与字符流的关系"><a href="#六、字节流与字符流的关系" class="headerlink" title="六、字节流与字符流的关系"></a>六、字节流与字符流的关系</h4><p>OutputStream/InputStream ：是字节流(stream of bytes)，它一个字节一个字节的向外边送数据。 </p>
+<p>Writer/Reader：是字符流(streams of characters)，它一个字符一个字符的向外边送数据。</p>
+<p>不同之处：</p>
+<ul>
+<li><p>字符流和字节流最大的区别是它包含了一个<code>readline()</code>接口，这个接口标明了，一行数据的意义，这也是可以理解的，因为只有字符才具备行的概念，相反字节流中的行也就是一个字节符号。</p>
+</li>
+<li><p>字节流在操作的时本身是不会用到缓冲区(内存)的，是与文件本身直接操作的。即使不关闭资源(close方法)文件也能输出；而字符流在操作时是使用到缓冲区的，如果不使用close方法关闭资源，则不会输出如何内容，并且可以使用flush方法强制进行刷新缓存区，这时才能在不关闭资源的情况下输出内容。</p>
+</li>
+</ul>
+<p>使用场景：</p>
+<ul>
+<li><p>在所有的硬盘上保存文件或进行传输的时候都是以字节的方法进行的，包括图片也是按字节完成，而字符是只有在内存中才会形成的，所以使用字节的操作是最多的。</p>
+</li>
+<li><p>如果要Java程序实现一个拷贝功能，应该选用字节流进行操作(可能拷贝的是图片)，并且采用边读边写的方式 (节省内存)。</p>
+</li>
+</ul>
+<p>字节流和字符流两者之间转换：</p>
+<ul>
+<li><p>OutputStreamWriter用于将写入的字符编码成字节后写入一个字节输出流。其内部实现是通过StreamEncoder对象，使用指定的或者默认的编码集将字符转码为字节，调用其自身实现的写入方法将转码后的字节写入到底层字节输出流中。</p>
+</li>
+<li><p>InputSreamReader用于将一个字节输入流中的字节解码成字符。其内部实现是通过StreamDecoder对象，使用指定的或者默认的编码集将字节解码为字符，调用其自身实现的读取方法将解码后的字符读取到程序中。</p>
+</li>
+</ul>
+<h4 id="七、RandomAccessFile"><a href="#七、RandomAccessFile" class="headerlink" title="七、RandomAccessFile"></a>七、RandomAccessFile</h4><p>支持读取和写入随机访问文件。随机访问文件的行为类似于存储在文件系统中的大量字节。有一种游标，或隐含数组的索引，称为文件指针；输入操作从文件指针开始读取字节，并将文件指针前进到读取的字节之后。运用场景多线程中分段下载。</p>
+<p>构造方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RandomAccessFile raf &#x3D; newRandomAccessFile(File file, String mode); </span><br><span class="line">其中参数 mode 的值可选 &quot;r&quot;：可读，&quot;w&quot; ：可写，&quot;rw&quot;：可读性；</span><br></pre></td></tr></table></figure>
+
+<p>成员方法：</p>
+<p><code>seek(int index)</code>：可以将指针移动到某个位置开始读写; </p>
+<p><code>setLength(long len)</code>：给写入文件预留空间。</p>
+<p>特点和优势：</p>
+<ul>
+<li>既可以读也可以写。RandomAccessFile不属于InputStream和OutputStream类系的它是一个完全独立的类，所有方 法(绝大多数都只属于它自己)都是自己从头开始规定的,这里面包含读写两种操作 </li>
+<li>可以指定位置读写。能在文件里面前后移动，在文件里移动用的seek( ),所以它的行为与其它的I/O类 有些根本性的不同。总而言之，它是一个直接继承Object的，独立的类。只有RandomAccessFile才有<code>seek</code>搜寻方法，而这个方法也只适用于文件.</li>
+</ul>
+<p>IO模型：</p>
+<p><strong>BIO 属于同步阻塞 IO 模型</strong> 。</p>
+<p>同步阻塞 IO 模型中，应用程序发起 read 调用后，会一直阻塞，直到内核把数据拷贝到用户空间。</p>
+<p> <strong>NIO (Non-blocking/New I/O)</strong></p>
+<p>Java 中的 NIO 于 Java 1.4 中引入，对应 <code>java.nio</code> 包，提供了 <code>Channel</code> , <code>Selector</code>，<code>Buffer</code> 等抽象。NIO 中的 N 可以理解为 Non-blocking，不单纯是 New。它支持面向缓冲的，基于通道的 I/O 操作方法。 对于高负载、高并发的（网络）应用，应使用 NIO 。Java 中的 NIO 可以看作是 <strong>I/O 多路复用模型</strong>。也有很多人认为，Java 中的 NIO 属于同步非阻塞 IO 模型。</p>
+<p>FileChannel用于读取、写入、映射和操作文件的通道。 FileChannel配合着ByteBuffer，将读写的数据缓存到内存中，然后以批量/缓存的方式read/write，省去了非批量操作时的重复中间操作，操纵大文件时可 以显著提高效率。</p>
+<p><strong>AIO (Asynchronous I/O)</strong></p>
+<p>异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java%E5%9F%BA%E7%A1%80/" rel="tag"># Java基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/18/Android%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" rel="prev" title="Android虚拟机与类加载机制">
+      <i class="fa fa-chevron-left"></i> Android虚拟机与类加载机制
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -2972,7 +2972,7 @@
   </entry>
   <entry>
     <title>Java泛型</title>
-    <url>/2021/10/31/Java%E6%B3%9B%E5%9E%8B/</url>
+    <url>/2021/11/20/Java%E6%B3%9B%E5%9E%8B/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>泛型（Generic）是 Java 编程语言的一个强大功能。它们提高了代码的类型安全性，在编译时可以检测到更多的错误。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、为什么使用泛型"><a href="#一、为什么使用泛型" class="headerlink" title="一、为什么使用泛型"></a>一、为什么使用泛型</h4><p>泛型使在定义类、接口和方法时，使类型成为参数。与方法声明中使用的形式参数非常相似，类型形参为你提供了一种让不同的输入重用相同的代码的方法。区别在于形式参数的输入是值，而类型形参的输入是类型。</p>
 <p>使用泛型的好处：</p>
@@ -3058,7 +3058,7 @@
   </entry>
   <entry>
     <title>Java注解</title>
-    <url>/2021/11/01/Java%E6%B3%A8%E8%A7%A3/</url>
+    <url>/2021/11/22/Java%E6%B3%A8%E8%A7%A3/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>注解是一种元数据形式，为编译器提供信息。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、注解是什么"><a href="#一、注解是什么" class="headerlink" title="一、注解是什么"></a>一、注解是什么</h4><p>Annotations (注解)，又称 Java 标注，是 JDK5.0 引入的一种注释机制。元数据的一种形式，提供有关于程序但不属于程序本身的数据。注解对它们注解的代码的操作没有直接影响。</p>
 <a id="more"></a>
@@ -3141,7 +3141,7 @@
   </entry>
   <entry>
     <title>Java反射</title>
-    <url>/2021/11/02/Java%E5%8F%8D%E5%B0%84/</url>
+    <url>/2021/11/26/Java%E5%8F%8D%E5%B0%84/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的，并且能够获得此类的引用。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。</p>
 <p>反射则是一开始并不知道我要初始化的类对象是什么，自然也无法使用 new 关键字来创建对象了。这时候，我们使用 JDK 提供的反射 API 进行反射调用。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、反射是什么"><a href="#一、反射是什么" class="headerlink" title="一、反射是什么"></a>一、反射是什么</h4><p>反射就是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；并且能改变它的属性。是Java被视为动态语言的关键。</p>
@@ -3230,7 +3230,7 @@
   </entry>
   <entry>
     <title>Java代理模式</title>
-    <url>/2021/11/03/Java%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</url>
+    <url>/2021/11/24/Java%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>代理模式分为静态代理和动态代理，动态代理是一种常见的设计模式。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、什么是代理模式"><a href="#一、什么是代理模式" class="headerlink" title="一、什么是代理模式"></a>一、什么是代理模式</h4><p>代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。通俗的来讲代理模式就是我们生活 中常见的中介。代理模式的目的：</p>
 <ul>
@@ -3283,7 +3283,7 @@
   </entry>
   <entry>
     <title>Java线程</title>
-    <url>/2021/11/04/Java%E7%BA%BF%E7%A8%8B/</url>
+    <url>/2021/11/28/Java%E7%BA%BF%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在并发编程中，有两个基本执行单元：进程(processes) 和 线程(thread)。在 Java 编程语言中，并发编程主要涉及线程。但是，进程也很重要。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><p><strong>进程</strong>：是计算机中的程序关于某数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位，是操作系统结构的基础。进程是线程的容器，是程序的实体。程序是指令、数据及其组织形式的描述。</p>
 <p><strong>线程</strong>：是操作系统能够进行运算调度的最小单位。它被包含在进程之中，是进程中的实际运作单位。一条线程指的是进程中一个单一顺序的控制流，一个进程中可以并发多个线程，每条线程并行执行不同的任务。</p>
@@ -3360,7 +3360,7 @@
   </entry>
   <entry>
     <title>线程间的共享</title>
-    <url>/2021/11/14/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/</url>
+    <url>/2021/12/04/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。线程之间的通信机制有两种，共享内存和消息传递。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
 <h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
@@ -3504,7 +3504,7 @@
   </entry>
   <entry>
     <title>CAS基本原理</title>
-    <url>/2021/11/16/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/</url>
+    <url>/2021/12/06/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>实现原子操作可以使用锁(synchronized)和CAS，synchronized锁基于阻塞的重量级锁的机制，CAS是一种不会阻塞线程，更有效，更加灵活的机制。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、原子操作"><a href="#一、原子操作" class="headerlink" title="一、原子操作"></a>一、原子操作</h4><p>在编程中，<em>atomic (原子)</em> 动作是一次性完全发生的动作(一个或多个操作)。原子动作不能在中间停止：它要么完全发生，要么根本不发生。</p>
 <a id="more"></a>
@@ -3538,7 +3538,7 @@
   </entry>
   <entry>
     <title>阻塞队列和线程池原理</title>
-    <url>/2021/11/09/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/</url>
+    <url>/2021/11/30/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍阻塞队列和线程池。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、阻塞队列"><a href="#一、阻塞队列" class="headerlink" title="一、阻塞队列"></a>一、阻塞队列</h4><h5 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h5><p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端（front）进行删除操作，而在表的后端（rear）进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能最先从队列中删除，故队列又称为先进先出（FIFO—first in first out）线性表。</p>
 <a id="more"></a>
@@ -3797,7 +3797,7 @@
   </entry>
   <entry>
     <title>深入理解AQS</title>
-    <url>/2021/11/18/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/</url>
+    <url>/2021/12/08/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍AbstractQueueSynchronizer。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><p>队列同步器AbstractQueuedSynchronizer（以下简称同步器或AQS），是用来构建锁或者其他同步组件的基础框架，它使用了一个int成员变量表示同步状态，通过维护一个双向链表FIFO队列来完成资源获取线程的排队工作。它能够成为实现大部分同步需求的基础。</p>
 <a id="more"></a>
@@ -3870,7 +3870,7 @@
   </entry>
   <entry>
     <title>JVM基础知识</title>
-    <url>/2021/11/28/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</url>
+    <url>/2021/12/12/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 JVM（Java Virtual Machine）。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、JVM"><a href="#一、JVM" class="headerlink" title="一、JVM"></a>一、JVM</h4><p>JVM 全称 Java Virtual Machine，也就是我们耳熟能详的 Java 虚拟机。它能识别 .class后缀的文件，并且能够解析它的指令，最终调用操作系统上的函数，完成我们想要的操作。</p>
 <h5 id="JVM工作"><a href="#JVM工作" class="headerlink" title="JVM工作"></a>JVM工作</h5><p>Java 程序不一样，使用 javac 编译成 .class 文件之后，还需要使用 Java 命令去主动执行它，操作系统并不认识这些 .class 文件。所以JVM就是一个翻译，将 .class 文件字节码翻译成机器识别的二进制机器码。</p>
@@ -3983,7 +3983,7 @@
   </entry>
   <entry>
     <title>深入理解对象与垃圾回收机制</title>
-    <url>/2021/12/02/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/</url>
+    <url>/2021/12/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍对象与垃圾回收机制。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、虚拟机中对象的创建过程"><a href="#一、虚拟机中对象的创建过程" class="headerlink" title="一、虚拟机中对象的创建过程"></a>一、虚拟机中对象的创建过程</h4><h5 id="对象的分配"><a href="#对象的分配" class="headerlink" title="对象的分配"></a>对象的分配</h5><p>虚拟机遇到一条new指令时，首先检查是否被类加载器加载，如果没有，那必须先执行相应的类加载过程。类加载就是把class加载到JVM的运行时数据区的过程。</p>
 <a id="more"></a>
@@ -4200,7 +4200,7 @@
   </entry>
   <entry>
     <title>JVM面试题</title>
-    <url>/2021/12/06/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/</url>
+    <url>/2021/12/14/%E9%9D%A2%E8%AF%95/JVM%E9%9D%A2%E8%AF%95%E9%A2%98/</url>
     <content><![CDATA[<h4 id="JVM内存结构说一下"><a href="#JVM内存结构说一下" class="headerlink" title="JVM内存结构说一下"></a>JVM内存结构说一下</h4><p>一般从两个维度出发：线程私有和线程共享。到每一个内存区域的细节点。</p>
 <p>程序计数器：是一块较小的内存空间，它的作用可以看作是当前线程所执行的字节码的行号指示器。</p>
 <p>Java 虚拟机栈：是基于线程的。哪怕你只有一个 main() 方法，也是以线程的方式运行的。在线程的生命周期中，参与计算的数据会频繁地入栈和出栈，栈的生命周期是和线程一样的。<br>栈里的每条数据，就是栈帧。在每个 Java 方法被调用的时候，都会创建一个栈帧，并入栈。一旦完成相应的调用，则出栈。所有的栈帧都出栈后，线程也就结束了。每个栈帧，都包含四个区域：局部变量表、操作数栈、动态连接、返回地址。<br>本地方法栈：是和虚拟机栈非常相似的一个区域，它服务的对象是 native 方法。</p>
@@ -4241,7 +4241,7 @@
   </entry>
   <entry>
     <title>并发面试题</title>
-    <url>/2021/11/24/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/</url>
+    <url>/2021/12/10/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/</url>
     <content><![CDATA[<h4 id="sychronied修饰普通方法和静态方法的区别？什么是可见性"><a href="#sychronied修饰普通方法和静态方法的区别？什么是可见性" class="headerlink" title="sychronied修饰普通方法和静态方法的区别？什么是可见性?"></a>sychronied修饰普通方法和静态方法的区别？什么是可见性?</h4><p>对象锁是用于对象实例方法，或者一个对象实例上的，类锁是用于类的静态方法或者一个类的class对象上的。我们知道，类的对象实例可以有很多个，但是每个类只有一个class对象，所以不同对象实例的对象锁是互不干扰的，但是每个类只有一个类锁。</p>
 <p>但是有一点必须注意的是，其实类锁只是一个概念上的东西，并不是真实存在的，类锁其实锁的是每个类的对应的class对象。类锁和对象锁之间也是互不干扰的。</p>
 <a id="more"></a>
@@ -4297,7 +4297,7 @@
   </entry>
   <entry>
     <title>Android虚拟机与类加载机制</title>
-    <url>/2021/12/10/Android%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/</url>
+    <url>/2021/12/18/Android%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍Android虚拟机与类加载机制。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、Android虚拟机"><a href="#一、Android虚拟机" class="headerlink" title="一、Android虚拟机"></a>一、Android虚拟机</h4><p>虚拟机是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。虚拟机有自己完善的硬件架构，如处理器、堆栈等，还具有相应的指令系统。</p>
 <h5 id="JVM虚拟机是什么"><a href="#JVM虚拟机是什么" class="headerlink" title="JVM虚拟机是什么"></a>JVM虚拟机是什么</h5><p>不是真实的物理机，JVM是一种用于计算设备的规范，它是一个虚构出来的计算机。它没有寄存器，所以指令集是使用Java栈来存储中间数据，这样做的目的就是为了保持Java虚拟机的指令集尽量的紧凑，同时也便于JAVA虚拟机在那些只有很少通用寄存器的平台上实现。所以，JVM本质上就是一个程序。</p>
@@ -4371,7 +4371,7 @@
   </entry>
   <entry>
     <title>Java基本IO</title>
-    <url>/2021/12/14/Java%E5%9F%BA%E6%9C%ACIO/</url>
+    <url>/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 Java 基本 I/O 。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、IO简介"><a href="#一、IO简介" class="headerlink" title="一、IO简介"></a>一、IO简介</h4><p>I/O（Input/Outpu） 即<strong>输入／输出</strong> 。从计算机结构的视角来看的话， I/O 描述了计算机系统与外部设备之间通信的过程。从应用程序的视角来看的话，应用程序对操作系统的内核发起 IO 调用（系统调用），操作系统负责的内核执行具体的 IO 操作。</p>
 <p>为了保证操作系统的稳定性和安全性，一个进程的地址空间划分为 <strong>用户空间（User space）</strong> 和 <strong>内核空间（Kernel space ）</strong> 。用户进程想要执行 IO 操作的话，必须通过 <strong>系统调用</strong> 来间接访问内核空间。</p>
@@ -5077,6 +5077,36 @@
 <h4 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h4><p>1、使用webp代替png/jpg </p>
 <p>2、不同网络的不同图片下发，如(对于原图是300x300的图片):2/3G使用低清晰度图片:使用100X100的图片; 4G再判断信号强度为强则使用使用300X300的图片，为中等则使用200x200，信号弱则使用100x100图片; WiFi网络:直接下发300X300的图片</p>
 <p>3、http开启缓存 / 首页数据加入缓存</p>
+]]></content>
+      <categories>
+        <category>性能优化</category>
+      </categories>
+      <tags>
+        <tag>性能优化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Crash监控</title>
+    <url>/2021/11/14/Crash%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h4 id="Crash监控"><a href="#Crash监控" class="headerlink" title="Crash监控"></a>Crash监控</h4><p>Crash(应用崩溃)是由于代码异常而导致 App 非正常退出，导致应用程序无法继续使用，所有工作都 停止的现象。发生 Crash 后需要重新启动应用(有些情况会自动重启)，而且不管应用在开发阶段做得 多么优秀，也无法避免 Crash 发生，特别是在 Android 系统中，系统碎片化严重、各 ROM 之间的差 异，甚至系统Bug，都可能会导致Crash的发生。</p>
+<p>在 Android 应用中发生的 Crash 有两种类型，Java 层的 Crash 和 Native 层 Crash。这两种Crash 的监 控和获取堆栈信息有所不同。</p>
+<a id="more"></a>
+
+<h4 id="Java-Crash"><a href="#Java-Crash" class="headerlink" title="Java Crash"></a>Java Crash</h4><p>Java的Crash监控非常简单，Java中的Thread定义了一个接口: <code>UncaughtExceptionHandler</code>，用于 处理未捕获的异常导致线程的终止(<strong>注意:catch了的异常是捕获不到的</strong>)，当我们的应用crash的时候，就会走 <code>UncaughtExceptionHandler.uncaughtException</code> ，在该方法中可以获取到异常的信息，我们通 过 <code>Thread.setDefaultUncaughtExceptionHandler</code> 该方法来设置线程的默认异常处理器，可以将异常信息保存到本地或者是上传到服务器，方便我们快速的定位问题。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class CrashHandler implements Thread.UncaughtExceptionHandler&#123;</span><br><span class="line">private static final String FILE_NAME_SUFFIX &#x3D; &quot;.trace&quot;;</span><br><span class="line">private static Thread.UncaughtExceptionHandler mDefaultCrashHandler; </span><br><span class="line">private static Context mContext;</span><br><span class="line">    private CrashHandler()&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">public static void init(@NonNull Context context)&#123; </span><br><span class="line">&#x2F;&#x2F;默认为:RuntimeInit#KillApplicationHandler</span><br><span class="line">mDefaultCrashHandler &#x3D; Thread.getDefaultUncaughtExceptionHandler(); Thread.setDefaultUncaughtExceptionHandler(this);</span><br><span class="line">mContext &#x3D; context.getApplicationContext();</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;**</span><br><span class="line">* 当程序中有未被捕获的异常，系统将会调用这个方法 *</span><br><span class="line">* @param t 出现未捕获异常的线程</span><br><span class="line">* @param e 得到异常信息</span><br><span class="line">*&#x2F;</span><br><span class="line">@Override</span><br><span class="line">    public void uncaughtException(Thread t, Throwable e)&#123;</span><br><span class="line">        try&#123;</span><br><span class="line">&#x2F;&#x2F;自行处理:保存本地</span><br><span class="line">File file &#x3D; dealException(e); &#x2F;&#x2F;上传服务器</span><br><span class="line">&#x2F;&#x2F;......</span><br><span class="line">&#125; catch (Exception e1)&#123; e1.printStackTrace();</span><br><span class="line">&#125; finally&#123; &#x2F;&#x2F;交给系统默认程序处理</span><br><span class="line">if (mDefaultCrashHandler !&#x3D; null)&#123; </span><br><span class="line">mDefaultCrashHandler.uncaughtException(t, e);</span><br><span class="line">&#125; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 导出异常信息到SD卡 *</span><br><span class="line">* @param e</span><br><span class="line">*&#x2F;</span><br><span class="line">private File dealException(Thread t,Throwable e) throw Exception&#123;</span><br><span class="line">String time &#x3D; new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(new</span><br><span class="line">Date());</span><br><span class="line">        File f &#x3D; new</span><br><span class="line">File(context.getExternalCacheDir().getAbsoluteFile(),&quot;crash_info&quot;); </span><br><span class="line">if (!f.exists()) &#123;</span><br><span class="line">f.mkdirs(); &#125;</span><br><span class="line">File crashFile &#x3D; new File(f, time + FILE_NAME_SUFFIX);</span><br><span class="line">File file &#x3D; new File(PATH + File.separator + time + FILE_NAME_SUFFIX);</span><br><span class="line">&#x2F;&#x2F;往文件中写入数据</span><br><span class="line">        PrintWriter pw &#x3D; new PrintWriter(new BufferedWriter(new</span><br><span class="line">FileWriter(file)));</span><br><span class="line">pw.println(time); pw.println(&quot;Thread: &quot;+ t.getName()); pw.println(getPhoneInfo()); e.printStackTrace(pw); &#x2F;&#x2F;写入crash堆栈 pw.close();</span><br><span class="line">return file;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private String getPhoneInfo() throws PackageManager.NameNotFoundException&#123; PackageManager pm &#x3D; mContext.getPackageManager();</span><br><span class="line">PackageInfo pi &#x3D; pm.getPackageInfo(mContext.getPackageName(),</span><br><span class="line">PackageManager.GET_ACTIVITIES);</span><br><span class="line">StringBuilder sb &#x3D; new StringBuilder(); &#x2F;&#x2F;App版本</span><br><span class="line">sb.append(&quot;App Version: &quot;); sb.append(pi.versionName); sb.append(&quot;_&quot;); sb.append(pi.versionCode + &quot;\n&quot;);</span><br><span class="line">&#x2F;&#x2F;Android版本号</span><br><span class="line">sb.append(&quot;OS Version: &quot;); sb.append(Build.VERSION.RELEASE); sb.append(&quot;_&quot;); sb.append(Build.VERSION.SDK_INT + &quot;\n&quot;);</span><br><span class="line">&#x2F;&#x2F;手机制造商</span><br><span class="line">sb.append(&quot;Vendor: &quot;); sb.append(Build.MANUFACTURER + &quot;\n&quot;);</span><br><span class="line">&#x2F;&#x2F;手机型号</span><br><span class="line">sb.append(&quot;Model: &quot;); sb.append(Build.MODEL + &quot;\n&quot;);</span><br><span class="line">&#x2F;&#x2F;CPU架构</span><br><span class="line">sb.append(&quot;CPU: &quot;);</span><br><span class="line">if (Build.VERSION.SDK_INT &gt;&#x3D; Build.VERSION_CODES.LOLLIPOP)&#123;</span><br><span class="line">sb.append(Arrays.toString(Build.SUPPORTED_ABIS)); &#125; else &#123;</span><br><span class="line">sb.append(Build.CPU_ABI); &#125;</span><br><span class="line">return sb.toString(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="NDK-Crash"><a href="#NDK-Crash" class="headerlink" title="NDK Crash"></a>NDK Crash</h4><p>相对于Java的Crash，NDK的错误无疑更加让人头疼，特别是对初学NDK的同学，不说监控，就算是错误堆栈都不知道怎么看。</p>
+<p><strong>Linux信号机制</strong></p>
+<p>信号机制是Linux进程间通信的一种重要方式，Linux信号一方面用于正常的进程间通信和同步，另一方 面它还负责监控系统异常及中断。当应用程序运行异常时，Linux内核将产生错误信号并通知当前进 程。当前进程在接收到该错误信号后，可以有三种不同的处理方式。</p>
+<ul>
+<li>忽略该信号;</li>
+<li>捕捉该信号并执行对应的信号处理函数(信号处理程序);</li>
+<li>执行该信号的缺省操作(如终止进程);</li>
+</ul>
+<p>当Linux应用程序在执行时发生严重错误，一般会导致程序崩溃。其中，Linux专门提供了一类crash信 号，在程序接收到此类信号时，缺省操作是将崩溃的现场信息记录到核心文件，然后终止进程。</p>
+<p>一般的出现崩溃信号，Android系统默认缺省操作是直接退出我们的程序。但是系统允许我们给某一个 进程的某一个特定信号注册一个相应的处理函数(<strong>signal</strong>)，即对该信号的默认处理动作进行修改。因 此NDK Crash的监控可以采用这种信号机制，捕获崩溃信号执行我们自己的信号处理函数从而捕获NDK Crash。</p>
+<p><strong>BreakPad</strong></p>
+<p>Google breakpad是一个跨平台的崩溃转储和分析框架和工具集合，其开源地址是:<a href="https://github.co" target="_blank" rel="noopener">https://github.co</a> m/google/breakpad。breakpad在Linux中的实现就是借助了Linux信号捕获机制实现的。因为其实现为C++，因此在Android中使用，必须借助NDK工具。</p>
 ]]></content>
       <categories>
         <category>性能优化</category>
