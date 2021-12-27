@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gvzne3cxz7g309e06974c.gif">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gvzo7ls4d5g3043038wec.gif">
 <meta property="article:published_time" content="2021-10-31T07:53:30.000Z">
-<meta property="article:modified_time" content="2021-11-02T08:35:34.965Z">
+<meta property="article:modified_time" content="2021-11-30T02:40:22.764Z">
 <meta property="article:author" content="prsuit">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -226,20 +226,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -390,6 +390,9 @@
 <?><p> 表示对类型没有什么限制，可以把<code>?</code>看成所有类型的父类，默认实现是&lt;?  extends  Object&gt;</p>
 <h5 id="PECS"><a href="#PECS" class="headerlink" title="PECS"></a>PECS</h5><p>方法的参数化类型代表生产者（producer）则使用<code>extends</code>，代表消费者（consumer）则使用<code>super</code>。</p>
 <p>只从方法的形参集合获取值使用<code>? extends T</code>，只从方法的形参集合写入值使用<code>? super T</code></p>
+<blockquote>
+<p>PECS 原则即 Producer Extends，Consumer Super 。如果参数化类型是一个生产者，则使用 &lt;? extends T&gt;；如果它是一个消费者，则使用 &lt;? super T&gt;。<code>生产者</code>表示频繁往外读取数据 T，而不从中添加数据。<code>消费者</code>表示只往里插入数据 T，而不读取数据。</p>
+</blockquote>
 <h4 id="七、虚拟机是如何实现泛型的"><a href="#七、虚拟机是如何实现泛型的" class="headerlink" title="七、虚拟机是如何实现泛型的"></a>七、虚拟机是如何实现泛型的</h4><h5 id="类型擦除"><a href="#类型擦除" class="headerlink" title="类型擦除"></a>类型擦除</h5><p>泛型被引入到 Java 语言中，以便在编译时提供更严格的类型检查并支持泛型编程。为了实现泛型，Java 编译器将类型擦除应用于：</p>
 <ul>
 <li>将泛型类型中的所有类型形参替换为其边界或 <code>Object</code>（如果类型形参是无界的）。因此，生成的字节码仅包含普通的类，接口和方法。</li>
