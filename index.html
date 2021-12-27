@@ -266,7 +266,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/20/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -280,7 +280,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/" class="post-title-link" itemprop="url">Java基本IO</a>
+            <a href="/2021/12/20/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">阻塞队列和线程池原理</a>
         </h2>
 
         <div class="post-meta">
@@ -290,7 +290,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-12-20 20:22:29" itemprop="dateCreated datePublished" datetime="2021-12-20T20:22:29+08:00">2021-12-20</time>
+              <time title="Created: 2021-12-20 14:05:25" itemprop="dateCreated datePublished" datetime="2021-12-20T14:05:25+08:00">2021-12-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -303,7 +303,7 @@
             </span>
 
           
-            <span id="/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/" class="post-meta-item leancloud_visitors" data-flag-title="Java基本IO" title="Views">
+            <span id="/2021/12/20/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="阻塞队列和线程池原理" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -320,18 +320,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 Java 基本 I/O 。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、IO简介"><a href="#一、IO简介" class="headerlink" title="一、IO简介"></a>一、IO简介</h4><p>I/O（Input/Outpu） 即<strong>输入／输出</strong> 。从计算机结构的视角来看的话， I/O 描述了计算机系统与外部设备之间通信的过程。从应用程序的视角来看的话，应用程序对操作系统的内核发起 IO 调用（系统调用），操作系统负责的内核执行具体的 IO 操作。</p>
-<p>为了保证操作系统的稳定性和安全性，一个进程的地址空间划分为 <strong>用户空间（User space）</strong> 和 <strong>内核空间（Kernel space ）</strong> 。用户进程想要执行 IO 操作的话，必须通过 <strong>系统调用</strong> 来间接访问内核空间。</p>
-<p>当应用程序发起 I/O 调用后，会经历两个步骤：</p>
-<ol>
-<li>内核等待 I/O 设备准备好数据；</li>
-<li>内核将数据从内核空间拷贝到用户空间。</li>
-</ol>
-<p>在开发过程中接触最多的就是磁盘 IO（读写文件）和 网络 IO（网络请求和响应）。UNIX 系统下， IO 模型一共有5种： 同步阻塞 I/O、同步非阻塞 I/O、I/O多路复用、信号驱动 I/O和异步I/O。</p>
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍阻塞队列和线程池。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、阻塞队列"><a href="#一、阻塞队列" class="headerlink" title="一、阻塞队列"></a>一、阻塞队列</h4><h5 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h5><p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端（front）进行删除操作，而在表的后端（rear）进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能最先从队列中删除，故队列又称为先进先出（FIFO—first in first out）线性表。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/#more" rel="contents">
+              <a class="btn" href="/2021/12/20/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1016,7 +1009,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/30/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/30/Java%E5%9F%BA%E6%9C%ACIO/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1030,7 +1023,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/30/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">阻塞队列和线程池原理</a>
+            <a href="/2021/11/30/Java%E5%9F%BA%E6%9C%ACIO/" class="post-title-link" itemprop="url">Java基本IO</a>
         </h2>
 
         <div class="post-meta">
@@ -1040,7 +1033,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-11-30 14:05:25" itemprop="dateCreated datePublished" datetime="2021-11-30T14:05:25+08:00">2021-11-30</time>
+              <time title="Created: 2021-11-30 20:22:29" itemprop="dateCreated datePublished" datetime="2021-11-30T20:22:29+08:00">2021-11-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1053,7 +1046,7 @@
             </span>
 
           
-            <span id="/2021/11/30/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="阻塞队列和线程池原理" title="Views">
+            <span id="/2021/11/30/Java%E5%9F%BA%E6%9C%ACIO/" class="post-meta-item leancloud_visitors" data-flag-title="Java基本IO" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -1070,11 +1063,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍阻塞队列和线程池。</p>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、阻塞队列"><a href="#一、阻塞队列" class="headerlink" title="一、阻塞队列"></a>一、阻塞队列</h4><h5 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h5><p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端（front）进行删除操作，而在表的后端（rear）进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能最先从队列中删除，故队列又称为先进先出（FIFO—first in first out）线性表。</p>
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 Java 基本 I/O 。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、IO简介"><a href="#一、IO简介" class="headerlink" title="一、IO简介"></a>一、IO简介</h4><p>I/O（Input/Outpu） 即<strong>输入／输出</strong> 。从计算机结构的视角来看的话， I/O 描述了计算机系统与外部设备之间通信的过程。从应用程序的视角来看的话，应用程序对操作系统的内核发起 IO 调用（系统调用），操作系统负责的内核执行具体的 IO 操作。</p>
+<p>为了保证操作系统的稳定性和安全性，一个进程的地址空间划分为 <strong>用户空间（User space）</strong> 和 <strong>内核空间（Kernel space ）</strong> 。用户进程想要执行 IO 操作的话，必须通过 <strong>系统调用</strong> 来间接访问内核空间。</p>
+<p>当应用程序发起 I/O 调用后，会经历两个步骤：</p>
+<ol>
+<li>内核等待 I/O 设备准备好数据；</li>
+<li>内核将数据从内核空间拷贝到用户空间。</li>
+</ol>
+<p>在开发过程中接触最多的就是磁盘 IO（读写文件）和 网络 IO（网络请求和响应）。UNIX 系统下， IO 模型一共有5种： 同步阻塞 I/O、同步非阻塞 I/O、I/O多路复用、信号驱动 I/O和异步I/O。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/11/30/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/#more" rel="contents">
+              <a class="btn" href="/2021/11/30/Java%E5%9F%BA%E6%9C%ACIO/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>

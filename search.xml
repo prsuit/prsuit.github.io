@@ -2561,7 +2561,7 @@
   </entry>
   <entry>
     <title>Java基本IO</title>
-    <url>/2021/12/20/Java%E5%9F%BA%E6%9C%ACIO/</url>
+    <url>/2021/11/30/Java%E5%9F%BA%E6%9C%ACIO/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍 Java 基本 I/O 。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、IO简介"><a href="#一、IO简介" class="headerlink" title="一、IO简介"></a>一、IO简介</h4><p>I/O（Input/Outpu） 即<strong>输入／输出</strong> 。从计算机结构的视角来看的话， I/O 描述了计算机系统与外部设备之间通信的过程。从应用程序的视角来看的话，应用程序对操作系统的内核发起 IO 调用（系统调用），操作系统负责的内核执行具体的 IO 操作。</p>
 <p>为了保证操作系统的稳定性和安全性，一个进程的地址空间划分为 <strong>用户空间（User space）</strong> 和 <strong>内核空间（Kernel space ）</strong> 。用户进程想要执行 IO 操作的话，必须通过 <strong>系统调用</strong> 来间接访问内核空间。</p>
@@ -4114,7 +4114,7 @@
   </entry>
   <entry>
     <title>阻塞队列和线程池原理</title>
-    <url>/2021/11/30/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/</url>
+    <url>/2021/12/20/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是介绍阻塞队列和线程池。</p>
 <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、阻塞队列"><a href="#一、阻塞队列" class="headerlink" title="一、阻塞队列"></a>一、阻塞队列</h4><h5 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h5><p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端（front）进行删除操作，而在表的后端（rear）进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能最先从队列中删除，故队列又称为先进先出（FIFO—first in first out）线性表。</p>
 <a id="more"></a>
