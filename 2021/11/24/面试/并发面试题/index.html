@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="sychronied修饰普通方法和静态方法的区别？什么是可见性?对象锁是用于对象实例方法，或者一个对象实例上的，类锁是用于类的静态方法或者一个类的class对象上的。我们知道，类的对象实例可以有很多个，但是每个类只有一个class对象，所以不同对象实例的对象锁是互不干扰的，但是每个类只有一个类锁。 但是有一点必须注意的是，其实类锁只是一个概念上的东西，并不是真实存在的，类锁其实锁的是每个类的对应的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发面试题">
+<meta property="og:url" content="http://yoursite.com/2021/11/24/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="sychronied修饰普通方法和静态方法的区别？什么是可见性?对象锁是用于对象实例方法，或者一个对象实例上的，类锁是用于类的静态方法或者一个类的class对象上的。我们知道，类的对象实例可以有很多个，但是每个类只有一个class对象，所以不同对象实例的对象锁是互不干扰的，但是每个类只有一个类锁。 但是有一点必须注意的是，其实类锁只是一个概念上的东西，并不是真实存在的，类锁其实锁的是每个类的对应的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gweobeyt96j30y50u0tb4.jpg">
+<meta property="article:published_time" content="2021-11-24T14:17:21.000Z">
+<meta property="article:modified_time" content="2021-12-27T11:10:22.476Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="面试题">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gweobeyt96j30y50u0tb4.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2021/11/24/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>并发面试题 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#sychronied修饰普通方法和静态方法的区别？什么是可见性"><span class="nav-number">1.</span> <span class="nav-text">sychronied修饰普通方法和静态方法的区别？什么是可见性?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁分哪几类？"><span class="nav-number">2.</span> <span class="nav-text">锁分哪几类？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CAS无锁编程的原理"><span class="nav-number">3.</span> <span class="nav-text">CAS无锁编程的原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AQS原理"><span class="nav-number">4.</span> <span class="nav-text">AQS原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Synchronized的原理以及与ReentrantLock的区别"><span class="nav-number">5.</span> <span class="nav-text">Synchronized的原理以及与ReentrantLock的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Synchronized做了哪些优化"><span class="nav-number">6.</span> <span class="nav-text">Synchronized做了哪些优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#volatile-能否保证线程安全？在DCL上的作用是什么？"><span class="nav-number">7.</span> <span class="nav-text">volatile 能否保证线程安全？在DCL上的作用是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#volatile和synchronize有什么区别"><span class="nav-number">8.</span> <span class="nav-text">volatile和synchronize有什么区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是守护线程？你是如何退出一个线程的？"><span class="nav-number">9.</span> <span class="nav-text">什么是守护线程？你是如何退出一个线程的？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sleep-、wait、yield-的区别，wait-的线程如何唤醒它？"><span class="nav-number">10.</span> <span class="nav-text">sleep 、wait、yield 的区别，wait 的线程如何唤醒它？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sleep是可中断的么？"><span class="nav-number">11.</span> <span class="nav-text">sleep是可中断的么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程生命周期"><span class="nav-number">12.</span> <span class="nav-text">线程生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadLocal是什么？"><span class="nav-number">13.</span> <span class="nav-text">ThreadLocal是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程池基本原理"><span class="nav-number">14.</span> <span class="nav-text">线程池基本原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有三个线程T1，T2，T3，怎么确保它们按顺序执行？"><span class="nav-number">15.</span> <span class="nav-text">有三个线程T1，T2，T3，怎么确保它们按顺序执行？</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/24/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          并发面试题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-24 22:17:21" itemprop="dateCreated datePublished" datetime="2021-11-24T22:17:21+08:00">2021-11-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/24/%E9%9D%A2%E8%AF%95/%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="并发面试题" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="sychronied修饰普通方法和静态方法的区别？什么是可见性"><a href="#sychronied修饰普通方法和静态方法的区别？什么是可见性" class="headerlink" title="sychronied修饰普通方法和静态方法的区别？什么是可见性?"></a>sychronied修饰普通方法和静态方法的区别？什么是可见性?</h4><p>对象锁是用于对象实例方法，或者一个对象实例上的，类锁是用于类的静态方法或者一个类的class对象上的。我们知道，类的对象实例可以有很多个，但是每个类只有一个class对象，所以不同对象实例的对象锁是互不干扰的，但是每个类只有一个类锁。</p>
+<p>但是有一点必须注意的是，其实类锁只是一个概念上的东西，并不是真实存在的，类锁其实锁的是每个类的对应的class对象。类锁和对象锁之间也是互不干扰的。</p>
+<a id="more"></a>
+
+<p>可见性是指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值。</p>
+<p>由于线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存中的变量，那么对于共享变量V，它们首先是在自己的工作内存，之后再同步到主内存。可是并不会及时的刷到主存中，而是会有一定时间差。很明显，这个时候线程 A 对变量 V 的操作对于线程 B 而言就不具备可见性了 。要解决共享对象可见性这个问题，我们可以使用volatile关键字或者是加锁。</p>
+<h4 id="锁分哪几类？"><a href="#锁分哪几类？" class="headerlink" title="锁分哪几类？"></a>锁分哪几类？</h4><p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gweobeyt96j30y50u0tb4.jpg" alt="img"> </p>
+<h4 id="CAS无锁编程的原理"><a href="#CAS无锁编程的原理" class="headerlink" title="CAS无锁编程的原理"></a>CAS无锁编程的原理</h4><p>使用当前的处理器基本都支持CAS()的指令，只不过每个厂家所实现的算法并不一样，每一个CAS操作过程都包含三个运算符：一个内存地址V，一个期望的值A和一个新值B，操作的时候如果这个地址上存放的值等于这个期望的值A，则将地址上的值赋为新值B，否则不做任何操作。<br>CAS的基本思路就是，如果这个地址上的值和期望的值相等，则给其赋予新值，否则不做任何事儿，但是要返回原值是多少。循环CAS就是在一个循环里不断的做cas操作，直到成功为止。<br>还可以说说CAS的三大问题。ABA、循环时间长开销大、只单个共享变量的原子操作。</p>
+<h4 id="AQS原理"><a href="#AQS原理" class="headerlink" title="AQS原理"></a>AQS原理</h4><p>是用来构建锁或者其他同步组件的基础框架，比如ReentrantLock、ReentrantReadWriteLock和CountDownLatch就是基于AQS实现的。它使用了一个int成员变量表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作。它是CLH队列锁的一种变体实现。它可以实现2种同步方式：独占式，共享式。</p>
+<p>AQS的主要使用方式是继承，子类通过继承AQS并实现它的抽象方法来管理同步状态，同步器的设计基于模板方法模式，所以如果要实现我们自己的同步工具类就需要覆盖其中几个可重写的方法，如tryAcquire/tryRelease、tryAcquireShared/tryReleaseShared等等。</p>
+<p>这样设计的目的是同步组件（比如锁）是面向使用者的，它定义了使用者与同步组件交互的接口（比如可以允许两个线程并行访问），隐藏了实现细节；同步器面向的是锁的实现者，它简化了锁的实现方式，屏蔽了同步状态管理、线程的排队、等待与唤醒等底层操作。这样就很好地隔离了使用者和实现者所需关注的领域。</p>
+<p>在内部，AQS维护一个共享资源state，通过内置的FIFO来完成获取资源线程的排队工作。该队列由一个一个的Node结点组成，每个Node结点维护一个prev引用和next引用，分别指向自己的前驱和后继结点，构成一个双端双向链表。</p>
+<h4 id="Synchronized的原理以及与ReentrantLock的区别"><a href="#Synchronized的原理以及与ReentrantLock的区别" class="headerlink" title="Synchronized的原理以及与ReentrantLock的区别"></a>Synchronized的原理以及与ReentrantLock的区别</h4><p>synchronized (this)原理：涉及两条指令：monitorenter，monitorexit；再说同步方法，从同步方法反编译的结果来看，方法的同步并没有通过指令monitorenter和monitorexit来实现，相对于普通方法，其常量池中多了ACC_SYNCHRONIZED标示符。</p>
+<p>JVM就是根据该标示符来实现方法的同步的：当方法被调用时，调用指令将会检查方法的 ACC_SYNCHRONIZED 访问标志是否被设置，如果设置了，执行线程将先获取monitor，获取成功之后才能执行方法体，方法执行完后再释放monitor。在方法执行期间，其他任何线程都无法再获得同一个monitor对象。</p>
+<p>ReentrantLock原理：底层则是利用了JUC中的AQS来实现的。线程可以重复进入任何一个它已经拥有的锁所同步着的代码块，synchronized、ReentrantLock都是可重入的锁。在实现上，就是线程每次获取锁时判定如果获得锁的线程是它自己时，简单将计数器累加即可，每释放一次锁，进行计数器累减，直到计算器归零，表示线程已经彻底释放锁。</p>
+<h4 id="Synchronized做了哪些优化"><a href="#Synchronized做了哪些优化" class="headerlink" title="Synchronized做了哪些优化"></a>Synchronized做了哪些优化</h4><p>引入如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁、逃逸分析等技术来减少锁操作的开销。</p>
+<p>逃逸分析：如果证明一个对象不会逃逸方法外或者线程外，则可针对此变量进行优化：同步消除synchronization Elimination，如果一个对象不会逃逸出线程，则对此变量的同步措施可消除。</p>
+<p>锁消除和粗化</p>
+<p>锁消除：虚拟机的运行时编译器在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
+<p>锁粗化：将临近的代码块用同一个锁合并起来。</p>
+<p>消除无意义的锁获取和释放，可以提高程序运行性能。</p>
+<h4 id="volatile-能否保证线程安全？在DCL上的作用是什么？"><a href="#volatile-能否保证线程安全？在DCL上的作用是什么？" class="headerlink" title="volatile 能否保证线程安全？在DCL上的作用是什么？"></a>volatile 能否保证线程安全？在DCL上的作用是什么？</h4><p>不能保证，在DCL的作用是：volatile是会保证被修饰的变量的可见性和有序性(禁止指令重排)，保证了单例模式下，保证在创建对象的时候的执行顺序一定是<br>1.分配内存空间<br>2.实例化对象instance<br>3.把instance引用指向已分配的内存空间,此时instance有了内存地址,不再为null了<br>的步骤, 从而保证了instance要么为null 要么是已经完全初始化好的对象。</p>
+<h4 id="volatile和synchronize有什么区别"><a href="#volatile和synchronize有什么区别" class="headerlink" title="volatile和synchronize有什么区别"></a>volatile和synchronize有什么区别</h4><p>volatile是最轻量的同步机制。</p>
+<p>volatile保证了不同线程对这个变量进行操作时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。但是volatile不能保证操作的原子性，因此多线程下的写复合操作会导致线程安全问题。</p>
+<p>关键字synchronized可以修饰方法或者以同步块的形式来进行使用，它主要确保多个线程在同一个时刻，只能有一个线程处于方法或者同步块中，它保证了线程对变量访问的可见性和排他性，又称为内置锁机制。</p>
+<h4 id="什么是守护线程？你是如何退出一个线程的？"><a href="#什么是守护线程？你是如何退出一个线程的？" class="headerlink" title="什么是守护线程？你是如何退出一个线程的？"></a>什么是守护线程？你是如何退出一个线程的？</h4><p>Daemon([ˈdiːmən] )（守护）线程是一种支持型线程，因为它主要被用作程序中后台调度以及支持性工作。这意味着，当一个Java虚拟机中不存在非Daemon线程的时候，Java虚拟机将会退出。可以通过调用Thread.setDaemon(true)将线程设置为Daemon线程。我们一般用不上，比如垃圾回收线程就是Daemon线程。<br>线程的中止：要么是run执行完成了，要么是抛出了一个未处理的异常导致线程提前结束。<br>暂停、恢复和停止操作对应在线程Thread的API就是suspend()、resume()和stop()。但是这些API是过期的，也就是不建议使用的。因为会导致程序可能工作在不确定状态下。<br>安全的中止：则是其他线程通过调用某个线程A的interrupt()方法对其进行中断操作，被中断的线程则是通过线程通过方法isInterrupted()来进行判断是否被中断，也可以调用静态方法Thread.interrupted()来进行判断当前线程是否被中断，不过Thread.interrupted()会同时将中断标识位改写为false。</p>
+<h4 id="sleep-、wait、yield-的区别，wait-的线程如何唤醒它？"><a href="#sleep-、wait、yield-的区别，wait-的线程如何唤醒它？" class="headerlink" title="sleep 、wait、yield 的区别，wait 的线程如何唤醒它？"></a>sleep 、wait、yield 的区别，wait 的线程如何唤醒它？</h4><p>yield()方法：使当前线程让出CPU占有权，但让出的时间是不可设定的。也不会释放锁资源。所有执行yield()的线程有可能在进入到就绪状态后会被操作系统再次选中马上又被执行。<br>yield() 、sleep()被调用后，都不会释放当前线程所持有的锁。<br>wait()方法：调用后，会释放当前线程持有的锁，而且当前被唤醒后，会重新去竞争锁，锁竞争到后才会执行wait方法后面的代码。<br>wait通常被用于线程间交互，sleep通常被用于暂停执行，yield()方法使当前线程让出CPU占有权。<br>wait 的线程使用notify()/notifyAll()进行唤醒。</p>
+<h4 id="sleep是可中断的么？"><a href="#sleep是可中断的么？" class="headerlink" title="sleep是可中断的么？"></a>sleep是可中断的么？</h4><p>sleep本身就支持中断，如果线程在sleep期间被中断，则会抛出一个中断异常。</p>
+<h4 id="线程生命周期"><a href="#线程生命周期" class="headerlink" title="线程生命周期"></a>线程生命周期</h4><p>Java中线程的状态分为6种：</p>
+<ol>
+<li>初始(NEW)：新创建了一个线程对象，但还没有调用start()方法。</li>
+<li>运行(RUNNABLE)：Java线程中将就绪（ready）和运行中（running）两种状态笼统的称为“运行”。<br>线程对象创建后，其他线程(比如main线程）调用了该对象的start()方法。该状态的线程位于可运行线程池中，等待被线程调度选中，获取CPU的使用权，此时处于就绪状态（ready）。就绪状态的线程在获得CPU时间片后变为运行中状态（running）。</li>
+<li>阻塞(BLOCKED)：表示线程阻塞于锁。</li>
+<li>等待(WAITING)：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）。</li>
+<li>超时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。</li>
+<li>终止(TERMINATED)：表示该线程已经执行完毕。</li>
+</ol>
+<h4 id="ThreadLocal是什么？"><a href="#ThreadLocal是什么？" class="headerlink" title="ThreadLocal是什么？"></a>ThreadLocal是什么？</h4><p>ThreadLocal是Java里一种特殊的变量。ThreadLocal为每个线程都提供了变量的副本，使得每个线程在某一时间訪问到的并非同一个对象，这样就隔离了多个线程对数据的数据共享。<br>在内部实现上，每个线程内部都有一个ThreadLocalMap，用来保存每个线程所拥有的变量副本。</p>
+<h4 id="线程池基本原理"><a href="#线程池基本原理" class="headerlink" title="线程池基本原理"></a>线程池基本原理</h4><p>在开发过程中，合理地使用线程池能够带来3个好处。</p>
+<p>第一：降低资源消耗。第二：提高响应速度。第三：提高线程的可管理性。</p>
+<p>1）如果当前运行的线程少于corePoolSize，则创建新线程来执行任务（注意，执行这一步骤需要获取全局锁）。</p>
+<p>2）如果运行的线程等于或多于corePoolSize，则将任务加入BlockingQueue。</p>
+<p>3）如果无法将任务加入BlockingQueue（队列已满），则创建新的线程来处理任务。</p>
+<p>4）如果创建新线程将使当前运行的线程超出maximumPoolSize，任务将被拒绝，并调用RejectedExecutionHandler.rejectedExecution()方法。</p>
+<h4 id="有三个线程T1，T2，T3，怎么确保它们按顺序执行？"><a href="#有三个线程T1，T2，T3，怎么确保它们按顺序执行？" class="headerlink" title="有三个线程T1，T2，T3，怎么确保它们按顺序执行？"></a>有三个线程T1，T2，T3，怎么确保它们按顺序执行？</h4><p>可以用join()方法实现。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag"># 面试题</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/18/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AQS/" rel="prev" title="深入理解AQS">
+      <i class="fa fa-chevron-left"></i> 深入理解AQS
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/28/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="next" title="JVM基础知识">
+      JVM基础知识 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

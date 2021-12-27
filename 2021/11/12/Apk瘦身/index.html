@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="APK 结构在讨论如何缩减应用的大小之前，有必要了解下应用 APK 的结构。APK 文件由一个 Zip 压缩文件组成，其中包含 构成应用的所有文件。这些文件包括 Java 类文件、资源文件和包含已编译资源的文件。 APK 包含以下目录:  META-INF&#x2F; :包含 CERT.SF 和 CERT.RSA 签名文件，以及 MANIFEST.MF 清单文件。 assets&#x2F; :包含应用的资源;应用可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apk瘦身">
+<meta property="og:url" content="http://yoursite.com/2021/11/12/Apk%E7%98%A6%E8%BA%AB/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="APK 结构在讨论如何缩减应用的大小之前，有必要了解下应用 APK 的结构。APK 文件由一个 Zip 压缩文件组成，其中包含 构成应用的所有文件。这些文件包括 Java 类文件、资源文件和包含已编译资源的文件。 APK 包含以下目录:  META-INF&#x2F; :包含 CERT.SF 和 CERT.RSA 签名文件，以及 MANIFEST.MF 清单文件。 assets&#x2F; :包含应用的资源;应用可以">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-12T12:40:04.000Z">
+<meta property="article:modified_time" content="2021-12-27T11:00:45.267Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/11/12/Apk%E7%98%A6%E8%BA%AB/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Apk瘦身 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#APK-结构"><span class="nav-number">1.</span> <span class="nav-text">APK 结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Android-Size-Analyzer"><span class="nav-number">2.</span> <span class="nav-text">Android Size Analyzer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移除未使用资源"><span class="nav-number">3.</span> <span class="nav-text">移除未使用资源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用矢量图"><span class="nav-number">4.</span> <span class="nav-text">使用矢量图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他"><span class="nav-number">5.</span> <span class="nav-text">其他</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/12/Apk%E7%98%A6%E8%BA%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Apk瘦身
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-12 20:40:04" itemprop="dateCreated datePublished" datetime="2021-11-12T20:40:04+08:00">2021-11-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/12/Apk%E7%98%A6%E8%BA%AB/" class="post-meta-item leancloud_visitors" data-flag-title="Apk瘦身" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="APK-结构"><a href="#APK-结构" class="headerlink" title="APK 结构"></a>APK 结构</h4><p>在讨论如何缩减应用的大小之前，有必要了解下应用 APK 的结构。APK 文件由一个 Zip 压缩文件组成，其中包含 构成应用的所有文件。这些文件包括 Java 类文件、资源文件和包含已编译资源的文件。</p>
+<p>APK 包含以下目录:</p>
+<ul>
+<li>META-INF/ :包含 CERT.SF 和 CERT.RSA 签名文件，以及 MANIFEST.MF 清单文件。</li>
+<li>assets/ :包含应用的资源;应用可以使用 AssetManager 对象检索这些资源。</li>
+<li>res/ :包含未编译到 resources.arsc 中的资源(图片、音视频等)。</li>
+<li>lib/ :包含特定于处理器软件层的已编译代码。此目录包含每种平台类型的子目录，如 armeabi 、 armeabi-v7a 、 arm64-v8a 、 x86 、 x86_64 和 mips 。</li>
+</ul>
+<a id="more"></a>
+
+<p>APK 还包含以下文件。在这些文件中，只有 AndroidManifest.xml 是必需的。</p>
+<ul>
+<li><p>resources.arsc :包含已编译的资源。此文件包含 res/values/ 文件夹的所有配置中的 XML 内容。打包工 具会提取此 XML 内容，将其编译为二进制文件形式，并压缩内容。此内容包括语言字符串和样式，以及未直 接包含在 resources.arsc 文件中的内容(例如布局文件和图片)的路径。</p>
+</li>
+<li><p>classes.dex :包含以 Dalvik/ART 虚拟机可理解的 DEX 文件格式编译的类。</p>
+</li>
+<li><p>AndroidManifest.xml :包含核心 Android 清单文件。此文件列出了应用的名称、版本、访问权限和引用的 库文件。该文件使用 Android 的二进制 XML 格式。</p>
+</li>
+</ul>
+<h4 id="Android-Size-Analyzer"><a href="#Android-Size-Analyzer" class="headerlink" title="Android Size Analyzer"></a>Android Size Analyzer</h4><p> Android Size Analyzer 工具可轻松地发现和实施多种缩减应用大小的策略。</p>
+<p>首先在 Android Studio 中的插件市场下载安装 Android Size Analyzer 插件。安装插件后，从菜单栏中依次选<br> 择 Analyze &gt; Analyze App Size，对当前项目运行应用大小分析。分析了项目后，系统会显示一个工具窗口，其 中包含有关如何缩减应用大小的建议。</p>
+<h4 id="移除未使用资源"><a href="#移除未使用资源" class="headerlink" title="移除未使用资源"></a>移除未使用资源</h4><p><strong>启用资源缩减 (不打包)</strong></p>
+<p>如果在应用的 build.gradle 文件中启用了资源缩减: shrinkResources ，则 Gradle 在打包APK时可以自动忽略 未使用资源。 资源缩减只有在与代码缩减: minifyEnabled 配合使用时才能发挥作用。在代码缩减器移除所有不 使用的代码后，资源缩减器便可确定应用仍要使用的资源 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    &#x2F;&#x2F; Other settings</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">release &#123;</span><br><span class="line">minifyEnabled true</span><br><span class="line">shrinkResources true</span><br><span class="line">proguardFiles getDefaultProguardFile(&#39;proguard-android.txt&#39;), &#39;proguard-rules.pro&#39;</span><br><span class="line">&#125; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用Lint分析器(物理删除)</strong><br> lint 工具是 Android Studio 中附带的静态代码分析器，可检测到 res/ 文件夹中未被代码引用的资源。</p>
+<p>从菜单栏中依次选择 Analyze &gt; Run Inspection By Name-&gt;输入unused res</p>
+<blockquote>
+<p>lint 工具不会扫描 assets/ 文件夹、通过反射引用的资源或已链接至应用的库文件。此外，它也不会移 除资源，只会提醒您它们的存在。 与资源缩减不同，这里点击删除，那就是把文件删了。反射引用资源:getResources().getIdentifier(“layout_main”,”layout”,getPackageName());</p>
+</blockquote>
+<p>自定义要保留的资源</p>
+<p>如果有想要特别声明需要保留或舍弃的特定资源，在项目中创建一个包含 <code>&lt;resources&gt;</code> 标记的 XML 文件，并<br> 在<code>tools:keep</code> 属性中指定每个要保留的资源，在<code>tools:discard</code> 属性中指定每个要舍弃的资源。这两个属性都 接受以逗号分隔的资源名称列表。还可以将星号字符用作通配符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> &lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;resources xmlns:tools&#x3D;&quot;http:&#x2F;&#x2F;schemas.android.com&#x2F;tools&quot; tools:keep&#x3D;&quot;@layout&#x2F;l_used*_c,@layout&#x2F;l_used_a,@layout&#x2F;l_used_b*&quot; tools:discard&#x3D;&quot;@layout&#x2F;unused2&quot; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>将该文件保存在项目资源中，例如，保存在 res/raw/keep.xml 中。构建系统不会将此文件打包到 APK 中。</p>
+<p><strong>移除未使用的备用资源</strong><br> Gradle 资源缩减器只会移除未由应用代码引用的资源，这意味着，它不会移除用于不同设备配置的备用资源。可</p>
+<p>以使用 Android Gradle 插件的 <code>resConfigs</code> 属性移除应用不需要的备用资源文件。</p>
+<p>例如，如果使用的是包含语言资源的库(如 AppCompat )，那么 APK 中将包含这些库中所有已翻译语言的字符 串。如果只想保留应用正式支持的语言，则可以使用 <code>resConfig</code> 属性指定这些语言。系统会移除未指定语言的所 有资源。配置resConfigs 只打包默认与简体中文资源。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">...</span><br><span class="line">resConfigs &quot;zh-rCN&quot; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>动态库打包配置</strong></p>
+<p>so文件是由ndk编译出来的动态库，是 c/c++ 写的，所以不是跨平台的。ABI 是应用程序二进制接口简称 (Application Binary Interface)，定义了二进制文件(尤其是.so文件)如何运行在相应的系统平台上，从使用的 指令集，内存对齐到可用的系统函数库。在Android 系统中，每一个CPU架构对应一个ABI，目前支持的有: armeabi-v7a，arm64- v8a，x86，x86_64。目前市面上手机设备基本上都是arm架构， armeabi-v7a 几乎能兼容 所有设备。因此可以配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">android&#123;</span><br><span class="line">    defaultConfig&#123;</span><br><span class="line">ndk&#123;</span><br><span class="line">abiFilters &quot;armeabi-v7a&quot;</span><br><span class="line">&#125; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于第三方服务，如百度地图、Bugly等会提供全平台的cpu架构。进行了上面的配置之后，表示只会把armeabi- v7a打包进入Apk。从而减少APK大小。</p>
+<p>对于arm64架构的设备，如果使用armeabi-v7a也能够兼容，但是不如使用arm64的so性能。因此现在部分应用市 场会根据设备提供不同架构的Apk安装。此时我们需要打包出针对arm64的apk与armv7a的apk，可以使用<code>productFlavor</code> 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">flavorDimensions &quot;default&quot; </span><br><span class="line">productFlavors&#123;</span><br><span class="line">arm32&#123;</span><br><span class="line">dimension &quot;default</span><br><span class="line">ndk&#123;</span><br><span class="line">abiFilters &quot;armeabi-v7a&quot;</span><br><span class="line">&#125; &#125;</span><br><span class="line">arm64&#123;</span><br><span class="line">dimension &quot;default&quot; </span><br><span class="line">ndk&#123;</span><br><span class="line">abiFilters &quot;arm64-v8a&quot; &#125;</span><br><span class="line">&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> splits &#123; </span><br><span class="line"> abi &#123;</span><br><span class="line">enable true</span><br><span class="line">reset()</span><br><span class="line">include &#39;arm64-v8a&#39;,&#39;armeabi-v7a&#39;</span><br><span class="line">&#x2F;&#x2F;exclude &#39;armeabi&#39;</span><br><span class="line">universalApk true &#x2F;&#x2F;是否打包一个包含所有so的apk</span><br><span class="line">&#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用矢量图"><a href="#使用矢量图" class="headerlink" title="使用矢量图"></a>使用矢量图</h4><p>Apk中图片应该算是占用空间最多的资源。我们可以使用webp减少png、jpg图片占用空间的大小。对于小图标也 可以使用矢量图。</p>
+<p>矢量图可以创建与分辨率无关的图标和其他可伸缩媒体。使用这些图形可以极大地减少 APK 占用的空间。 矢量图 片在 Android 中以 VectorDrawable 对象的形式表示。借助 VectorDrawable 对象，100 字节的文件可以生成与 屏幕大小相同的清晰图片。</p>
+<p>不过，系统渲染每个 VectorDrawable 对象需要花费大量时间，而较大的图片则需要更长的时间才能显示在屏幕 上。因此，建议仅在显示小图片时使用这些矢量图。</p>
+<p>重复使用资源：如果需要让矢量图实现触摸变色。只需要创建selector选择器，设置给tint即可。</p>
+<p>如果我们需要让矢量图显示红色怎么办?这种情况，我们不需要再去创建一个新的矢量图。可以直接给 ImageView 设置 android:tint 属性 来完成颜色的修改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> &lt;ImageView</span><br><span class="line">android:layout_width&#x3D;&quot;50dp&quot; </span><br><span class="line">android:layout_height&#x3D;&quot;50dp&quot; </span><br><span class="line">android:tint&#x3D;&quot;@color&#x2F;colorAccent&quot; </span><br><span class="line">android:src&#x3D;&quot;@drawable&#x2F;tabbar_home_vector&quot; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>使用精简版本的依赖:如protobuf-lite版本;对于分模块的库按需引入:如netty分模块引入; </li>
+<li>主动移除无用代码(开启R8/Progurad自动移除)</li>
+<li>避免使用枚举，使用 @IntDef 代替。</li>
+<li>开启资源混淆:<a href="https://github.com/shwenzhang/AndResGuard" target="_blank" rel="noopener">https://github.com/shwenzhang/AndResGuard</a></li>
+<li>支付宝删除Dex debugItem <a href="https://juejin.im/post/6844903712201277448" target="_blank" rel="noopener">https://juejin.im/post/6844903712201277448</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" rel="prev" title="Java内存模型">
+      <i class="fa fa-chevron-left"></i> Java内存模型
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/14/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/" rel="next" title="线程间的共享">
+      线程间的共享 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。线程之间的通信机制有两种，共享内存和消息传递。 目录一、概念线程共享通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：thread interference (线程干扰) 和 memory consistency errors (内存一致性错误)。防止这些错误所需的工具是 synchron">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程间的共享">
+<meta property="og:url" content="http://yoursite.com/2021/11/14/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="前言线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。线程之间的通信机制有两种，共享内存和消息传递。 目录一、概念线程共享通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：thread interference (线程干扰) 和 memory consistency errors (内存一致性错误)。防止这些错误所需的工具是 synchron">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwb9tp7hxzj30tw062q3k.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwb9o31wu9j30ns04paaq.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gw6s3s5qc8j30g30ffwf9.jpg">
+<meta property="article:published_time" content="2021-11-14T03:00:00.000Z">
+<meta property="article:modified_time" content="2021-12-27T11:12:01.159Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="Java基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gwb9tp7hxzj30tw062q3k.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2021/11/14/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>线程间的共享 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、概念"><span class="nav-number">2.1.</span> <span class="nav-text">一、概念</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#线程共享"><span class="nav-number">2.1.1.</span> <span class="nav-text">线程共享</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#同步"><span class="nav-number">2.1.2.</span> <span class="nav-text">同步</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、synchronized"><span class="nav-number">2.2.</span> <span class="nav-text">二、synchronized</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#同步方法"><span class="nav-number">2.2.1.</span> <span class="nav-text">同步方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#同步语句"><span class="nav-number">2.2.2.</span> <span class="nav-text">同步语句</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#类锁"><span class="nav-number">2.2.3.</span> <span class="nav-text">类锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#对象锁"><span class="nav-number">2.2.4.</span> <span class="nav-text">对象锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误的加锁"><span class="nav-number">2.2.5.</span> <span class="nav-text">错误的加锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#特性"><span class="nav-number">2.2.6.</span> <span class="nav-text">特性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现原理"><span class="nav-number">2.2.7.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#了解各种锁"><span class="nav-number">2.2.8.</span> <span class="nav-text">了解各种锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#锁的状态"><span class="nav-number">2.2.9.</span> <span class="nav-text">锁的状态</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、ThreadLocal"><span class="nav-number">2.3.</span> <span class="nav-text">三、ThreadLocal</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理"><span class="nav-number">2.3.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#区别"><span class="nav-number">2.3.2.</span> <span class="nav-text">区别</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、volatile"><span class="nav-number">2.4.</span> <span class="nav-text">四、volatile</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#最轻量的同步机制"><span class="nav-number">2.4.1.</span> <span class="nav-text">最轻量的同步机制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#特性-1"><span class="nav-number">2.4.2.</span> <span class="nav-text">特性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#适用场景"><span class="nav-number">2.4.3.</span> <span class="nav-text">适用场景</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#深入理解"><span class="nav-number">2.4.4.</span> <span class="nav-text">深入理解</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现原理-1"><span class="nav-number">2.4.5.</span> <span class="nav-text">实现原理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、线程间协作"><span class="nav-number">2.5.</span> <span class="nav-text">五、线程间协作</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#标准使用范式"><span class="nav-number">2.5.1.</span> <span class="nav-text">标准使用范式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#wait"><span class="nav-number">2.5.2.</span> <span class="nav-text">wait</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#notify-notifyAll"><span class="nav-number">2.5.3.</span> <span class="nav-text">notify&#x2F;notifyAll</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、死锁"><span class="nav-number">2.6.</span> <span class="nav-text">六、死锁</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#概念"><span class="nav-number">2.6.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#发生条件"><span class="nav-number">2.6.2.</span> <span class="nav-text">发生条件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#危害"><span class="nav-number">2.6.3.</span> <span class="nav-text">危害</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如何避免"><span class="nav-number">2.6.4.</span> <span class="nav-text">如何避免</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#七、其它问题"><span class="nav-number">2.7.</span> <span class="nav-text">七、其它问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/14/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线程间的共享
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-14 11:00:00" itemprop="dateCreated datePublished" datetime="2021-11-14T11:00:00+08:00">2021-11-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/14/%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB/" class="post-meta-item leancloud_visitors" data-flag-title="线程间的共享" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>线程间通信的实现，主要通过共享对字段的访问和引用字段所引用的对象。线程之间的通信机制有两种，共享内存和消息传递。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h4><h5 id="线程共享"><a href="#线程共享" class="headerlink" title="线程共享"></a>线程共享</h5><p>通过共享内存对字段的访问和引用字段所引用的对象。这种通信形式非常有效，但可能出现两种错误：<em>thread interference (线程干扰)</em> 和 <em>memory consistency errors (内存一致性错误)</em>。防止这些错误所需的工具是 <em>synchronization (同步)</em>。</p>
+<h5 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h5><p>同步是围绕称为 <em>intrinsic lock (内部锁)</em> 或 <em>monitor lock (监视器锁)</em> 的内部实体构建的。(API 规范通常将此实体简称为“监视器”。)内部锁在同步的两个方面都发挥作用：强制对对象状态进行独占访问，并建立对可见性至关重要的 happens-before 关系。</p>
+<a id="more"></a>
+
+<p>每个对象都有一个与之相关联的内部锁。按照规范，需要对对象字段进行独占和一致访问的线程必须在访问对象之前 <em>acquire (获取)</em> 对象的内部锁，然后在完成时 release (释放) 内部锁。一个线程在获取锁和释放锁之间的时间段内，被称为own (拥有) 内部锁。只要一个线程拥有一个内部锁，其他线程就不可以获取相同的锁。另一个线程在尝试获取锁时将阻塞。当线程释放内部锁时，在该操作与同一锁的任何后续获取之间建立 happens-before 关系。</p>
+<h4 id="二、synchronized"><a href="#二、synchronized" class="headerlink" title="二、synchronized"></a>二、synchronized</h4><p>Java 编程语言提供两种基本的同步习惯用法：<em>synchronized methods (同步方法)</em> 和 <em>synchronized statements (同步语句)</em>。所有加上synchronized修饰的方法和块语句，在多线程访问的时候，同一时刻只能有一个线程能够执行synchronized修饰的方法或者代码块。</p>
+<h5 id="同步方法"><a href="#同步方法" class="headerlink" title="同步方法"></a>同步方法</h5><p>要使方法同步，只需将 <code>synchronized</code> 关键字添加到其声明中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">    private int c &#x3D; 0;</span><br><span class="line">    public synchronized void increment() &#123;</span><br><span class="line">        c++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void decrement() &#123;</span><br><span class="line">        c--;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized int value() &#123;</span><br><span class="line">        return c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用同步方法有两个影响：</p>
+<ul>
+<li>首先，对同一对象的两个同步方法的调用不可能进行交错。当一个线程在执行一个对象的同步方法的时候，其他所有的调用该对象的同步方法的线程都会被挂起(暂停执行)，直到第一个线程对该对象的操作完毕。</li>
+<li>其次，当同步方法退出时，它会自动与同一对象的同步方法的 <em>any subsequent invocation (任何后续调用)</em> 建立 happens-before 关系。这就确保了对该对象的修改对其他线程是可见的。</li>
+</ul>
+<blockquote>
+<p>注：构造函数不能同步，将 <code>synchronized</code> 关键字与构造函数一起使用是一种语法错误。同步构造函数没有意义，因为只有创建对象的线程在构造时才能访问它。</p>
+</blockquote>
+<p>当线程调用同步方法时，它会自动获取该方法的对象的内部锁，并在方法返回时释放它。即使返回是由未捕获的异常引起的，也会释放锁。</p>
+<h5 id="同步语句"><a href="#同步语句" class="headerlink" title="同步语句"></a>同步语句</h5><p>与同步方法不同，同步语句必须指定提供内部锁的对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class SynchronizedCounter &#123;</span><br><span class="line">	private Object obj &#x3D; new Object();&#x2F;&#x2F;作为一个锁</span><br><span class="line">	&#x2F;&#x2F; 使用obj提供锁</span><br><span class="line">	public void incCount()&#123;</span><br><span class="line"> 		synchronized (obj)&#123;</span><br><span class="line">			count++;</span><br><span class="line">   	 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 或使用this提供锁</span><br><span class="line">	public void incCount2()&#123;</span><br><span class="line"> 		synchronized (this)&#123;</span><br><span class="line">			count++;</span><br><span class="line">    	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="类锁"><a href="#类锁" class="headerlink" title="类锁"></a>类锁</h5><p><code>synchronized</code>修饰类或静态方法时实质锁的是<code>class</code>对象。类锁的作用范围是<strong>类级别</strong>的，不会因为同一个类的不同对象执行而失效。</p>
+<p><code>synchronized</code>修饰静态方法与<code>synchronized(xxx.class)</code>互斥，因为静态方法与类关联，而不是与对象关联。在这种情况下，线程获取与该类关联的 <code>Class</code> 对象的内部锁。因此，访问类的静态字段是由一个锁控制的，该锁与任何该类的实例的锁都不同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class ClassLock&#123;</span><br><span class="line">	  &#x2F;&#x2F;修饰静态方法</span><br><span class="line"> 		private synchronized static void test1()&#123;</span><br><span class="line">     	 	System.out.println(&quot;synClass going...&quot;);</span><br><span class="line">     		SleepTools.second(1);</span><br><span class="line">     		System.out.println(&quot;synClass end&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;修饰类ClassLock.class，test1与test2互斥</span><br><span class="line">    private static void test2()&#123;</span><br><span class="line">        synchronized(ClassLock.class)&#123;</span><br><span class="line">     	 		System.out.println(&quot;synClass going...&quot;);</span><br><span class="line">     			SleepTools.second(1);</span><br><span class="line">     			System.out.println(&quot;synClass end&quot;);</span><br><span class="line">     		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="对象锁"><a href="#对象锁" class="headerlink" title="对象锁"></a>对象锁</h5><p><code>synchronized</code>修饰实例对象或非静态方法时实质锁的是实例对象。对象锁的作用范围是<strong>对象级别</strong>的，即仅仅作用于同一个对象时锁才生效，如果是同一个类的两个不同的对象是不会互斥的，即没有效果的。</p>
+<p><code>synchronized</code>修饰非静态方法与<code>synchronized(this)</code>互斥，<code>synchronized</code>修饰非静态方法实质锁的是当前对象(this)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class ObjectLock&#123;</span><br><span class="line">	  &#x2F;&#x2F;修饰方法</span><br><span class="line"> 		private synchronized void test1()&#123;</span><br><span class="line">     	 	System.out.println(&quot;sync going...&quot;);</span><br><span class="line">     		SleepTools.second(1);</span><br><span class="line">     		System.out.println(&quot;sync end&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;修饰当前对象this，test1与test2互斥</span><br><span class="line">    private void test2()&#123;</span><br><span class="line">        synchronized(this)&#123;</span><br><span class="line">     	 		System.out.println(&quot;sync going...&quot;);</span><br><span class="line">     			SleepTools.second(1);</span><br><span class="line">     			System.out.println(&quot;sync end&quot;);</span><br><span class="line">     		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：类锁和对象锁是相互独立的，互不相斥。两者作用范围不同。</p>
+</blockquote>
+<h5 id="错误的加锁"><a href="#错误的加锁" class="headerlink" title="错误的加锁"></a>错误的加锁</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class Worker implements Runnable&#123;</span><br><span class="line">	private Integer i;</span><br><span class="line">	</span><br><span class="line">	public Worker(Integer)&#123;</span><br><span class="line">		this.i &#x3D; i;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public void run()&#123;</span><br><span class="line">			synchronized(i)&#123;</span><br><span class="line">					i++;</span><br><span class="line">					System.out.println(&quot;i值为：&quot;+i);</span><br><span class="line">			&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) throws InterruptedException&#123;</span><br><span class="line">		Worker worker &#x3D; new Worker(1);</span><br><span class="line">		for(int i &#x3D;0; i&lt;5; i++)&#123;</span><br><span class="line">				new Thread(worker).start();</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;发现输出结果有时并不是2，3，4，5，6</span><br></pre></td></tr></table></figure>
+
+<p>分析在执行<code>i++</code>会调用Integer的<code>valueOf()</code>方法，会重新new一个Integer对象，因此对象i就发生了变化，锁的对象就不一样了，就不是同一个锁，synchronized也就无法锁住了。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public static Integer valueOf(int i) &#123;</span><br><span class="line">        if (i &gt;&#x3D; IntegerCache.low &amp;&amp; i &lt;&#x3D; IntegerCache.high)</span><br><span class="line">            return IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">        return new Integer(i);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：synchronized锁的都是锁某个具体对象，要让线程安全同步运行，保证锁的对象不会发生变化。</p>
+</blockquote>
+<h5 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h5><ul>
+<li><p>synchronized锁并不能被中断，可重入锁，不带超时功能，悲观锁，非公平锁。</p>
+</li>
+<li><p>等待/唤醒需要使用synchronized锁。当执行了对象的<code>wait()</code>方法后会释放该锁，执行<code>notify()/notifyAll()</code>方法后不会释放锁。</p>
+</li>
+<li><p>使用synchronized锁时尽量缩小锁的范围以保证性能，推荐尽量使用synchronized代码块来降低锁的范围，避免使用synchronized来修饰方法。尽量找到并发访问代码的临界区。</p>
+</li>
+</ul>
+<h5 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h5><p>在JVM里的实现是基于进入和退出Monitor对象来实现方法同步和代码块同步，使用monitorenter和monitorexit指令实现的：</p>
+<ul>
+<li><p>monitorenter指令是在编译后插入到同步代码块的开始位置，而monitorexit是插入到方法结束处和异常处。</p>
+</li>
+<li><p>每个monitorenter必须有对应的monitorexit与之配对。</p>
+</li>
+<li><p>任何对象都有一个monitor与之关联，当且一个monitor被持有后，它将处于锁定状态。</p>
+</li>
+</ul>
+<p>从反编译的结果来看，对同步块，MonitorEnter指令插入在同步代码块的开始位置，当代码执行到该指令时，将会尝试获取该对象Monitor的所有权，即尝试获得该对象的锁，而monitorExit指令则插入在方法结束处和异常处。对同步方法，并没有通过指令monitorenter和monitorexit来实现，相对于普通方法，其常量池中多了ACC_SYNCHRONIZED标示符。</p>
+<p>synchronized使用的锁是存放在Java对象头里面，具体位置是对象头里面的MarkWord，MarkWord里默认数据是存储对象的HashCode等信息，但是会随着对象的运行改变而发生变化，不同的锁状态对应着不同的记录存储方式。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwb9tp7hxzj30tw062q3k.jpg" alt=""></p>
+<h5 id="了解各种锁"><a href="#了解各种锁" class="headerlink" title="了解各种锁"></a>了解各种锁</h5><p><strong>自旋锁</strong></p>
+<p>自旋锁原理非常简单，如果持有锁的线程能在很短时间内释放锁资源，那么那些等待竞争锁的线程就不需要做内核态和用户态之间的切换进入阻塞挂起状态，它们只需要等一等（自旋），等持有锁的线程释放锁后即可立即获取锁，这样就避免用户线程和内核的切换的消耗。</p>
+<p>但是线程自旋是需要消耗CPU的，说白了就是让CPU在做无用功，线程不能一直占用CPU自旋做无用功，所以需要设定一个自旋等待的最大时间。</p>
+<p>如果持有锁的线程执行的时间超过自旋等待的最大时间扔没有释放锁，就会导致其它争用锁的线程在最大等待时间内还是获取不到锁，这时争用线程会停止自旋进入阻塞状态。</p>
+<p>优缺点：</p>
+<p>自旋锁尽可能的减少线程的阻塞，这对于锁的竞争不激烈，且占用锁时间非常短的代码块来说性能能大幅度的提升，因为自旋的消耗会小于线程阻塞挂起操作的消耗！</p>
+<p>但是如果锁的竞争激烈，或者持有锁的线程需要长时间占用锁执行同步块，这时候就不适合使用自旋锁了，因为自旋锁在获取锁前一直都是占用cpu做无用功，线程自旋的消耗大于线程阻塞挂起操作的消耗，其它需要cup的线程又不能获取到cpu，造成cpu的浪费。</p>
+<p>自旋锁时间阈值：</p>
+<p>自旋锁的目的是为了占着CPU的资源不释放，等到获取到锁立即进行处理。但是如何去选择自旋的执行时间呢？如果自旋执行时间太长，会有大量的线程处于自旋状态占用CPU资源，进而会影响整体系统的性能。因此自旋次数很重要。</p>
+<p>JVM对于自旋次数的选择，jdk1.5默认为10次，在1.6引入了适应性自旋锁，适应性自旋锁意味着自旋的时间不在是固定的了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定，基本认为一个线程上下文切换的时间是最佳的一个时间。JDK1.6中-XX:+UseSpinning开启自旋锁； JDK1.7后，去掉此参数，由jvm控制。</p>
+<h5 id="锁的状态"><a href="#锁的状态" class="headerlink" title="锁的状态"></a>锁的状态</h5><p>一共有四种状态，级别从低到高依次是：<strong>无锁状态，偏向锁状态，轻量级锁状态和重量级锁状态</strong>。它会随着竞争情况逐渐升级。锁可以升级但不能降级，目的是为了提高获得锁和释放锁的效率。</p>
+<p>偏向锁：大多数情况下，锁不仅不存在多线程竞争，而且总是由同一线程多次获得，为了让线程获得锁的代价更低而引入了偏向锁。无竞争时不需要进行CAS操作来加锁和解锁。它会偏向于第一个访问锁的线程。</p>
+<p>轻量级锁：是由偏向锁升级来的，偏向锁运行在一个线程进入同步块的情况下，当第二个线程加入锁争用的时候，偏向锁就会升级为轻量级锁； 无竞争时通过CAS操作来加锁和解锁。（自旋锁——是一种锁的机制，不是状态）</p>
+<p>重量级锁：由轻量级锁自旋加锁失败多次后升级为重量级锁，真正的加锁操作，阻塞竞争线程。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwb9o31wu9j30ns04paaq.jpg" alt=""></p>
+<blockquote>
+<p>注：synchronized的实现的优化是引入了偏向锁、轻量级锁。JDK引入了自旋锁和适应性自旋锁。</p>
+</blockquote>
+<h4 id="三、ThreadLocal"><a href="#三、ThreadLocal" class="headerlink" title="三、ThreadLocal"></a>三、ThreadLocal</h4><p>ThreadLocal 是线程局部(本地)变量，提供了线程内存储变量的能力，这些变量不同之处在于每一个线程读取的变量是对应的互相独立的，通过 get 和 set 方法就可以得到当前线程对应的值。</p>
+<h5 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h5><p>Thread 类有一个 ThreadLocal.ThreadLocalMap 类型的实例变量 threadLocals，ThreadLocal 的静态内部类 ThreadLocalMap 为每个 Thread 都维护了一个数组 table，ThreadLocal 对象确定了一个数组下标，而这个下标就是 value 存储的对应位置。具体原理见《ThreadLocal源码分析》。</p>
+<h5 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h5><p>ThreadLocal和Synchonized都用于解决多线程并发访问。可是ThreadLocal与synchronized有本质的差别。synchronized是利用锁的机制，使变量或代码块在某一时该仅仅能被一个线程访问。而ThreadLocal为每个线程都提供了变量的副本，使得每个线程在某一时间访问到的并非同一个对象，这样就隔离了多个线程对数据的数据共享。</p>
+<blockquote>
+<p>注：使用ThreadLocal变量的值对各线程是不需要同步的，每个线程使用的是变量的副本。而使用synchronized可以使变量值做到同步。</p>
+</blockquote>
+<h4 id="四、volatile"><a href="#四、volatile" class="headerlink" title="四、volatile"></a>四、volatile</h4><h5 id="最轻量的同步机制"><a href="#最轻量的同步机制" class="headerlink" title="最轻量的同步机制"></a>最轻量的同步机制</h5><p>Java语言提供了弱同步机制，即volatile变量，以确保变量的更新通知其他线程。volatile变量具备变量可见性、禁止重排序两种特性。volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取volatile类型的变量时总会返回最新写入的值。</p>
+<h5 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h5><p>volatile变量的两种特性：</p>
+<p><strong>变量可见性</strong></p>
+<p>保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的值对于其他线程是可以立即获取的。强制线程修改完把变量值立即同步到主内存，其它线程从主内存中读取变量值。</p>
+<p><strong>禁止重排序</strong></p>
+<p>volatile禁止了指令重排。比sychronized更轻量级的同步锁。在访问volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile变量是一种比synchronized关键字更轻量级的同步机制。volatile适合这种场景：一个变量被多个线程共享，线程直接给这个变量赋值。</p>
+<p><strong>原子性</strong></p>
+<p>对任意单个volatile变量的读/写具有原子性，但类似于volatile++这种复合操作不具有原子性。volatile虽然能保证执行完及时把变量刷到主内存中，但对于count++这种非原子性、多指令的情况，由于线程切换，线程A刚把count=0加载到工作内存，线程B就可以开始工作了，这样就会导致线程A和B执行完的结果都是1，都写到主内存中，主内存的值还是1不是2。</p>
+<h5 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h5><p>值得说明的是对volatile变量的单次读/写操作可以保证原子性的，如long和double类型变量，但是并不能保证<code>i++</code>这种操作的原子性，因为本质上<code>i++</code>是读、写两次操作。在某些场景下可以代替synchronized。但是，volatile的不能完全取代synchronized的位置，只有在一些特殊的场景下(如一写多读)，才能适用volatile。无法保证一个变量在多线程同时写的时候线程安全。并发编程中，使用volatile + CAS操作来实现原子操作，代替synchronized。</p>
+<p><strong>总体来说，需要必须同时满足下面两个条件时才能保证并发环境的线程安全：</strong></p>
+<p>（1）对变量的写操作不依赖于当前值，或者说是写操作独立互不关联，变量赋值（boolean flag = true）。</p>
+<p>（2）该变量没有包含在具有其他变量的不变式中，也就是说，不同的volatile变量之间，不能互相依赖。只有在状态真正独立于程序内其他内容时才能使用volatile。</p>
+<blockquote>
+<p>注：volatile保证可见性和单个读/写操作(get/set)原子性，不能保证复合操作(volatile++)原子性。synchronized能保证可见性和操作原子性。</p>
+</blockquote>
+<h5 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h5><p>如果要深入了解volatile关键字的作用，就必须先来了解一下JVM在运行时候的内存分配过程。其中有一个内存区域是jvm虚拟机栈，每一个线程运行时都有一个线程栈，线程栈保存了线程运行时候变量值信息。当线程访问某一个对象时候值的时候，首先通过对象的引用找到对应在堆内存的变量的值，然后把堆内存变量的具体值load到线程本地内存中，建立一个变量副本，之后线程就不再和对象在堆内存变量值有任何关系，而是直接修改副本变量的值，在修改完之后的某一个时刻（线程退出之前），自动把线程变量副本的值回写到对象在堆中变量。这样在堆中的对象的值就产生变化了。如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gw6s3s5qc8j30g30ffwf9.jpg" alt=""></p>
+<p>因此volatile关键字作用就是强制线程每次读取变量值的时候都去“主内存”中取值，并同步修改后的值到主内存。</p>
+<h5 id="实现原理-1"><a href="#实现原理-1" class="headerlink" title="实现原理"></a>实现原理</h5><p>通过对OpenJDK中的unsafe.cpp源码的分析，会发现被volatile关键字修饰的变量会存在一个“lock:”的前缀。Lock前缀，Lock不是一种内存屏障，但是它能完成类似内存屏障的功能。Lock会对CPU总线和高速缓存加锁，可以理解为CPU指令级的一种锁。</p>
+<p>有volatile变量修饰的共享变量进行写操作的时候会使用CPU提供的Lock前缀指令：</p>
+<ul>
+<li>将当前处理器缓存里的volatile所在行的数据(volatile变量值)写回到系统内存。</li>
+<li>这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。</li>
+</ul>
+<h4 id="五、线程间协作"><a href="#五、线程间协作" class="headerlink" title="五、线程间协作"></a>五、线程间协作</h4><p>利用等待和通知机制完成线程间协作。等待<code>wait()</code>和通知<code>notify()/notifyAll()</code>需要synchronized锁。</p>
+<h5 id="标准使用范式"><a href="#标准使用范式" class="headerlink" title="标准使用范式"></a>标准使用范式</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;等待</span><br><span class="line">public void waitXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">		while(条件不满足)&#123;</span><br><span class="line">				对象.wait();</span><br><span class="line">				&#x2F;&#x2F;业务逻辑</span><br><span class="line">				...</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;业务逻辑</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;通知</span><br><span class="line">public void notifyXXX()&#123;</span><br><span class="line">	synchronized(对象)&#123;</span><br><span class="line">	 	&#x2F;&#x2F;业务逻辑</span><br><span class="line">	  ...</span><br><span class="line">	  改变条件</span><br><span class="line">	  对象.notify&#x2F;notifyAll();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h5><p><code>wait()</code>方法执行后会释放锁，<code>wait()</code>之后的代码不会执行。被唤醒后，线程要重新竞争锁，拿到锁之后才会执行<code>wait()</code>之后的代码。</p>
+<h5 id="notify-notifyAll"><a href="#notify-notifyAll" class="headerlink" title="notify/notifyAll"></a>notify/notifyAll</h5><p><code>notify()/notifyAll()</code>方法执行后不会释放锁，等同步代码块执行完才释放，</p>
+<blockquote>
+<p>注：notify()方法只唤醒该对象上的一个等待线程，notifyAll()方法唤醒该对象上所有等待线程。</p>
+<p>wait()、notify()、notifyAll()方法是Object类的方法。</p>
+</blockquote>
+<h4 id="六、死锁"><a href="#六、死锁" class="headerlink" title="六、死锁"></a>六、死锁</h4><h5 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h5><p>是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。此时称系统处于死锁状态或系统产生了死锁。</p>
+<h5 id="发生条件"><a href="#发生条件" class="headerlink" title="发生条件"></a>发生条件</h5><p>1.多操作者（M&gt;=2个）情况下，争夺多个资源（N&gt;=2个，且N&lt;=M）。</p>
+<p>2.争夺资源的顺序不对。</p>
+<p>3.争夺者拿到资源不放手。</p>
+<p>学术化的定义四个必要条件：互斥条件、请求和保持条件、不剥夺条件、环路等待条件。</p>
+<h5 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h5><p>1、线程不工作了，但是整个程序还是活着的。</p>
+<p>2、没有任何的异常信息可以供我们检查。</p>
+<p>3、一旦程序发生了发生了死锁，是没有任何的办法恢复的，只能重启程序，对正式已发布程序来说，这是个很严重的问题。</p>
+<h5 id="如何避免"><a href="#如何避免" class="headerlink" title="如何避免"></a>如何避免</h5><p>避免死锁常见的算法有有序资源分配法、银行家算法，关键是保证拿锁的顺序一致。两种解决方式：</p>
+<p>1、 内部通过顺序比较，确定拿锁的顺序；</p>
+<p>2、采用尝试拿锁的机制(Lock)。</p>
+<h4 id="七、其它问题"><a href="#七、其它问题" class="headerlink" title="七、其它问题"></a>七、其它问题</h4><p>活锁：两个线程在尝试拿锁的机制中，发生多个线程之间互相谦让，不断发生同一个线程总是拿到同一把锁，在尝试拿另一把锁时因为拿不到，而将本来已经持有的锁释放的过程。</p>
+<p>解决办法：每个线程休眠随机数，错开拿锁的时间。</p>
+<p>线程饥饿：低优先级的线程，总是拿不到执行时间。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><a href="https://www.cnblogs.com/yeya/p/10207030.html" target="_blank" rel="noopener">Java并发编程：synchronized、Lock、ReentrantLock以及ReadWriteLock的那些事儿</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java%E5%9F%BA%E7%A1%80/" rel="tag"># Java基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/12/Apk%E7%98%A6%E8%BA%AB/" rel="prev" title="Apk瘦身">
+      <i class="fa fa-chevron-left"></i> Apk瘦身
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/16/CAS%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" rel="next" title="CAS基本原理">
+      CAS基本原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

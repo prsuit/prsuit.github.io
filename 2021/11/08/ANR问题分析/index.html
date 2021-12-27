@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ANRANR(Application Not responding)，是指应用程序未响应，Android系统对于一些事件需要在一定的时间范围内完成，如果超过预定时间能未能得到有效响应或者响应时间过长，都会造成ANR。在 Android 里，应用程序的响应性是由 Activity Manager 和 WindowManager 系统服务监视的。当它监测到以下情况中的一个时，Android 就会针对特">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ANR问题分析">
+<meta property="og:url" content="http://yoursite.com/2021/11/08/ANR%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="ANRANR(Application Not responding)，是指应用程序未响应，Android系统对于一些事件需要在一定的时间范围内完成，如果超过预定时间能未能得到有效响应或者响应时间过长，都会造成ANR。在 Android 里，应用程序的响应性是由 Activity Manager 和 WindowManager 系统服务监视的。当它监测到以下情况中的一个时，Android 就会针对特">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-08T14:40:04.000Z">
+<meta property="article:modified_time" content="2021-12-27T11:02:46.019Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/11/08/ANR%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>ANR问题分析 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#ANR"><span class="nav-number">1.</span> <span class="nav-text">ANR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何避免ANR"><span class="nav-number">2.</span> <span class="nav-text">如何避免ANR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何解决ANR"><span class="nav-number">3.</span> <span class="nav-text">如何解决ANR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何监控ANR方案"><span class="nav-number">4.</span> <span class="nav-text">如何监控ANR方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Watchdog机制总结"><span class="nav-number">5.</span> <span class="nav-text">Watchdog机制总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/08/ANR%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ANR问题分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-08 22:40:04" itemprop="dateCreated datePublished" datetime="2021-11-08T22:40:04+08:00">2021-11-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/08/ANR%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" class="post-meta-item leancloud_visitors" data-flag-title="ANR问题分析" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="ANR"><a href="#ANR" class="headerlink" title="ANR"></a>ANR</h4><p>ANR(Application Not responding)，是指应用程序未响应，Android系统对于一些事件需要在一定的时间范围内完成，如果超过预定时间能未能得到有效响应或者响应时间过长，都会造成ANR。在 Android 里，应用程序的响应性是由 Activity Manager 和 WindowManager 系统服务监视的。当它监测到以下情况中的一个时，Android 就会针对特定的应用程序显示 ANR。</p>
+<a id="more"></a>
+
+<p><strong>场景</strong></p>
+<p>Service Timeout、BroadcastQueue Timeout </p>
+<p>ContentProvider Timeout 、InputDispatching Timeout</p>
+<p><strong>Timeout时长</strong></p>
+<p>对于前台服务，则超时为SERVICE_TIMEOUT = 20s; 对于后台服务，则超时为SERVICE_BACKGROUND_TIMEOUT = 200s</p>
+<p> 对于前台广播，则超时为BROADCAST_FG_TIMEOUT = 10s; 对于后台广播，则超时为BROADCAST_BG_TIMEOUT = 60s; </p>
+<p>ContentProvider超时为CONTENT_PROVIDER_PUBLISH_TIMEOUT = 10s; </p>
+<p>InputDispatching Timeout: 输入事件分发超时5s，包括按键和触摸事件。</p>
+<blockquote>
+<p>注： Input的超时机制与其他的不同，对于input来说即便某次事件执行时间超过timeout时长，只要用 户后续在没有再生成输入事件，则不会触发ANR。</p>
+</blockquote>
+<h4 id="如何避免ANR"><a href="#如何避免ANR" class="headerlink" title="如何避免ANR"></a>如何避免ANR</h4><ol>
+<li><p>主线程尽量只做UI相关的操作,避免耗时操作，比如过度复杂的UI绘制，网络操作，文件IO操作;</p>
+</li>
+<li><p>避免主线程跟工作线程发生锁的竞争，减少系统耗时binder的调用，谨慎使用sharePreference，注意主线程</p>
+<p>执行provider query操作。</p>
+</li>
+</ol>
+<h4 id="如何解决ANR"><a href="#如何解决ANR" class="headerlink" title="如何解决ANR"></a>如何解决ANR</h4><p>线下可以通过ADB命令导出ANR文件进行分析。</p>
+<p><strong>导出ANR文件</strong></p>
+<p>ANR发生之后我们可以使用以下命令导出ANR文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">adb pull data/anr/traces.txt 存储路径</span><br><span class="line"></span><br><span class="line"><span class="comment">//或者生成</span></span><br><span class="line">adb bugreport</span><br><span class="line"><span class="comment">//导出</span></span><br><span class="line">adb pull 文件路径 存储路径</span><br></pre></td></tr></table></figure>
+
+<p><strong>ANR文件分析</strong></p>
+<p>查看trace信息，分析是否有耗时的message，binder调用，锁的竞争，CPU资源的抢占。</p>
+<h4 id="如何监控ANR方案"><a href="#如何监控ANR方案" class="headerlink" title="如何监控ANR方案"></a>如何监控ANR方案</h4><p>线上监控方案我们可以实现<code>FileObserver</code>去监听ANR目录的变化和使用<code>ANR-WatchDod</code>去监听并打印ANR堆栈信息。<br><strong>FileObserver</strong><br>注意事项：</p>
+<ul>
+<li>FileOberver需要三种权限</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.READ_EXTERNAL_STORAGE"</span>/&gt;</span></span><br><span class="line"><span class="comment">&lt;!--在sdcard中创建/删除文件的权限 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.MOUNT_UNMOUNT_FILESYSTEMS"</span>&gt;</span><span class="tag">&lt;/<span class="name">uses-permission</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>FileOberver的startWatching、stopWatching都加锁，因此要避免在对象锁中实现，以免造成死锁。</li>
+</ul>
+<p>使用方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressLint(<span class="meta-string">"NewApi"</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">startANRListener</span><span class="params">()</span></span>&#123;</span><br><span class="line">     <span class="keyword">val</span> fileObserver =  <span class="keyword">object</span> :FileObserver(File(<span class="string">"/data/anr/"</span>), CLOSE_WRITE)&#123;</span><br><span class="line">         <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onEvent</span><span class="params">(event: <span class="type">Int</span>, path: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">           Log.d(<span class="string">"ANRWatching"</span>, <span class="string">"/data/anr/<span class="variable">$path</span>"</span>)</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">       fileObserver.startWatching()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ANR-WatchDog</strong><br><a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2FSalomonBrys%2FANR-WatchDog" target="_blank" rel="noopener">ANR-WatchDog</a>，是一个非侵入式的ANR监控组件。<br>使用步骤:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">'com.github.anrwatchdog:anrwatchdog:1.4.0'</span></span><br></pre></td></tr></table></figure>
+
+<p> 在application中使用</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyApplication</span>: <span class="type">Application</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate()</span><br><span class="line">        ANRWatchDog().start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>原理</strong><br>与<code>Watchdog</code>原理类似，<code>ANRWatchDog</code> 继承子Thread，所以它最重要的就是run方法。核心内容可以分为以下几点：</p>
+<ul>
+<li>在run方法中实现无限循环</li>
+<li><code>_tick自动加上5000毫秒</code>并往Handler发消息</li>
+<li>睡眠5000毫秒</li>
+<li>如果5000毫秒之内主线程还没有处理Runnable，将_tick置0，则进入ANR异常。</li>
+</ul>
+<h4 id="Watchdog机制总结"><a href="#Watchdog机制总结" class="headerlink" title="Watchdog机制总结"></a>Watchdog机制总结</h4><p>每一个线程都可以对应一个Looper，一个Looper对应一个MessageQueue，所以可以通过向MessageQueue中post检测任务来预测该检测任务是否被及时的执行，以此达到检测线程任务卡顿的效果，但是前提是该线程要先创建一个Looper。</p>
+<p>ANR异常我们可分为线上监测和线下监测两个方向</p>
+<ul>
+<li>线上监测主要是利用FileObserver进行ANR目录文件变化监听，以ANR-WatchDog进行补充。</li>
+<li>FileObserver在使用过程中应注意高版本程序不可用以及预防死锁出现。</li>
+<li>线下监测主要是在报错之后利用ADB命令将错误的日志导出并找到错误的类进行分析</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/06/%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/" rel="prev" title="启动优化">
+      <i class="fa fa-chevron-left"></i> 启动优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/09/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" rel="next" title="阻塞队列和线程池原理">
+      阻塞队列和线程池原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

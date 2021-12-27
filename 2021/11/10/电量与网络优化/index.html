@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="电量优化电池续航时间是移动用户体验中最重要的一个方面。没电的设备完全无法使用。因此，对于应用来说，尽可能地考 虑电池续航时间是至关重要的。在开发时对于单个APP应该注意能够:  减少操作:您的应用是否存在可删减的多余操作?例如，是否可以缓存已下载的数据，而不是每次重新下载 数据?  推迟操作:应用是否需要立即执行某项操作?例如，是否可以等到设备充电后或者Wifi连接时(通常情况下使 用移动网络要比">
+<meta property="og:type" content="article">
+<meta property="og:title" content="电量与网络优化">
+<meta property="og:url" content="http://yoursite.com/2021/11/10/%E7%94%B5%E9%87%8F%E4%B8%8E%E7%BD%91%E7%BB%9C%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="SongHang&#39;s Blog">
+<meta property="og:description" content="电量优化电池续航时间是移动用户体验中最重要的一个方面。没电的设备完全无法使用。因此，对于应用来说，尽可能地考 虑电池续航时间是至关重要的。在开发时对于单个APP应该注意能够:  减少操作:您的应用是否存在可删减的多余操作?例如，是否可以缓存已下载的数据，而不是每次重新下载 数据?  推迟操作:应用是否需要立即执行某项操作?例如，是否可以等到设备充电后或者Wifi连接时(通常情况下使 用移动网络要比">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-10T08:18:15.000Z">
+<meta property="article:modified_time" content="2021-12-27T10:58:46.116Z">
+<meta property="article:author" content="prsuit">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/11/10/%E7%94%B5%E9%87%8F%E4%B8%8E%E7%BD%91%E7%BB%9C%E4%BC%98%E5%8C%96/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>电量与网络优化 | SongHang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SongHang's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#电量优化"><span class="nav-number">1.</span> <span class="nav-text">电量优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Doze低电耗模式和StandBy待机模式"><span class="nav-number">2.</span> <span class="nav-text">Doze低电耗模式和StandBy待机模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#监控电池电量和充电状态"><span class="nav-number">3.</span> <span class="nav-text">监控电池电量和充电状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Energy-Profiler"><span class="nav-number">4.</span> <span class="nav-text">Energy Profiler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络优化"><span class="nav-number">5.</span> <span class="nav-text">网络优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#DNS优化"><span class="nav-number">5.1.</span> <span class="nav-text">DNS优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#连接优化"><span class="nav-number">5.2.</span> <span class="nav-text">连接优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据压缩"><span class="nav-number">5.3.</span> <span class="nav-text">数据压缩</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其它"><span class="nav-number">6.</span> <span class="nav-text">其它</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">prsuit</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/10/%E7%94%B5%E9%87%8F%E4%B8%8E%E7%BD%91%E7%BB%9C%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="prsuit">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SongHang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          电量与网络优化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-10 16:18:15" itemprop="dateCreated datePublished" datetime="2021-11-10T16:18:15+08:00">2021-11-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/11/10/%E7%94%B5%E9%87%8F%E4%B8%8E%E7%BD%91%E7%BB%9C%E4%BC%98%E5%8C%96/" class="post-meta-item leancloud_visitors" data-flag-title="电量与网络优化" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="电量优化"><a href="#电量优化" class="headerlink" title="电量优化"></a>电量优化</h4><p>电池续航时间是移动用户体验中最重要的一个方面。没电的设备完全无法使用。因此，对于应用来说，尽可能地考</p>
+<p>虑电池续航时间是至关重要的。在开发时对于单个APP应该注意能够:</p>
+<ul>
+<li>减少操作:您的应用是否存在可删减的多余操作?例如，是否可以缓存已下载的数据，而不是每次重新下载 数据? </li>
+<li>推迟操作:应用是否需要立即执行某项操作?例如，是否可以等到设备充电后或者Wifi连接时(通常情况下使 用移动网络要比WIFI更耗电 )再将数据备份到云端?</li>
+<li>合并操作:工作是否可以批处理，而不是多次将设备置于活动状态?比如和服务器请求不同的接口获取数 据，部分接口是否可以合并为一个?</li>
+</ul>
+<a id="more"></a>
+
+<h4 id="Doze低电耗模式和StandBy待机模式"><a href="#Doze低电耗模式和StandBy待机模式" class="headerlink" title="Doze低电耗模式和StandBy待机模式"></a>Doze低电耗模式和StandBy待机模式</h4><p>从 Android 6.0(API 级别 23)开始，Android 引入了两项省电功能，通过管理应用在设备未连接至电源时的行为 方式，帮助用户延长电池寿命。当用户长时间未使用设备时，低电耗模式会延迟应用的后台 CPU 和网络活动，从 而降低耗电量。应用待机模式会延迟用户近期未与之交互的应用的后台网络活动。</p>
+<p>白名单</p>
+<p>系统提供了一个可配置的白名单，将部分免除低电耗模式和应用待机模式优化的应用列入其中。 在低电耗模式和应 用待机模式期间，列入白名单的应用可以使用网络并保留部分唤醒锁定。不过，列入白名单的应用仍会受到其他限 制，就像其他应用一样。</p>
+<p>可以在设置 中的 电池优化手动配置白名单 。另外，系统也提供了一些方法，让应用要求用户将其列入白名单。</p>
+<p>应用可以触发 <code>ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS</code> Intent，让用户直接转到电池优化，以便他 们在其中添加该应用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));</span><br></pre></td></tr></table></figure>
+
+<p>具有 <code>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS</code>权限的应用可以触发一个系统对话框，让用户直接将该应用 添加到白名单，而无需转到“设置”。此类应用将通过触发 <code>ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS</code>Intent 来触发该对话框。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> Intent intent &#x3D; new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS); intent.setData(Uri.parse(&quot;package:&quot;+getPackageName()));</span><br><span class="line">startActivity(intent);</span><br><span class="line">&lt;uses-permission android:name&#x3D;&quot;android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS&quot; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="监控电池电量和充电状态"><a href="#监控电池电量和充电状态" class="headerlink" title="监控电池电量和充电状态"></a>监控电池电量和充电状态</h4><p>为了减少电池续航被我们软件的影响，我们可以通过检查电池状态以及电量来判断是否进行某些操作。比如我们可 以在充电时才进行一些数据上报之类的操作。获取充电状态和注册广播来监控充电状态变化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">IntentFilter ifilter &#x3D; new IntentFilter(Intent.ACTION_BATTERY_CHANGED); Intent batteryStatus &#x3D; registerReceiver(null, ifilter);</span><br><span class="line">&#x2F;&#x2F; 是否正在充电</span><br><span class="line">int status &#x3D; batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1); </span><br><span class="line">boolean isCharging &#x3D; status &#x3D;&#x3D; BatteryManager.BATTERY_STATUS_CHARGING ||</span><br><span class="line">                     status &#x3D;&#x3D; BatteryManager.BATTERY_STATUS_FULL;</span><br><span class="line">&#x2F;&#x2F; 什么方式充电?</span><br><span class="line">int chargePlug &#x3D; batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1); </span><br><span class="line">&#x2F;&#x2F;usb</span><br><span class="line">boolean usbCharge &#x3D; chargePlug &#x3D;&#x3D; BatteryManager.BATTERY_PLUGGED_USB; </span><br><span class="line">&#x2F;&#x2F;充电器</span><br><span class="line">boolean acCharge &#x3D; chargePlug &#x3D;&#x3D; BatteryManager.BATTERY_PLUGGED_AC;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Energy-Profiler"><a href="#Energy-Profiler" class="headerlink" title="Energy Profiler"></a>Energy Profiler</h4><p>使用Profile 运行App。使用 Android 8.0 及以上版本的设备时，使用Energy Profiler 可以了解应用在哪里耗用了不必要的电量。 Energy Profiler 会监控 CPU、网络无线装置和 GPS 传感器的使用情况，并直观地显示其中每个组件消耗的电量。还会显 示可能会影响耗电量的系统事件(唤醒锁定、闹钟、作业和位置信息请求)的发生次数。</p>
+<h4 id="网络优化"><a href="#网络优化" class="headerlink" title="网络优化"></a>网络优化</h4><p>正常一条网络请求需要经过的流程是这样:</p>
+<ul>
+<li><p>DNS 解析，请求DNS服务器，获取域名对应的 IP 地址; </p>
+</li>
+<li><p>与服务端建立连接，包括 tcp 三次握手，安全协议同步流程; </p>
+</li>
+<li><p>连接建立完成，发送和接收数据，解码数据。</p>
+</li>
+</ul>
+<p>这里有明显的三个优化点:</p>
+<ul>
+<li>直接使用 IP 地址，去除 DNS 解析步骤; </li>
+<li>不要每次请求都重新建立连接，复用连接或一直使用同一条连接(长连接); </li>
+<li>压缩数据，减小传输的数据大小。</li>
+</ul>
+<h5 id="DNS优化"><a href="#DNS优化" class="headerlink" title="DNS优化"></a>DNS优化</h5><p>DNS(Domain Name System)，它的作用是根据域名查出IP地址，它是HTTP协议的前提，只有将域名正确的解</p>
+<p>析成IP地址后，后面的HTTP流程才能进行。DNS 完整的解析流程很长，会先从本地系统缓存取，若没有就到最近的 DNS 服务器取，若没有再到主域名服务器取，每一层都有缓存，但为了域名解析的实时性，每一层缓存都有过期时间。</p>
+<p>传统的DNS解析机制有几个缺点:</p>
+<ul>
+<li><p>缓存时间设置得长，域名更新不及时，设置得短，大量 DNS 解析请求影响请求速度; </p>
+</li>
+<li><p>域名劫持，容易被中间人攻击，或被运营商劫持，把域名解析到第三方 IP 地址，据统计劫持率会达到7%; </p>
+</li>
+<li><p>DNS 解析过程不受控制，无法保证解析到最快的IP;</p>
+</li>
+<li><p>一次请求只能解析一个域名。</p>
+</li>
+</ul>
+<p>为了解决这些问题，就有了 HTTPDNS，原理很简单，就是自己做域名解析的工作，通过 HTTP 请求后台去拿到域 名对应的 IP 地址，直接解决上述所有问题。</p>
+<p>HTTPDNS的好处总结就是:</p>
+<ul>
+<li>避免Local DNS 劫持：由于 HttpDns 是通过 IP 直接请求 HTTP 获取服务器 A 记录地址，不存在向本地运营商询问 domain 解析过程，所以从根本避免了劫持问题。</li>
+<li>DNS 解析由自己控制，可以确保根据用户所在地返回就近的 IP 地址，或根据客户端测速结果使用速度最快的 IP;</li>
+<li>一次请求可以解析多个域名。</li>
+</ul>
+<blockquote>
+<p>阿里HttpDNS:<a href="https://help.aliyun.com/document_detail/30103.html?spm=a2c4g.11186623.6.543.7eee" target="_blank" rel="noopener">https://help.aliyun.com/document_detail/30103.html?spm=a2c4g.11186623.6.543.7eee</a> 78bc3kDYhO</p>
+</blockquote>
+<h5 id="连接优化"><a href="#连接优化" class="headerlink" title="连接优化"></a>连接优化</h5><p>第二个问题，连接建立耗时的问题，这里主要的优化思路是复用连接，不用每次请求都重新建立连接，如何更有效 率地复用连接，可以说是网络请求速度优化里最主要的点了。</p>
+<p>【keep-alive】: HTTP 协议里有个 keep-alive，HTTP1.1默认开启，一定程度上缓解了每次请求都要进行TCP三 次握手建立连接的耗时。原理是请求完成后不立即释放连接，而是放入连接池中，若这时有另一个请求要发出，请 求的域名和端口是一样的，就直接拿出连接池中的连接进行发送和接收数据，少了建立连接的耗时。 实际上现在无 论是客户端还是浏览器都默认开启了keep-alive，对同个域名不会再有每发一个请求就进行一次建连的情况，纯短 连接已经不存在了。</p>
+<p>但有 keep-alive 的连接一次只能发送接收一个请求，在上一个请求处理完成之前，无法接受新的请求。若同时发 起多个请求，就有两种情况:</p>
+<ul>
+<li>若串行发送请求，可以一直复用一个连接，但速度很慢，每个请求都要等待上个请求完成再进行发送。 </li>
+<li>若并行发送请求，那么只能每个请求都要进行tcp三次握手建立新的连接。</li>
+</ul>
+<p>对并行请求的问题，新一代协议 HTTP2 提出了多路复用去解决。 HTTP2 的多路复用机制一样是复用连接，但它复 用的这条连接支持同时处理多条请求，所有请求都可以并发在这条连接上进行，也就解决了上面说的并发请求需要 建立多条连接带来的问题。</p>
+<p>多路复用把在连接里传输的数据都封装成一个个stream，每个stream都有标识，stream的发送和接收可以是乱序 的，不依赖顺序，也就不会有阻塞的问题，接收端可以根据stream的标识去区分属于哪个请求，再进行数据拼接， 得到最终数据。</p>
+<p>Android 的开源网络库<strong>OKhttp</strong>默认就会开启 <code>keep-alive</code> ，并且在<strong>Okhttp3</strong>以上版本也支持了 HTTP2。</p>
+<h5 id="数据压缩"><a href="#数据压缩" class="headerlink" title="数据压缩"></a>数据压缩</h5><p>第三个问题，传输数据大小的问题。数据对请求速度的影响分两方面，一是压缩率，二是解压序列化反序列化的速 度。目前最流行的两种数据格式是 json 和 protobuf，json 是字符串，protobuf 是二进制，即使用各种压缩算法 压缩后，protobuf 仍会比 json 小，数据量上 protobuf 有优势，序列化速度 protobuf 也有一些优势 。</p>
+<p><a href="https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md" target="_blank" rel="noopener">https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md</a></p>
+<p>除了选择不同的序列化方式(数据格式)之外，Http可以对内容(也就是body部分)进行编码，可以采用gzip这样的编码，从而达到压缩的目的。在OKhttp的 BridgeInterceptor 中会自动为我们开启gzip解压的支持。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line">boolean transparentGzip &#x3D; false;</span><br><span class="line">if (userRequest.header(&quot;Accept-Encoding&quot;) &#x3D;&#x3D; null &amp;&amp; userRequest.header(&quot;Range&quot;) &#x3D;&#x3D; null) &#123;</span><br><span class="line">transparentGzip &#x3D; true;</span><br><span class="line">requestBuilder.header(&quot;Accept-Encoding&quot;, &quot;gzip&quot;); &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果服务器响应头存在:<code>Content-Encodin:gzip</code>并且有响应body数据，会进行相应的处理。</p>
+<p>客户端也可以发送压缩数据给服务端，通过代码将请求数据压缩，并在请求中加入<code>Content-Encodin:gzip</code>即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">private RequestBody gzip(final RequestBody body) &#123;</span><br><span class="line">        return new RequestBody() &#123;</span><br><span class="line">@Override</span><br><span class="line">public MediaType contentType() &#123; return body.contentType();</span><br><span class="line">&#125;</span><br><span class="line">@Override</span><br><span class="line">public long contentLength() &#123;</span><br><span class="line">return -1; &#x2F;&#x2F; We don&#39;t know the compressed length in advance!</span><br><span class="line">&#125;</span><br><span class="line">@Override</span><br><span class="line">public void writeTo(BufferedSink sink) throws IOException &#123; BufferedSink gzipSink &#x3D; Okio.buffer(new GzipSink(sink)); body.writeTo(gzipSink);</span><br><span class="line">gzipSink.close();</span><br><span class="line">&#125; &#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h4><p>1、使用webp代替png/jpg </p>
+<p>2、不同网络的不同图片下发，如(对于原图是300x300的图片):2/3G使用低清晰度图片:使用100X100的图片; 4G再判断信号强度为强则使用使用300X300的图片，为中等则使用200x200，信号弱则使用100x100图片; WiFi网络:直接下发300X300的图片</p>
+<p>3、http开启缓存 / 首页数据加入缓存</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/09/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86/" rel="prev" title="阻塞队列和线程池原理">
+      <i class="fa fa-chevron-left"></i> 阻塞队列和线程池原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/11/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" rel="next" title="Java内存模型">
+      Java内存模型 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">prsuit</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"wcHVHcMfvijlbh1aHD87HwFg-gzGzoHsz","app_key":"LuS6lIabezmhCePy6QOd6WnR","server_url":"https://prsuit.github.io/","security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
